@@ -4,7 +4,7 @@
     "name": "Revizto"
   },
   "metadata": {
-    "description": "Revizto plugin marketplace — live project intelligence and curated Revizto platform skills over the Revizto MCP Server."
+    "description": "Revizto Blueprints — MCP blueprints, Claude plugins and tools for Revizto: live project intelligence and clash governance over the Revizto MCP Server, plus curated Revizto platform skills."
   },
   "plugins": [
     {
@@ -16,6 +16,16 @@
         "name": "Revizto"
       },
       "keywords": ["revizto", "bim", "coordination", "mcp", "project-intelligence", "aeco"]
+    },
+    {
+      "name": "revizto-project-intelligence-matrix",
+      "source": "./plugins/revizto-pi-matrix",
+      "description": "Clash governance for Revizto — build clash tests from your project's search sets or the Codifying Coordination v2.0 template, export them for Revizto to import, and, with the Revizto MCP connector, check how they are running in a live project. Works offline; live reads are optional and read-only.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Revizto"
+      },
+      "keywords": ["revizto", "bim", "coordination", "clash", "clash-matrix", "search-sets", "mcp", "aeco"]
     }
   ]
 }

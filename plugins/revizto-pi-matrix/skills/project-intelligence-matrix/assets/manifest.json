@@ -1,0 +1,32 @@
+{
+  "md5": "a2d8c48bfa1e710a39bf9cdc4aabb5bb",
+  "file": "matrix.html",
+  "product": "Revizto Project Intelligence Matrix",
+  "version": "1.0.0",
+  "stamp": "1.0.0",
+  "tcsVersion": "1.1",
+  "buildDate": "2026-11-11",
+  "size": 1113487,
+  "sha256": "7ce7468b2561415ec56bb74b96ebaadcfdd254947793957b8ea00009878a2445",
+  "anchor": "/*@@INSTALL_CONNECTORS@@*/",
+  "anchorCount": 1,
+  "tools": {
+    "read": [
+      "list_accounts",
+      "list_licenses",
+      "list_projects",
+      "list_clash_tests",
+      "list_clash_groups",
+      "list_clashes",
+      "get_clash_stats",
+      "list_stamp_templates",
+      "get_issue",
+      "list_issue_comments",
+      "list_model_objects",
+      "list_workflows",
+      "get_issue_image"
+    ],
+    "write": []
+  },
+  "packagedBy": "package_release.py"
+}

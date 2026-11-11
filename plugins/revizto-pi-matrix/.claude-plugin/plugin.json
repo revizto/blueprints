@@ -1,0 +1,8 @@
+{
+  "name": "revizto-project-intelligence-matrix",
+  "version": "1.0.0",
+  "description": "Clash governance for Revizto — build clash tests from your project's search sets or the Codifying Coordination v2.0 template, export them for Revizto to import, and, with the Revizto MCP connector, check how they are running in a live project. Works offline; live reads are optional and read-only.",
+  "author": { "name": "Revizto" },
+  "license": "SEE LICENSE IN LICENSE.md",
+  "keywords": ["revizto", "bim", "coordination", "clash", "clash-matrix", "search-sets", "mcp", "aeco"]
+}
