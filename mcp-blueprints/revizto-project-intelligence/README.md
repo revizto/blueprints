@@ -15,7 +15,7 @@ The Blueprint **opens read-only every session**. Read-only is a toggle you contr
 the write surface becomes available, so you can push reassignments, status changes and more into your
 Revizto project. Every write runs count-first targeting, a diff preview, and an explicit approval step.
 
-**Status:** `v1.0.3` (build `2026-08-18.1`). Version history in [CHANGELOG.md](CHANGELOG.md).
+**Status:** `v1.0.4` (build `2026-08-28.2`). Version history in [CHANGELOG.md](CHANGELOG.md).
 
 > ### Upgrading? Re-run the install skill.
 >
@@ -87,8 +87,9 @@ region can you access?"*
 
 ### Step 3 — Install the plugin
 
-**Add the marketplace by URL.** **+** → `revizto/project-intelligence-blueprint` → turn **"Sync
-automatically" off** → **Sync** → install **revizto-project-intelligence**.
+**Add the marketplace by URL.** **+** → `revizto/blueprints` → turn **"Sync automatically" off** →
+**Sync** → install **revizto-project-intelligence**. The same marketplace also lists the Revizto Project
+Intelligence Matrix; install it too if you want it — each installs on its own.
 
 **Or upload the package.** If you were supplied `revizto-project-intelligence-v1.0.4.plugin` (also
 attached to the GitHub release), use **Directory → Plugins → Personal → Local uploads**. No repository
@@ -97,7 +98,9 @@ access needed.
 Either way the install detail should list **3 skills** at version **1.0.4**.
 
 > **Upgrading?** Remove the old entry before installing the new one, or Claude keeps serving the cached
-> version.
+> version. **If you added the marketplace as `revizto/project-intelligence-blueprint`**, remove that
+> marketplace and add `revizto/blueprints` instead: the repository was renamed and this plugin now lives in
+> `mcp-blueprints/revizto-project-intelligence/`.
 
 ### Step 4 — Enable the plugin's skills 🔴
 
@@ -134,7 +137,7 @@ If Claude starts *designing* a dashboard instead, the skill is not enabled — g
   archived**, tagged when it does.
 - **06 Action anything shows a padlock on first load.** Correct — toggle the **Read-only** pill off to
   enable writes.
-- About / footer reads build **`2026-08-18.1`**.
+- About / footer reads build **`2026-08-28.2`**.
 
 ### Troubleshooting
 
@@ -142,7 +145,7 @@ If Claude starts *designing* a dashboard instead, the skill is not enabled — g
 |---|---|
 | "Tools aren't authorised for this artifact" / "Licence not accessible" / no projects | You ran the install **in the cloud**. Re-run it on your computer (Step 1). This is the usual cause. |
 | Asking Claude to open the Blueprint does nothing, or it starts **designing** one | The `project-intelligence-dashboard` skill is not enabled (Step 4). It should copy a file, never author one. |
-| Build stamp older than `2026-08-18.1` | The deployed artifact predates the plugin update. Re-run the skill (Step 5). |
+| Build stamp older than `2026-08-28.2` | The deployed artifact predates the plugin update. Re-run the skill (Step 5). |
 | Marketplace add fails: `github_repo_not_accessible`, or a prompt about the Claude GitHub App | "Sync automatically" was left **on**. Remove the entry and re-add with it off (Step 3). |
 | Adding the marketplace says it needs **admin** | You are on the **Organization** tab. Use **Personal** — per-user, no admin. |
 | Plugin stuck on an old version after reinstall | Cache. Quit Claude, then `chflags -R nouchg ~/.claude/plugins 2>/dev/null; rm -rf ~/.claude/plugins/cache ~/.claude/plugins/marketplaces/revizto`, reopen and re-add. On Windows: `%USERPROFILE%\.claude\plugins\`. |
@@ -175,7 +178,7 @@ One `CONFIG` object at the top of `dashboard.html`:
 | `connectors` | `[]` | One entry per connected region, `{prefix, env, wsHost, missing}`. The install skill fills this with your own `mcp__<connector-id>__` prefixes; connections can also be added at runtime from the MCP Server panel. |
 | `readOnly` | `false` | The Read-only pill is a live per-session toggle. The Blueprint opens read-only regardless; this constant only controls whether the toggle can be turned off. Set `true` to hard-lock read-only and disable writes entirely. |
 | `tcsVersion` | `"1.1"` | Terms version. Bumping it re-prompts acceptance on every connection. |
-| `buildStamp` | `"2026-08-18.1"` | Shown in About and the Terms footer, for support. |
+| `buildStamp` | `"2026-08-28.2"` | Shown in About and the Terms footer, for support. |
 
 ## Trust posture
 
@@ -200,13 +203,16 @@ uses **Organization settings → Plugins**, with Cowork and Skills enabled for t
 
 ## Repository layout
 
+This plugin lives in `mcp-blueprints/revizto-project-intelligence/` of the
+[Revizto Blueprints](../../README.md) repository. The marketplace file is at the repository root.
+
 ```
-.claude-plugin/plugin.json         plugin manifest
-.claude-plugin/marketplace.json    one-plugin marketplace
+.claude-plugin/plugin.json           plugin manifest
 skills/
-  project-intelligence-dashboard/  install action + assets/dashboard.html
+  project-intelligence-dashboard/    install action + assets/dashboard.html + assets/manifest.json
   skill-aeco-innovation-revizto/       Revizto platform knowledge
   skill-aeco-innovation-revizto-api/   Revizto API / MCP reference
+tools/ · tests/ · package.json       build and verification gates (see RELEASING.md)
 CHANGELOG.md · CONNECTORS.md · SKILLS-MANIFEST.md · TERMS.md · LICENSE.md
 ```
 

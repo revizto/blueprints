@@ -165,6 +165,7 @@ skills/
   project-intelligence-matrix/         install action
     assets/matrix.html                 the Matrix (single self-contained file)
     assets/manifest.json               size, checksums, version, tools — written at release
+tools/verify.mjs                       repository gates (asset, public-safe, read-only, version, licence)
 CHANGELOG.md · CONNECTORS.md · SKILLS-MANIFEST.md · LICENSE.md
 ```
 

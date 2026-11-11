@@ -13,16 +13,21 @@ asset if they fail, and that refusal is the point.
 `npm: command not found`, Node is not installed — see "Releasing without Node locally" at the bottom,
 which is a supported path, not a workaround.
 
-Every command below assumes you are **in the repo**:
+Every command below assumes you are **in this plugin's folder** of the Revizto Blueprints repository
+(`revizto/blueprints`, previously `revizto/project-intelligence-blueprint`):
 
 ```bash
-cd ~/Developer/project-intelligence-blueprint
+cd ~/Developer/blueprints/mcp-blueprints/revizto-project-intelligence
 ```
+
+The gates locate their files relative to this folder. The one file outside it is the marketplace,
+`../../.claude-plugin/marketplace.json`, which lists every plugin in the repository; Gate 6 reads this
+plugin's own entry from it by name. `git` commands work from here as from the repository root.
 
 ## 0 · Before you start
 
-Everything that states the version must already agree: `.claude-plugin/plugin.json`,
-`.claude-plugin/marketplace.json`, `SKILL.md` frontmatter, the `README.md` package name and
+Everything that states the version must already agree: `.claude-plugin/plugin.json`, this plugin's
+entry in the root `.claude-plugin/marketplace.json`, `SKILL.md` frontmatter, the `README.md` package name and
 install-detail line, and the top `CHANGELOG.md` heading — which must also quote the `buildStamp`
 that the shipped `dashboard.html` actually contains.
 
@@ -93,7 +98,7 @@ file.
 
 ## 6 · Create the GitHub release
 
-On <https://github.com/revizto/project-intelligence-blueprint/releases> → **Draft a new release**:
+On <https://github.com/revizto/blueprints/releases> → **Draft a new release**:
 
 - **Tag** — `v1.0.4` (the one you just pushed; do not let GitHub create a new one)
 - **Title** — `v1.0.4 — the _cb outage; argument contract; guards that cannot go stale`
