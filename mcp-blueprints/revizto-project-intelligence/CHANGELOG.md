@@ -65,7 +65,7 @@ Revizto — and the Blueprint then blamed the customer's connector for it.
 ### No environment concept, and no internal region, in shipped source
 
 - **`REGION_NAMES` named an internal pre-production region.** The table carried
-  `"eu-south-1-barcelona":"Barcelona (stage)"` — a display label only, never a connector, and no
+  a display label for an internal test region — a label only, never a connector, and no
   staging connector id has ever shipped. But it named internal Revizto infrastructure in a public
   artifact, which this build already forbids itself elsewhere: the connection-identity notes carry the
   rule *"internal server names must not appear in shipped source"* and then omit their own examples.

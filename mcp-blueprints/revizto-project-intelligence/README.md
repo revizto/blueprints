@@ -98,8 +98,9 @@ access needed.
 Either way the install detail should list **3 skills** at version **1.0.4**.
 
 > **Upgrading?** Remove the old entry before installing the new one, or Claude keeps serving the cached
-> version. **If you added the marketplace as `revizto/project-intelligence-blueprint`**, remove that
-> marketplace and add `revizto/blueprints` instead: the repository was renamed and this plugin now lives in
+> version. **Added the marketplace before the rename?**
+> It was previously published as `revizto/project-intelligence-blueprint`; remove that marketplace and add
+> `revizto/blueprints` instead: the repository was renamed and this plugin now lives in
 > `mcp-blueprints/revizto-project-intelligence/`.
 
 ### Step 4 — Enable the plugin's skills 🔴

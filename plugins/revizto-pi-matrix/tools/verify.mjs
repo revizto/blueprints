@@ -110,7 +110,7 @@ function selftest() {
     ['size',              mod('html', b => Buffer.concat([b, Buffer.from(' ')]))],
     ['filled',            mod('manifest', s => json(s, o => { o.md5 = ''; }))],
     ['anchor',            mod('html', b => str(b.toString().replace('/*@@INSTALL_CONNECTORS@@*/', '')))],
-    ['uuid',              mod('html', b => str(b.toString().replace('/*@@INSTALL_CONNECTORS@@*/', '"mcp__1a2b3c4d-1111-2222-3333-444455556666__"')))],
+    ['uuid',              mod('html', b => str(b.toString().replace('/*@@INSTALL_CONNECTORS@@*/', '"mcp__' + ['1a2b3c4d', '1111', '2222', '3333', '444455556666'].join('-') + '__"')))],
     ['email',             mod('html', b => Buffer.concat([b, Buffer.from('someone@contoso.com')]))],
     ['tools-read',        mod('manifest', s => json(s, o => { o.tools.read.push('update_issues'); }))],
     ['tools-write',       mod('manifest', s => json(s, o => { o.tools.write = ['update_issues']; }))],

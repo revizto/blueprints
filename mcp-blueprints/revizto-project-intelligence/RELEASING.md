@@ -14,7 +14,7 @@ asset if they fail, and that refusal is the point.
 which is a supported path, not a workaround.
 
 Every command below assumes you are **in this plugin's folder** of the Revizto Blueprints repository
-(`revizto/blueprints`, previously `revizto/project-intelligence-blueprint`):
+(`revizto/blueprints`; it was previously published as `revizto/project-intelligence-blueprint`):
 
 ```bash
 cd ~/Developer/blueprints/mcp-blueprints/revizto-project-intelligence

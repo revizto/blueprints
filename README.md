@@ -81,8 +81,8 @@ automatically" OFF** → **Sync**. Then install either or both:
 | Blueprint | **revizto-project-intelligence** | 3 skills at version 1.0.4 |
 | Matrix | **revizto-project-intelligence-matrix** | 1 skill at version 1.0.0 |
 
-> **Added the marketplace before as `revizto/project-intelligence-blueprint`?** Remove that marketplace
-> and add `revizto/blueprints` instead. The repository was renamed and the Blueprint now lives in
+> **Added this marketplace before the rename?** It was previously published as `revizto/project-intelligence-blueprint`.
+> Remove that marketplace and add `revizto/blueprints` instead. The Blueprint now lives in
 > `mcp-blueprints/revizto-project-intelligence/`. Remove an old plugin entry before installing the new
 > one, or Claude keeps serving the cached version.
 
