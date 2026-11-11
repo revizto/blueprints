@@ -138,6 +138,9 @@ because Claude installs a plugin from its own folder. Release tags name the plug
 
 [LICENSE.md](LICENSE.md) is the Revizto Custom Licence and governs this repository.
 
+The licence text currently names the Revizto Project Intelligence Blueprint. Broader wording covering every
+item in this repository is in preparation.
+
 ## History
 
 This repository was previously published as `revizto/project-intelligence-blueprint`.
