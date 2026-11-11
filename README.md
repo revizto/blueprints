@@ -130,7 +130,8 @@ job, it goes in `mcp-blueprints/`; otherwise in `plugins/`. The marketplace file
 point into either folder. Standalone tools have no marketplace entry.
 
 Each plugin carries its own changelog, connector notes and a byte-identical copy of the root licence,
-because Claude installs a plugin from its own folder. Repository-level changes are in
+because Claude installs a plugin from its own folder. Release tags name the plugin: the Blueprint keeps its
+`vX.Y.Z` tags; the Matrix is tagged `matrix-vX.Y.Z`. Repository-level changes are in
 [CHANGELOG.md](CHANGELOG.md).
 
 ## Licence

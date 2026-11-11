@@ -111,7 +111,7 @@ If Claude starts *designing* a matrix instead, the skill is not enabled — go b
 
 | Symptom | Fix |
 |---|---|
-| "The Matrix's tools aren't authorised for this artifact" | You ran the install **in the cloud**, or before connecting Revizto. Re-run the skill on your computer (Step 1) with the connector signed in. |
+| "The Matrix’s tools aren’t authorised for this artifact yet" | You ran the install **in the cloud**, or before connecting Revizto. Re-run the skill on your computer (Step 1) with the connector signed in. |
 | Asking Claude to open the Matrix does nothing, or it starts **designing** one | The `project-intelligence-matrix` skill is not enabled (Step 4). It should copy a file, never author one. |
 | The install skill stops with "manifest.json is unfilled" or "does not match the manifest" | The package is incomplete or was altered. Remove the plugin, re-sync the marketplace and install again. Do not deploy the file by hand. |
 | Marketplace add fails: `github_repo_not_accessible`, or a prompt about the Claude GitHub App | "Sync automatically" was left **on**. Remove the entry and re-add with it off (Step 3). |
@@ -165,7 +165,7 @@ skills/
   project-intelligence-matrix/         install action
     assets/matrix.html                 the Matrix (single self-contained file)
     assets/manifest.json               size, checksums, version, tools — written at release
-tools/verify.mjs                       repository gates (asset, public-safe, read-only, version, licence)
+tools/verify.mjs                       repository gates (asset, public-safe, read-only, version, licence; --selftest)
 CHANGELOG.md · CONNECTORS.md · SKILLS-MANIFEST.md · LICENSE.md
 ```
 

@@ -4,7 +4,7 @@ Repository-level changes: layout, licence, additions and removals. Each item kee
 folder — [Blueprint](mcp-blueprints/revizto-project-intelligence/CHANGELOG.md) ·
 [Matrix](plugins/revizto-pi-matrix/CHANGELOG.md).
 
-## Revizto Blueprints — layout, and the Project Intelligence Matrix 1.0.0
+## Unreleased — Revizto Blueprints layout, and the Project Intelligence Matrix 1.0.0
 
 The repository becomes **Revizto Blueprints**, a shared home for Revizto MCP blueprints, Claude plugins
 and tools, and gains its second plugin.

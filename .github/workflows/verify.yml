@@ -30,5 +30,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: '20' }
+      - name: the gates can fail (each injected defect must go red)
+        run: node tools/verify.mjs --selftest
       - name: asset, public-safe, read-only, version and licence gates
         run: node tools/verify.mjs

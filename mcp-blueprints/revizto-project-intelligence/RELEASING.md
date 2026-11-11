@@ -1,7 +1,7 @@
 # Releasing
 
 The plugin ships as a single self-contained HTML asset with no runtime build, which is how three
-defects of the same shape reached customers (WS28d, WS35, WS36). The gates below are the substitute
+defects of the same shape reached customers. The gates below are the substitute
 for a build pipeline. **Do not skip them** — `tools/package.mjs` will refuse to produce a release
 asset if they fail, and that refusal is the point.
 

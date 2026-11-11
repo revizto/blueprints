@@ -15,7 +15,7 @@ Intelligence Blueprint serves the Matrix too.
 > **Two separate gates.** Connecting the connector is necessary but **not** sufficient. The Matrix
 > artifact has its own per-artifact `mcp_tools` allowlist, which the connector grant does **not**
 > populate — the install skill's `create_artifact` declares the read tools into it, and only when run
-> locally in Cowork. If the Matrix says "tools aren't authorised for this artifact," that second gate is
+> locally in Cowork. If the Matrix says "tools aren’t authorised for this artifact yet," that second gate is
 > the empty one.
 
 ## Read-only by construction

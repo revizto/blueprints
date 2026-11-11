@@ -42,7 +42,7 @@ automatic failure.
 The read tools are authorised for the Matrix artifact only when `create_artifact` runs **locally on the
 user's computer**. In a **cloud** Cowork session the artifact is registered through the cloud→desktop
 bridge, which **cannot bind the `mcp_tools` allowlist** — the Matrix still opens and every offline
-feature works, but live reads fail with "The Matrix's tools aren't authorised for this artifact".
+feature works, but live reads fail with "The Matrix’s tools aren’t authorised for this artifact yet".
 
 Before you start: confirm the session is running **on this computer** (local), not in the cloud. In the
 Claude app the header shows a **cloud icon** for cloud sessions and a **computer/laptop icon** for local
@@ -91,15 +91,21 @@ it — copy it:
 
 ```bash
 A="$CLAUDE_PLUGIN_ROOT/skills/project-intelligence-matrix/assets"
-cp "$A/matrix.html" ./pi-matrix.html
-python3 - "$A/manifest.json" ./pi-matrix.html <<'PY'
-import hashlib, json, sys
+cp "$A/matrix.html" ./pi-matrix.pristine.html     # never edited: the reference for step 6
+cp "$A/matrix.html" ./pi-matrix.html              # the copy you edit in step 3
+python3 - "$A/manifest.json" ./pi-matrix.pristine.html "$CLAUDE_PLUGIN_ROOT/.claude-plugin/plugin.json" <<'PY'
+import hashlib, json, re, sys
 m = json.load(open(sys.argv[1])); b = open(sys.argv[2], "rb").read()
+v = json.load(open(sys.argv[3]))["version"]
 assert m.get("md5"), "STOP: manifest.json is unfilled - this package was never released. Do not deploy."
+assert m.get("version") == v, f"STOP: manifest is version {m.get('version')}, plugin is {v}. Do not deploy."
 got = hashlib.sha256(b).hexdigest()
 print("bytes", len(b), "want", m["size"], "| sha256", got[:12], "want", m["sha256"][:12])
 assert len(b) == m["size"] and got == m["sha256"], "STOP: the copy does not match the manifest. Do not deploy it."
-print("OK - Matrix", m["version"], "build", m["stamp"], "| read tools:", ", ".join(m["tools"]["read"]))
+assert m.get("anchorCount") == 1 and b.decode().count(m["anchor"]) == 1, "STOP: install marker missing or repeated."
+rd, wr = m["tools"]["read"], m["tools"]["write"]
+assert rd and wr == [] and all(re.match(r"^(list|get)_", t) for t in rd), "STOP: manifest declares a non-read tool."
+print("OK - Matrix", m["version"], "build", m["stamp"], "| read tools:", ", ".join(rd))
 PY
 ```
 
@@ -131,6 +137,21 @@ const CONNECTORS=[{prefix:"mcp__<connector-id>__",env:"prod",origin:"current"}];
 Replace the marker comment itself — it must not remain in the file. Use a single targeted find-and-replace
 on that one line and **touch nothing else**: no reformatting, no other edits. Read the real prefix; never
 guess it. If no connector is connected, leave the line exactly as shipped.
+
+Then prove the edit was that one line and nothing else:
+
+```bash
+python3 - ./pi-matrix.pristine.html ./pi-matrix.html <<'PY'
+import sys
+a = open(sys.argv[1], encoding="utf-8").read().split("\n"); b = open(sys.argv[2], encoding="utf-8").read().split("\n")
+assert len(a) == len(b), "STOP: lines were added or removed. Redo from step 2."
+diff = [i for i in range(len(a)) if a[i] != b[i]]
+assert len(diff) <= 1 and all(a[i].startswith("const CONNECTORS=[") for i in diff), "STOP: something other than the connector line changed. Redo from step 2."
+print("OK -", "connector line set" if diff else "unchanged (no connector)", "| markers left:", b[diff[0]].count("@@INSTALL_CONNECTORS@@") if diff else "n/a")
+PY
+```
+
+When connected, "markers left" must be 0.
 
 **4 — Call every read tool in `manifest.json` once in this session (mandatory when connected — this is
 what makes the allowlist bind).**
@@ -168,9 +189,9 @@ tool** (`update_issues` or anything else) for this artifact.
 
 **6 — Verify you deployed the real thing AND the tools bound (mandatory).**
 
-- Content: the only permitted difference from the shipped file is the connector line from step 3, so
-  check the **pristine** copy against `manifest.json` (as in step 2), then confirm the deployed file
-  contains the four views (`tab-import`, `tab-matrix`, `tab-reg`, `tab-health`) and no longer contains
+- Content: the only permitted difference from the shipped file is the connector line, which the check at
+  the end of step 3 proved against `./pi-matrix.pristine.html` (itself checked against `manifest.json` in
+  step 2). Confirm the deployed file is `./pi-matrix.html` and contains the four views (`tab-import`, `tab-matrix`, `tab-reg`, `tab-health`) and no longer contains
   the marker text when connected. A matrix you "built" yourself will be far smaller and will match
   nothing — discard it and redo from step 2.
 - Tools (connected installs): open the Matrix, go to **04 Health** and read a project. It must reach the
