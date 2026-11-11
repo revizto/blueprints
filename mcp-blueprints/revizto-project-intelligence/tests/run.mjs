@@ -353,7 +353,10 @@ section('6  VERSION  (one release, one number, in every file that states it)');
   // silently serves customers an older plugin than the repo claims to ship.
   const read = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
   const plugin = JSON.parse(read('.claude-plugin/plugin.json')).version;
-  const market = JSON.parse(read('.claude-plugin/marketplace.json')).plugins[0].version;
+  // Declared change: the marketplace now lives at the repository root, two levels above this plugin,
+  // and lists more than one plugin. Read it there and take this plugin's own entry by name.
+  const marketFile = JSON.parse(fs.readFileSync(path.join(ROOT, '..', '..', '.claude-plugin/marketplace.json'), 'utf8'));
+  const market = ((marketFile.plugins || []).find(p => p.name === 'revizto-project-intelligence') || {}).version;
   const skill  = (/^\s*version:\s*"([^"]+)"/m.exec(read('skills/project-intelligence-dashboard/SKILL.md')) || [])[1];
   const readme = read('README.md');
   const changelog = (/^##\s*(\d+\.\d+\.\d+)/m.exec(read('CHANGELOG.md')) || [])[1];
