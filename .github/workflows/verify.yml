@@ -7,6 +7,9 @@ on:
   push:
     branches: [main, 'release/**']
   pull_request:
+# Least privilege: the gates only read the checkout. (Code scanning: workflow did not limit GITHUB_TOKEN.)
+permissions:
+  contents: read
 jobs:
   verify:
     runs-on: ubuntu-latest

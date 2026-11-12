@@ -95,7 +95,8 @@ In a Cowork session running on your computer, say:
 > Open the Revizto Project Intelligence Matrix — follow the `project-intelligence-matrix` skill.
 
 It copies the bundled Matrix, checks it against its manifest, and — if you connected Revizto in Step 2 —
-calls your Revizto read tools once and registers the artifact with them authorised.
+calls each Revizto read tool once (one account, licence and project, read-only — see *Your data*) and
+registers the artifact with them authorised.
 
 If Claude starts *designing* a matrix instead, the skill is not enabled — go back to Step 4.
 
@@ -141,8 +142,14 @@ cannot see in Revizto itself.
 
 - **Stays on this device.** Matrices you import or edit are saved in your browser's storage for this
   artifact. Nothing is uploaded.
-- **Live reads are read-only and consented.** No Revizto call is made until you accept the Terms at the
-  first live read, recorded on-device, per connection.
+- **Live reads are read-only and consented.** Inside the Matrix, no Revizto call is made until you accept
+  the Terms at the first live read, recorded on-device, per connection.
+- **One exception, at install, and only if you connected Revizto.** Claude can only authorise a tool for
+  the Matrix if it has called that tool in the same session, so the install skill (Step 5) calls each
+  read tool once — through your own connector, with your own Revizto permissions — for one account,
+  licence and project, before the Matrix opens and before its Terms gate. Those calls read; they change
+  nothing, and their results are not stored in the Matrix. If you don't want them, skip Step 2 and use the
+  Matrix offline, or decline when Claude asks to run them.
 - **Exported clash tests bind to your project's search sets by ID**, so export reads your project's
   search-set export first (Export, step 1).
 
@@ -166,9 +173,12 @@ skills/
     assets/matrix.html                 the Matrix (single self-contained file)
     assets/manifest.json               size, checksums, version, tools — written at release
 tools/verify.mjs                       repository gates (asset, public-safe, read-only, version, licence; --selftest)
-CHANGELOG.md · CONNECTORS.md · SKILLS-MANIFEST.md · LICENSE.md
+CHANGELOG.md · CONNECTORS.md · SKILLS-MANIFEST.md · LICENSE.md · OFL.txt
 ```
 
 ## Licence
 
 See [LICENSE.md](LICENSE.md).
+
+The Matrix embeds the Geist and Geist Mono typefaces (Copyright 2024 The Geist Project Authors), used
+under the SIL Open Font License 1.1 — see [OFL.txt](OFL.txt).

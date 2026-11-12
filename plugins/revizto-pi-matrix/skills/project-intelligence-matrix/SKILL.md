@@ -89,11 +89,22 @@ try to repair the old artifact in place.
 **2 — Copy the bundled Matrix verbatim and check it against the manifest.** Do not open it to reproduce
 it — copy it:
 
+First resolve the plugin's own folder. Claude normally sets `$CLAUDE_PLUGIN_ROOT`; if it is empty, find
+the folder that holds this plugin's `.claude-plugin/plugin.json` (named `revizto-project-intelligence-matrix`)
+and set `PR` to it yourself (`PR=/path/to/that/folder`) before running the block. Every path below reads from `PR`, so there is one code path either way.
+
 ```bash
-A="$CLAUDE_PLUGIN_ROOT/skills/project-intelligence-matrix/assets"
+PR="${PR:-${CLAUDE_PLUGIN_ROOT:-}}"
+if [ -z "$PR" ]; then
+  echo "STOP: CLAUDE_PLUGIN_ROOT is not set. Set PR to the folder containing this plugin's .claude-plugin/plugin.json, then re-run this block."
+  exit 1
+fi
+[ -f "$PR/.claude-plugin/plugin.json" ] && [ -f "$PR/skills/project-intelligence-matrix/assets/matrix.html" ] \
+  || { echo "STOP: $PR is not the Matrix plugin folder."; exit 1; }
+A="$PR/skills/project-intelligence-matrix/assets"
 cp "$A/matrix.html" ./pi-matrix.pristine.html     # never edited: the reference for step 6
 cp "$A/matrix.html" ./pi-matrix.html              # the copy you edit in step 3
-python3 - "$A/manifest.json" ./pi-matrix.pristine.html "$CLAUDE_PLUGIN_ROOT/.claude-plugin/plugin.json" <<'PY'
+python3 - "$A/manifest.json" ./pi-matrix.pristine.html "$PR/.claude-plugin/plugin.json" <<'PY'
 import hashlib, json, re, sys
 m = json.load(open(sys.argv[1])); b = open(sys.argv[2], "rb").read()
 v = json.load(open(sys.argv[3]))["version"]
@@ -113,9 +124,8 @@ If either assertion fails, **stop and say so**. An unfilled manifest means the p
 release checks; a mismatch means the wrong file, a truncated copy, or a file you generated yourself. If
 the copy is only a few KB you have definitely got the wrong file.
 
-(If `$CLAUDE_PLUGIN_ROOT` isn't set, locate this plugin's
-`skills/project-intelligence-matrix/assets/matrix.html` on disk and copy that. Never substitute a
-hand-written file.)
+Never substitute a hand-written file, and never point `PR` at anything but this plugin's own installed
+folder.
 
 **3 — Make EXACTLY ONE edit: replace the connector marker.** The copied file contains this exact text
 once, as the value of its connector list:
@@ -155,6 +165,12 @@ When connected, "markers left" must be 0.
 
 **4 — Call every read tool in `manifest.json` once in this session (mandatory when connected — this is
 what makes the allowlist bind).**
+
+**Tell the user first, and get their go-ahead.** Say, in one or two sentences, that to authorise the
+Matrix's live reads you will now call each Revizto read tool once through their connector — read-only, for
+one account, licence and project — and that this happens at install, before the Matrix's own Terms gate.
+If they decline, skip this step and deploy with no `mcp_tools` (the Matrix works offline; they can re-run
+the install later).
 
 `manifest.json` → `.tools.read` is the authoritative list. It is extracted from the build's own
 declaration when the release is packaged; use it rather than any list written out in prose, here or

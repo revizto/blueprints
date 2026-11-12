@@ -29,6 +29,8 @@ function load() {
     changelog: r(path.join(ROOT, 'CHANGELOG.md')),
     readme: r(path.join(ROOT, 'README.md')),
     licence: r(path.join(ROOT, 'LICENSE.md'), null),
+    // The embedded Geist fonts' licence. Optional at load so its absence is reported as a gate, not a crash.
+    ofl: fs.existsSync(path.join(ROOT, 'OFL.txt')) ? r(path.join(ROOT, 'OFL.txt')) : '',
     rootLicence: r(path.join(REPO, 'LICENSE.md'), null),
   };
 }
@@ -63,6 +65,10 @@ function gates(f, out = () => {}) {
   const anchor = man.anchor || '/*@@INSTALL_CONNECTORS@@*/';
   ok('anchor', 'exactly one install marker, inside CONNECTORS=[ ]',
      text.split(anchor).length - 1 === 1 && text.includes('CONNECTORS=[' + anchor + ']'));
+  // The install skill refuses to deploy unless manifest.anchorCount is exactly 1, so a manifest that says
+  // otherwise is a package nobody can install. Check the manifest's own claim, not only the HTML.
+  ok('anchor-count', 'manifest records exactly one install marker (the installer asserts anchorCount === 1)',
+     man.anchorCount === 1 && man.anchor === '/*@@INSTALL_CONNECTORS@@*/', 'anchorCount=' + man.anchorCount + ' anchor=' + man.anchor);
 
   out('2  PUBLIC  (nothing install- or workspace-specific ships)');
   ok('uuid', 'no connector id baked in',
@@ -98,6 +104,10 @@ function gates(f, out = () => {}) {
 
   out('5  LICENCE');
   ok('licence', 'LICENSE.md is a byte-identical copy of the root licence', Buffer.compare(f.licence, f.rootLicence) === 0);
+  // The build embeds Geist and Geist Mono and its About text says the OFL ships beside it.
+  const embedsGeist = /Geist/.test(text) && /SIL Open Font License/.test(text);
+  ok('ofl', 'OFL.txt ships with the plugin and carries the Geist copyright and the OFL 1.1 text',
+     !embedsGeist || (/Copyright 2024 The Geist Project Authors/.test(f.ofl) && /SIL OPEN FONT LICENSE Version 1\.1/.test(f.ofl)));
   return fails;
 }
 
@@ -110,6 +120,8 @@ function selftest() {
     ['size',              mod('html', b => Buffer.concat([b, Buffer.from(' ')]))],
     ['filled',            mod('manifest', s => json(s, o => { o.md5 = ''; }))],
     ['anchor',            mod('html', b => str(b.toString().replace('/*@@INSTALL_CONNECTORS@@*/', '')))],
+    ['anchor-count',      mod('manifest', s => json(s, o => { o.anchorCount = 0; }))],
+    ['anchor-count',      mod('manifest', s => json(s, o => { delete o.anchorCount; }))],
     ['uuid',              mod('html', b => str(b.toString().replace('/*@@INSTALL_CONNECTORS@@*/', '"mcp__' + ['1a2b3c4d', '1111', '2222', '3333', '444455556666'].join('-') + '__"')))],
     ['email',             mod('html', b => Buffer.concat([b, Buffer.from('someone@contoso.com')]))],
     ['tools-read',        mod('manifest', s => json(s, o => { o.tools.read.push('update_issues'); }))],
@@ -122,6 +134,7 @@ function selftest() {
     ['html-version',      mod('manifest', s => json(s, o => { o.version = '9.9.9'; }))],
     ['readme-version',    mod('readme', s => s.split('version **').join('version __'))],
     ['licence',           mod('licence', b => Buffer.concat([b, Buffer.from('x')]))],
+    ['ofl',               mod('ofl', () => '')],
   ];
   const clean = gates(base);
   let blind = clean.length ? ['clean tree is not green: ' + clean.join(', ')] : [];
