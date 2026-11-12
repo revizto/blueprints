@@ -18,3 +18,22 @@ installed and versioned separately from the Project Intelligence Blueprint.
   tests are running in a live project. The build declares read tools only and refuses any write before it
   reaches the connector. Terms are accepted at the first live read, per connection.
 - **Local by default.** Matrices are saved in browser storage on the device. Nothing is uploaded.
+
+Hardened before release in response to pre-merge code review:
+
+- **Edits are saved to the matrix they were made in**, even when you switch matrices, delete one or
+  finish an import within the autosave delay.
+- **Revert restores an imported matrix to how it was imported** and never deletes it. Matrices imported
+  before this build show Revert as unavailable, with the reason.
+- **Multi-set clash tests export whole or not at all.** A test only partly selected, partly left out, or
+  partly already in the project is named, with the choice to include the whole test or leave it out; the
+  counts shown before export equal the file.
+- **Search sets with the same name in different folders are refused, not guessed.** Tests that use them
+  are blocked at export with the folders named; rename one in Revizto and export the search sets again.
+- **04 Health recognises the multi-set tests the Matrix exported**, credits each with exactly the pairs
+  it was written with, and says when a pair was added after the last export.
+- **A live read stays with the project and server it started on.** Switching mid-read discards the old
+  read instead of showing it under the new project; repeated Reads run one at a time, latest wins.
+- **The authorisation message names this plugin's install skill** (`project-intelligence-matrix`).
+- **The Geist font licence ships with the plugin** (`OFL.txt`).
+- **The install explains its one-off read calls** before making them (see README → Your data).

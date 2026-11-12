@@ -1777,7 +1777,9 @@ const HOST_SAVE_WRAP=null;
 const MX_NS="rvz-pimx1-";
 const MXE_DOCSKEY=MX_NS+"docs", MXE_TAXKEY=MX_NS+"tax", MXE_PINKEY=MX_NS+"pins";
 const MXE_DOCKEY_PREFIX=MX_NS+"doc@";
+const MXE_ORIGKEY_PREFIX=MX_NS+"orig@";
 const MXE_CHECKLIST_PREFIX=MX_NS+"chk@";
+const MXE_EXPLEDGER_PREFIX=MX_NS+"xl@";
 const ONBOARD_KEY=MX_NS+"onboard";
 const DATA = {"policy":{"priorities":[{"code":"tr","label":"Trivial","riskRange":[0,1]},{"code":"mi","label":"Minor","riskRange":[2,3]},{"code":"Ma","label":"Major","riskRange":[4,5]},{"code":"Cr","label":"Critical","riskRange":[6,6]},{"code":"Bl","label":"Blocker","riskRange":null}],"clashTypes":[{"code":"H","symbol":"◳","label":"Hard"},{"code":"C","symbol":"▣","label":"Clearance","requiresDistance":true},{"code":"T","symbol":"T","label":"Tolerance","requiresDistance":true},{"code":"A","symbol":"⬒","label":"Above","requiresDistance":true},{"code":"B","symbol":"⬓","label":"Below","requiresDistance":true},{"code":"I","symbol":"▣","label":"Inside","requiresDistance":true},{"code":"SI","symbol":"⬔","label":"Duplicate","requiresDistance":true}],"automation":[{"code":"AA","label":"Advanced issue automation"},{"code":"SA","label":"Simple issue automation"},{"code":"NA","label":"No automation"}],"clearanceOptions":[25,50,75,100],"clearanceDefault":25,"toleranceRules":[{"id":"r1","when":{"sectionPair":["SERV","SERV"]},"set":{"clashType":"C","clearanceMm":25},"note":"Services × Services — Codifying Coordination v2.0. Includes same-discipline pairs."},{"id":"r2","when":{"sectionPair":["STRU","SERV"]},"set":{"clashType":"C","clearanceMm":25},"note":"Structure × Services — Codifying Coordination v2.0."},{"id":"default","when":"*","set":{"clashType":"H"},"note":"Every other pair is hard; Architecture × Services falls here by omission."}]},"spatialFields":[{"id":"levelName","label":"Level","group":"levels","src":"list_clashes.levelName (default)"},{"id":"areaName","label":"Area","group":"areas","src":"list_clashes.areaName (default)"},{"id":"zoneName","label":"Zone","group":"zones","src":"list_clashes.zoneName (default)"},{"id":"roomName","label":"Room","group":null,"src":"list_clashes include: roomName"},{"id":"spaceName","label":"Space","group":null,"src":"list_clashes include: spaceName"},{"id":"grids","label":"Grid","group":null,"src":"list_clashes include: grids"},{"id":"roadName","label":"Road + chainage","group":null,"src":"list_clashes include: roadName, roadDistanceFromStart"}],"taxonomy":{"sections":[{"id":"ARCH","label":"Architecture","order":1},{"id":"STRU","label":"Structure","order":2},{"id":"CIVL","label":"Civil","order":3},{"id":"SERV","label":"Services","order":4},{"id":"SITE","label":"Site Services","order":5},{"id":"STEL","label":"Steel Detailing","order":6}],"disciplines":[{"id":"ARC-EXT","label":"Architecture - Exterior","sectionId":"ARCH","abbr":"ARC","code":"ARCE"},{"id":"ARC-INT","label":"Architecture - Interior","sectionId":"ARCH","abbr":"ARC","code":"ARCI"},{"id":"STR-PRI","label":"Structure - Primary","sectionId":"STRU","abbr":"STR","code":"STRP"},{"id":"STR-SEC","label":"Structure - Secondary","sectionId":"STRU","abbr":"STR","code":"STRS"},{"id":"CIV","label":"Civil","sectionId":"CIVL","abbr":"CIV","code":"CIV"},{"id":"SRV-MEC","label":"Services - Mechanical","sectionId":"SERV","abbr":"SRV","code":"SRVM"},{"id":"SRV-ELE","label":"Services - Electrical","sectionId":"SERV","abbr":"SRV","code":"SRVE"},{"id":"SRV-HYD","label":"Services - Hydraulic","sectionId":"SERV","abbr":"SRV","code":"SRVH"},{"id":"FIR","label":"Services - Fire Protection","sectionId":"SERV","abbr":"FIR","code":"FIR"},{"id":"SME","label":"Site Services - HVAC","sectionId":"SITE","abbr":"SME","code":"SME"},{"id":"SEL","label":"Site Services - Electrical","sectionId":"SITE","abbr":"SEL","code":"SEL"},{"id":"STL","label":"Site Services - Telecom","sectionId":"SITE","abbr":"STL","code":"STL"},{"id":"SPI","label":"Site Services - Piping","sectionId":"SITE","abbr":"SPI","code":"SPI"},{"id":"SPL","label":"Site Services - Plumbing","sectionId":"SITE","abbr":"SPL","code":"SPL"},{"id":"SSD","label":"Steel Detailer - Main","sectionId":"STEL","abbr":"SSD","code":"SSD"},{"id":"SSM","label":"Steel Detailer - Misc.","sectionId":"STEL","abbr":"SSM","code":"SSM"}]},"datasets":{"real":{"label":"Codifying Coordination v2.0 — 19 sets","sets":[{"id":"CE","name":"Ceilings","bindName":"AR:CE - Ceilings","bindVerified":true,"disciplineId":"ARC-INT","risk":1.0,"classification":{"ifcClass":"IfcCovering","revitCategory":"Ceilings","confidence":"inferred","inferredFrom":"seed.name"}},{"id":"DR","name":"Doors","bindName":"AR:DR - Doors","bindVerified":true,"disciplineId":"ARC-INT","risk":3.0,"classification":{"ifcClass":"IfcDoor","revitCategory":"Doors","confidence":"inferred","inferredFrom":"seed.name"}},{"id":"ST","name":"Stairs & Ramps","bindName":"AR:ST - Stairs and Ramps","bindVerified":true,"disciplineId":"ARC-INT","risk":3.0,"classification":{"ifcClass":"IfcStair","revitCategory":"Stairs","confidence":"inferred","inferredFrom":"seed.name"}},{"id":"WN","name":"Windows","bindName":"AR:WN - Windows","bindVerified":true,"disciplineId":"ARC-EXT","risk":2.0,"classification":{"ifcClass":"IfcWindow","revitCategory":"Windows","confidence":"inferred","inferredFrom":"seed.name"}},{"id":"WF","name":"Walls (Fire Rated)","bindName":"AR:WF - Walls (Fire Rated)","bindVerified":true,"disciplineId":"ARC-INT","risk":3.0,"classification":{"ifcClass":"IfcWall","revitCategory":"Walls","confidence":"inferred","inferredFrom":"seed.name"}},{"id":"SF","name":"Structure (Floors Only)","bindName":"ST:SF - Structure (Floors Only)","bindVerified":true,"disciplineId":"STR-PRI","risk":2.0,"classification":{"ifcClass":"IfcSlab","revitCategory":"Floors","confidence":"inferred","inferredFrom":"seed.name"}},{"id":"SS","name":"Structure excl Floors (Steel)","bindName":"ST:SS - Structure excl Floors (Steel)","bindVerified":true,"disciplineId":"STR-PRI","risk":3.0,"classification":{"ifcClass":"IfcBeam","revitCategory":"Structural Framing","confidence":"inferred","inferredFrom":"seed.name"}},{"id":"SC","name":"Structure excl Floors (Concrete)","bindName":"ST:SC - Structure excl Floors (Concrete)","bindVerified":true,"disciplineId":"STR-PRI","risk":3.0,"classification":{"ifcClass":"IfcColumn","revitCategory":"Structural Columns","confidence":"inferred","inferredFrom":"seed.name"}},{"id":"AT","name":"Air Terminals","bindName":"SV:AT - Air Terminals","bindVerified":true,"disciplineId":"SRV-MEC","risk":1.0,"classification":{"ifcClass":"IfcAirTerminal","revitCategory":"Air Terminals","confidence":"inferred","inferredFrom":"seed.name"}},{"id":"CT","name":"Cable Trays","bindName":"SV:CT - Cable Trays","bindVerified":true,"disciplineId":"SRV-ELE","risk":0.0,"classification":{"ifcClass":"IfcCableCarrierSegment","revitCategory":"Cable Trays","confidence":"inferred","inferredFrom":"seed.name"}},{"id":"DW","name":"Ductwork","bindName":"SV:DW - Ductwork excl Flexible","bindVerified":true,"disciplineId":"SRV-MEC","risk":2.0,"classification":{"ifcClass":"IfcDuctSegment","revitCategory":"Ducts","confidence":"inferred","inferredFrom":"seed.name"}},{"id":"ME","name":"Mechanical Equipment","bindName":"SV:ME - Mechanical Equipment","bindVerified":true,"disciplineId":"SRV-MEC","risk":3.0,"classification":{"ifcClass":"IfcUnitaryEquipment","revitCategory":"Mechanical Equipment","confidence":"inferred","inferredFrom":"seed.name"}},{"id":"GE","name":"General Equipment (Elec, Comms, Data, Sec, Fire)","bindName":"SV:GE - General Equipment (Elec, Comms, Data, Sec, Fire)","bindVerified":true,"disciplineId":"SRV-ELE","risk":1.0,"classification":{"ifcClass":"IfcElectricAppliance","revitCategory":"Electrical Equipment","confidence":"inferred","inferredFrom":"seed.name"}},{"id":"LF","name":"Lighting Fixtures","bindName":"SV:LF - Lighting Fixtures","bindVerified":true,"disciplineId":"SRV-ELE","risk":1.0,"classification":{"ifcClass":"IfcLightFixture","revitCategory":"Lighting Fixtures","confidence":"inferred","inferredFrom":"seed.name"}},{"id":"PD","name":"Pipework (Drainage)","bindName":"SV:PD - Pipework (Drainage)","bindVerified":true,"disciplineId":"SRV-HYD","risk":3.0,"classification":{"ifcClass":"IfcPipeSegment","revitCategory":"Pipes","confidence":"inferred","inferredFrom":"seed.name"}},{"id":"PF","name":"Pipework (Fire)","bindName":"SV:PF - Pipework (Fire)","bindVerified":true,"disciplineId":"FIR","risk":1.0,"classification":{"ifcClass":"IfcPipeSegment","revitCategory":"Pipes","confidence":"inferred","inferredFrom":"seed.name"}},{"id":"PH","name":"Pipework (Hot and Cold Water)","bindName":"SV:PH - Pipework (Hot and Cold Water)","bindVerified":true,"disciplineId":"SRV-HYD","risk":1.0,"classification":{"ifcClass":"IfcPipeSegment","revitCategory":"Pipes","confidence":"inferred","inferredFrom":"seed.name"}},{"id":"PM","name":"Pipework (Mechanical)","bindName":"SV:PM - Pipework (Mechanical)","bindVerified":true,"disciplineId":"SRV-MEC","risk":1.0,"classification":{"ifcClass":"IfcPipeSegment","revitCategory":"Pipes","confidence":"inferred","inferredFrom":"seed.name"}},{"id":"RL","name":"Railings","bindName":"AR:RL - Railings","bindVerified":false,"disciplineId":"ARC-INT","risk":2.0,"classification":{"ifcClass":"IfcRailing","revitCategory":"Railings","confidence":"inferred","inferredFrom":"seed.name"}}],"pairs":[{"key":"ATCT","a":"AT","b":"CT","governed":true,"assignee":"A","priority":"tr","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"ATDW","a":"AT","b":"DW","governed":true,"assignee":"A","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"ATME","a":"AT","b":"ME","governed":true,"assignee":"A","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"ATGE","a":"AT","b":"GE","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"ATLF","a":"AT","b":"LF","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"ATPD","a":"AT","b":"PD","governed":true,"assignee":"A","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"ATPF","a":"AT","b":"PF","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"ATPH","a":"AT","b":"PH","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"ATPM","a":"AT","b":"PM","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"CEDR","a":"CE","b":"DR","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CEWN","a":"CE","b":"WN","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CEWF","a":"CE","b":"WF","governed":true,"assignee":"A","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CEPD","a":"CE","b":"PD","governed":true,"assignee":"A","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CESF","a":"CE","b":"SF","governed":true,"assignee":"A","priority":"mi","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CESS","a":"CE","b":"SS","governed":true,"assignee":"A","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CESC","a":"CE","b":"SC","governed":true,"assignee":"A","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CEST","a":"CE","b":"ST","governed":true,"assignee":"A","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CEPF","a":"CE","b":"PF","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CEPH","a":"CE","b":"PH","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CEPM","a":"CE","b":"PM","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CECT","a":"CE","b":"CT","governed":true,"assignee":"B","priority":"tr","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CEGE","a":"CE","b":"GE","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"ATCE","a":"CE","b":"AT","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CEDW","a":"CE","b":"DW","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CEME","a":"CE","b":"ME","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CTLF","a":"CT","b":"LF","governed":true,"assignee":"A","priority":"tr","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"CTPD","a":"CT","b":"PD","governed":true,"assignee":"A","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"CTPF","a":"CT","b":"PF","governed":true,"assignee":"A","priority":"tr","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"CTPH","a":"CT","b":"PH","governed":true,"assignee":"A","priority":"tr","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"CTPM","a":"CT","b":"PM","governed":true,"assignee":"A","priority":"tr","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"CTDW","a":"CT","b":"DW","governed":true,"assignee":"A","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"CTME","a":"CT","b":"ME","governed":true,"assignee":"A","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"CTGE","a":"CT","b":"GE","governed":true,"assignee":"A","priority":"tr","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"DRSC","a":"DR","b":"SC","governed":true,"assignee":"A","priority":"Cr","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DRSF","a":"DR","b":"SF","governed":true,"assignee":"A","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DRSS","a":"DR","b":"SS","governed":true,"assignee":"A","priority":"Cr","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DRST","a":"DR","b":"ST","governed":true,"assignee":"A","priority":"Cr","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DRWF","a":"DR","b":"WF","governed":true,"assignee":"A","priority":"Cr","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DRWN","a":"DR","b":"WN","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"ATDR","a":"DR","b":"AT","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CTDR","a":"DR","b":"CT","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DRDW","a":"DR","b":"DW","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DRGE","a":"DR","b":"GE","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DRLF","a":"DR","b":"LF","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DRME","a":"DR","b":"ME","governed":true,"assignee":"B","priority":"Cr","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DRPD","a":"DR","b":"PD","governed":true,"assignee":"B","priority":"Cr","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DRPF","a":"DR","b":"PF","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DRPH","a":"DR","b":"PH","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DRPM","a":"DR","b":"PM","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DWME","a":"DW","b":"ME","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"DWGE","a":"DW","b":"GE","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"DWLF","a":"DW","b":"LF","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"DWPD","a":"DW","b":"PD","governed":true,"assignee":"A","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"DWPF","a":"DW","b":"PF","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"DWPH","a":"DW","b":"PH","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"DWPM","a":"DW","b":"PM","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"GEPH","a":"GE","b":"PH","governed":true,"assignee":"A","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"GEPM","a":"GE","b":"PM","governed":true,"assignee":"A","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"GELF","a":"GE","b":"LF","governed":true,"assignee":"A","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"GEPD","a":"GE","b":"PD","governed":true,"assignee":"A","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"GEPF","a":"GE","b":"PF","governed":true,"assignee":"A","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"LFPD","a":"LF","b":"PD","governed":true,"assignee":"A","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"LFPF","a":"LF","b":"PF","governed":true,"assignee":"A","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"LFPH","a":"LF","b":"PH","governed":true,"assignee":"A","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"LFPM","a":"LF","b":"PM","governed":true,"assignee":"A","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"GEME","a":"ME","b":"GE","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"LFME","a":"ME","b":"LF","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"MEPD","a":"ME","b":"PD","governed":true,"assignee":"A","priority":"Cr","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"MEPF","a":"ME","b":"PF","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"MEPH","a":"ME","b":"PH","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"MEPM","a":"ME","b":"PM","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"PDPF","a":"PD","b":"PF","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"PDPH","a":"PD","b":"PH","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"PDPM","a":"PD","b":"PM","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"PFPH","a":"PF","b":"PH","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"PFPM","a":"PF","b":"PM","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"PHPM","a":"PH","b":"PM","governed":true,"assignee":"A","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r1","automation":"SA","ignoreRules":[],"comments":null},{"key":"CTSC","a":"SC","b":"CT","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"PFSC","a":"SC","b":"PF","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"PDSC","a":"SC","b":"PD","governed":true,"assignee":"B","priority":"Cr","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"PHSC","a":"SC","b":"PH","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"PMSC","a":"SC","b":"PM","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"ATSC","a":"SC","b":"AT","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"DWSC","a":"SC","b":"DW","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"MESC","a":"SC","b":"ME","governed":true,"assignee":"B","priority":"Cr","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"GESC","a":"SC","b":"GE","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"LFSC","a":"SC","b":"LF","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"CTSF","a":"SF","b":"CT","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"ATSF","a":"SF","b":"AT","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"SFSS","a":"SF","b":"SS","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"SCSF","a":"SF","b":"SC","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DWSF","a":"SF","b":"DW","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"MESF","a":"SF","b":"ME","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"GESF","a":"SF","b":"GE","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"LFSF","a":"SF","b":"LF","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"PDSF","a":"SF","b":"PD","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"PFSF","a":"SF","b":"PF","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"PHSF","a":"SF","b":"PH","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"PMSF","a":"SF","b":"PM","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"PHSS","a":"SS","b":"PH","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"PMSS","a":"SS","b":"PM","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"PDSS","a":"SS","b":"PD","governed":true,"assignee":"B","priority":"Cr","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"SCSS","a":"SS","b":"SC","governed":true,"assignee":"B","priority":"Cr","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"ATSS","a":"SS","b":"AT","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"CTSS","a":"SS","b":"CT","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"DWSS","a":"SS","b":"DW","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"MESS","a":"SS","b":"ME","governed":true,"assignee":"B","priority":"Cr","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"GESS","a":"SS","b":"GE","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"LFSS","a":"SS","b":"LF","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"PFSS","a":"SS","b":"PF","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"C","clearanceMm":25,"clashTypeSource":"rule:r2","automation":"SA","ignoreRules":[],"comments":null},{"key":"STWN","a":"ST","b":"WN","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"STWF","a":"ST","b":"WF","governed":true,"assignee":"B","priority":"Cr","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"ATST","a":"ST","b":"AT","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CTST","a":"ST","b":"CT","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DWST","a":"ST","b":"DW","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"MEST","a":"ST","b":"ME","governed":true,"assignee":"B","priority":"Cr","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"GEST","a":"ST","b":"GE","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"LFST","a":"ST","b":"LF","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"PDST","a":"ST","b":"PD","governed":true,"assignee":"B","priority":"Cr","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"PFST","a":"ST","b":"PF","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"PHST","a":"ST","b":"PH","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"PMST","a":"ST","b":"PM","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"SFST","a":"ST","b":"SF","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"SSST","a":"ST","b":"SS","governed":true,"assignee":"B","priority":"Cr","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"SCST","a":"ST","b":"SC","governed":true,"assignee":"B","priority":"Cr","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DWWF","a":"WF","b":"DW","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"MEWF","a":"WF","b":"ME","governed":true,"assignee":"B","priority":"Cr","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"GEWF","a":"WF","b":"GE","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"LFWF","a":"WF","b":"LF","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"PHWF","a":"WF","b":"PH","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"PMWF","a":"WF","b":"PM","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"PDWF","a":"WF","b":"PD","governed":true,"assignee":"B","priority":"Cr","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"PFWF","a":"WF","b":"PF","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CTWF","a":"WF","b":"CT","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"ATWF","a":"WF","b":"AT","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"SSWF","a":"WF","b":"SS","governed":true,"assignee":"A","priority":"Cr","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"SCWF","a":"WF","b":"SC","governed":true,"assignee":"A","priority":"Cr","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"WFWN","a":"WN","b":"WF","governed":true,"assignee":"A","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"SSWN","a":"WN","b":"SS","governed":true,"assignee":"A","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"SCWN","a":"WN","b":"SC","governed":true,"assignee":"A","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"SFWN","a":"WN","b":"SF","governed":true,"assignee":"A","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"MEWN","a":"WN","b":"ME","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"GEWN","a":"WN","b":"GE","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"PMWN","a":"WN","b":"PM","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"PFWN","a":"WN","b":"PF","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"CTWN","a":"WN","b":"CT","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"LFWN","a":"WN","b":"LF","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"PDWN","a":"WN","b":"PD","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"PHWN","a":"WN","b":"PH","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"ATWN","a":"WN","b":"AT","governed":true,"assignee":"B","priority":"mi","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DWWN","a":"WN","b":"DW","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null},{"key":"DRRL","a":"DR","b":"RL","governed":true,"assignee":"B","priority":"Ma","priorityDerived":true,"clashType":"H","clearanceMm":null,"clashTypeSource":"rule:default","automation":"SA","ignoreRules":[],"comments":null}],"tests":[{"pairKey":"ATCT","testName":"AT:CT Air Terminals vs Cable Trays","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-26"},{"pairKey":"ATDW","testName":"AT:DW Air Terminals vs Ductwork","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-17"},{"pairKey":"ATME","testName":"AT:ME Air Terminals vs Mechanical Equipment","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":15,"clashesNew":8,"clashesResolved":0,"groupsClashing":10,"groupsNew":6,"groupsResolved":0,"lastRunAt":"2026-07-22"},{"pairKey":"ATGE","testName":"AT:GE Air Terminals vs General Equipment (Elec, Comms, Data, Sec, Fire)","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-23"},{"pairKey":"ATLF","testName":"AT:LF Air Terminals vs Lighting Fixtures","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-17"},{"pairKey":"ATPD","testName":"AT:PD Air Terminals vs Pipework (Drainage)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":27,"clashesNew":13,"clashesResolved":0,"groupsClashing":13,"groupsNew":11,"groupsResolved":0,"lastRunAt":"2026-07-13"},{"pairKey":"ATPF","testName":"AT:PF Air Terminals vs Pipework (Fire)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-29"},{"pairKey":"ATPH","testName":"AT:PH Air Terminals vs Pipework (Hot and Cold Water)","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-10"},{"pairKey":"ATPM","testName":"AT:PM Air Terminals vs Pipework (Mechanical)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":72,"clashesNew":45,"clashesResolved":0,"groupsClashing":35,"groupsNew":27,"groupsResolved":0,"lastRunAt":"2026-07-18"},{"pairKey":"CEDR","testName":"CE:DR Ceilings vs Doors","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-10"},{"pairKey":"CEWN","testName":"CE:WN Ceilings vs Windows","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":136,"clashesNew":70,"clashesResolved":0,"groupsClashing":75,"groupsNew":69,"groupsResolved":0,"lastRunAt":"2026-07-22"},{"pairKey":"CEWF","testName":"CE:WF Ceilings vs Walls (Fire Rated)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":14,"clashesNew":13,"clashesResolved":0,"groupsClashing":9,"groupsNew":5,"groupsResolved":0,"lastRunAt":"2026-07-13"},{"pairKey":"CEPD","testName":"CE:PD Ceilings vs Pipework (Drainage)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":23,"clashesNew":22,"clashesResolved":0,"groupsClashing":11,"groupsNew":9,"groupsResolved":0,"lastRunAt":"2026-07-17"},{"pairKey":"CESF","testName":"CE:SF Ceilings vs Structure (Floors Only)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-30"},{"pairKey":"CESS","testName":"CE:SS Ceilings vs Structure excl Floors (Steel)","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-26"},{"pairKey":"CESC","testName":"CE:SC Ceilings vs Structure excl Floors (Concrete)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-24"},{"pairKey":"CEST","testName":"CE:ST Ceilings vs Stairs & Ramps","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":34,"clashesNew":27,"clashesResolved":0,"groupsClashing":17,"groupsNew":16,"groupsResolved":0,"lastRunAt":"2026-07-17"},{"pairKey":"CEPF","testName":"CE:PF Ceilings vs Pipework (Fire)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-15"},{"pairKey":"CEPH","testName":"CE:PH Ceilings vs Pipework (Hot and Cold Water)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-28"},{"pairKey":"CEPM","testName":"CE:PM Ceilings vs Pipework (Mechanical)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-19"},{"pairKey":"CECT","testName":"CE:CT Ceilings vs Cable Trays","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-10"},{"pairKey":"CEGE","testName":"CE:GE Ceilings vs General Equipment (Elec, Comms, Data, Sec, Fire)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":113,"clashesNew":77,"clashesResolved":0,"groupsClashing":72,"groupsNew":71,"groupsResolved":0,"lastRunAt":"2026-07-22"},{"pairKey":"CEDW","testName":"CE:DW Ceilings vs Ductwork","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":170,"clashesNew":158,"clashesResolved":0,"groupsClashing":107,"groupsNew":96,"groupsResolved":0,"lastRunAt":"2026-07-11"},{"pairKey":"CEME","testName":"CE:ME Ceilings vs Mechanical Equipment","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-18"},{"pairKey":"CTLF","testName":"CT:LF Cable Trays vs Lighting Fixtures","clashType":"C","clearanceMm":25,"automation":"NA","clashesClashing":3,"clashesNew":2,"clashesResolved":0,"groupsClashing":2,"groupsNew":1,"groupsResolved":0,"lastRunAt":"2026-07-26"},{"pairKey":"CTPD","testName":"CT:PD Cable Trays vs Pipework (Drainage)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":40,"clashesNew":36,"clashesResolved":0,"groupsClashing":24,"groupsNew":14,"groupsResolved":0,"lastRunAt":"2026-07-28"},{"pairKey":"CTPF","testName":"CT:PF Cable Trays vs Pipework (Fire)","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":166,"clashesNew":133,"clashesResolved":0,"groupsClashing":93,"groupsNew":81,"groupsResolved":0,"lastRunAt":"2026-07-10"},{"pairKey":"CTPH","testName":"CT:PH Cable Trays vs Pipework (Hot and Cold Water)","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":100,"clashesNew":97,"clashesResolved":0,"groupsClashing":50,"groupsNew":26,"groupsResolved":0,"lastRunAt":"2026-07-28"},{"pairKey":"CTPM","testName":"CT:PM Cable Trays vs Pipework (Mechanical)","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-10"},{"pairKey":"CTDW","testName":"CT:DW Cable Trays vs Ductwork","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-26"},{"pairKey":"CTME","testName":"CT:ME Cable Trays vs Mechanical Equipment","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-18"},{"pairKey":"CTGE","testName":"CT:GE Cable Trays vs General Equipment (Elec, Comms, Data, Sec, Fire)","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-13"},{"pairKey":"DRSC","testName":"DR:SC Doors vs Structure excl Floors (Concrete)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-20"},{"pairKey":"DRSF","testName":"DR:SF Doors vs Structure (Floors Only)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-23"},{"pairKey":"DRSS","testName":"DR:SS Doors vs Structure excl Floors (Steel)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-17"},{"pairKey":"DRST","testName":"DR:ST Doors vs Stairs & Ramps","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":94,"clashesNew":82,"clashesResolved":0,"groupsClashing":50,"groupsNew":26,"groupsResolved":0,"lastRunAt":"2026-07-11"},{"pairKey":"DRWF","testName":"DR:WF Doors vs Walls (Fire Rated)","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":126,"clashesNew":75,"clashesResolved":0,"groupsClashing":70,"groupsNew":57,"groupsResolved":0,"lastRunAt":"2026-07-10"},{"pairKey":"DRWN","testName":"DR:WN Doors vs Windows","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-21"},{"pairKey":"ATDR","testName":"DR:AT Doors vs Air Terminals","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-29"},{"pairKey":"CTDR","testName":"DR:CT Doors vs Cable Trays","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":115,"clashesNew":86,"clashesResolved":0,"groupsClashing":60,"groupsNew":52,"groupsResolved":0,"lastRunAt":"2026-07-14"},{"pairKey":"DRDW","testName":"DR:DW Doors vs Ductwork","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":123,"clashesNew":64,"clashesResolved":0,"groupsClashing":64,"groupsNew":61,"groupsResolved":0,"lastRunAt":"2026-07-10"},{"pairKey":"DRGE","testName":"DR:GE Doors vs General Equipment (Elec, Comms, Data, Sec, Fire)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":94,"clashesNew":72,"clashesResolved":0,"groupsClashing":49,"groupsNew":48,"groupsResolved":0,"lastRunAt":"2026-07-20"},{"pairKey":"DRLF","testName":"DR:LF Doors vs Lighting Fixtures","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":16,"clashesNew":9,"clashesResolved":0,"groupsClashing":9,"groupsNew":8,"groupsResolved":0,"lastRunAt":"2026-07-10"},{"pairKey":"DRME","testName":"DR:ME Doors vs Mechanical Equipment","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-16"},{"pairKey":"DRPD","testName":"DR:PD Doors vs Pipework (Drainage)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":108,"clashesNew":87,"clashesResolved":0,"groupsClashing":52,"groupsNew":36,"groupsResolved":0,"lastRunAt":"2026-07-13"},{"pairKey":"DRPF","testName":"DR:PF Doors vs Pipework (Fire)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-28"},{"pairKey":"DRPH","testName":"DR:PH Doors vs Pipework (Hot and Cold Water)","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-20"},{"pairKey":"DRPM","testName":"DR:PM Doors vs Pipework (Mechanical)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":75,"clashesNew":40,"clashesResolved":0,"groupsClashing":45,"groupsNew":24,"groupsResolved":0,"lastRunAt":"2026-07-19"},{"pairKey":"DWGE","testName":"DW:GE Ductwork vs General Equipment (Elec, Comms, Data, Sec, Fire)","clashType":"C","clearanceMm":25,"automation":"NA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-29"},{"pairKey":"DWLF","testName":"DW:LF Ductwork vs Lighting Fixtures","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":92,"clashesNew":48,"clashesResolved":0,"groupsClashing":46,"groupsNew":33,"groupsResolved":0,"lastRunAt":"2026-07-12"},{"pairKey":"DWPD","testName":"DW:PD Ductwork vs Pipework (Drainage)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-12"},{"pairKey":"DWPF","testName":"DW:PF Ductwork vs Pipework (Fire)","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":82,"clashesNew":65,"clashesResolved":0,"groupsClashing":44,"groupsNew":27,"groupsResolved":0,"lastRunAt":"2026-07-28"},{"pairKey":"DWPH","testName":"DW:PH Ductwork vs Pipework (Hot and Cold Water)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":101,"clashesNew":54,"clashesResolved":0,"groupsClashing":64,"groupsNew":38,"groupsResolved":0,"lastRunAt":"2026-07-18"},{"pairKey":"DWPM","testName":"DW:PM Ductwork vs Pipework (Mechanical)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-13"},{"pairKey":"GEPH","testName":"GE:PH General Equipment (Elec, Comms, Data, Sec, Fire) vs Pipework (Hot and Cold Water)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":123,"clashesNew":95,"clashesResolved":0,"groupsClashing":58,"groupsNew":35,"groupsResolved":0,"lastRunAt":"2026-07-12"},{"pairKey":"GEPM","testName":"GE:PM General Equipment (Elec, Comms, Data, Sec, Fire) vs Pipework (Mechanical)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":117,"clashesNew":70,"clashesResolved":0,"groupsClashing":62,"groupsNew":54,"groupsResolved":0,"lastRunAt":"2026-07-24"},{"pairKey":"GELF","testName":"GE:LF General Equipment (Elec, Comms, Data, Sec, Fire) vs Lighting Fixtures","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":54,"clashesNew":40,"clashesResolved":0,"groupsClashing":39,"groupsNew":29,"groupsResolved":0,"lastRunAt":"2026-07-27"},{"pairKey":"GEPD","testName":"GE:PD General Equipment (Elec, Comms, Data, Sec, Fire) vs Pipework (Drainage)","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-28"},{"pairKey":"GEPF","testName":"GE:PF General Equipment (Elec, Comms, Data, Sec, Fire) vs Pipework (Fire)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":104,"clashesNew":80,"clashesResolved":0,"groupsClashing":50,"groupsNew":42,"groupsResolved":0,"lastRunAt":"2026-07-16"},{"pairKey":"LFPD","testName":"LF:PD Lighting Fixtures vs Pipework (Drainage)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-29"},{"pairKey":"LFPF","testName":"LF:PF Lighting Fixtures vs Pipework (Fire)","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":49,"clashesNew":44,"clashesResolved":0,"groupsClashing":30,"groupsNew":26,"groupsResolved":0,"lastRunAt":"2026-07-18"},{"pairKey":"LFPH","testName":"LF:PH Lighting Fixtures vs Pipework (Hot and Cold Water)","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-27"},{"pairKey":"LFPM","testName":"LF:PM Lighting Fixtures vs Pipework (Mechanical)","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-25"},{"pairKey":"GEME","testName":"ME:GE Mechanical Equipment vs General Equipment (Elec, Comms, Data, Sec, Fire)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-11"},{"pairKey":"LFME","testName":"ME:LF Mechanical Equipment vs Lighting Fixtures","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-21"},{"pairKey":"MEPD","testName":"ME:PD Mechanical Equipment vs Pipework (Drainage)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":95,"clashesNew":77,"clashesResolved":0,"groupsClashing":44,"groupsNew":38,"groupsResolved":0,"lastRunAt":"2026-07-19"},{"pairKey":"MEPF","testName":"ME:PF Mechanical Equipment vs Pipework (Fire)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":32,"clashesNew":26,"clashesResolved":0,"groupsClashing":15,"groupsNew":9,"groupsResolved":0,"lastRunAt":"2026-07-15"},{"pairKey":"MEPH","testName":"ME:PH Mechanical Equipment vs Pipework (Hot and Cold Water)","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-11"},{"pairKey":"MEPM","testName":"ME:PM Mechanical Equipment vs Pipework (Mechanical)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":168,"clashesNew":156,"clashesResolved":0,"groupsClashing":87,"groupsNew":44,"groupsResolved":0,"lastRunAt":"2026-07-11"},{"pairKey":"PDPF","testName":"PD:PF Pipework (Drainage) vs Pipework (Fire)","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":153,"clashesNew":144,"clashesResolved":0,"groupsClashing":104,"groupsNew":96,"groupsResolved":0,"lastRunAt":"2026-07-20"},{"pairKey":"PDPH","testName":"PD:PH Pipework (Drainage) vs Pipework (Hot and Cold Water)","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-30"},{"pairKey":"PDPM","testName":"PD:PM Pipework (Drainage) vs Pipework (Mechanical)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":132,"clashesNew":101,"clashesResolved":0,"groupsClashing":78,"groupsNew":67,"groupsResolved":0,"lastRunAt":"2026-07-30"},{"pairKey":"PFPH","testName":"PF:PH Pipework (Fire) vs Pipework (Hot and Cold Water)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":58,"clashesNew":41,"clashesResolved":0,"groupsClashing":39,"groupsNew":26,"groupsResolved":0,"lastRunAt":"2026-07-26"},{"pairKey":"PFPM","testName":"PF:PM Pipework (Fire) vs Pipework (Mechanical)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-27"},{"pairKey":"PHPM","testName":"PH:PM Pipework (Hot and Cold Water) vs Pipework (Mechanical)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":9,"clashesNew":6,"clashesResolved":0,"groupsClashing":5,"groupsNew":3,"groupsResolved":0,"lastRunAt":"2026-07-17"},{"pairKey":"CTSC","testName":"SC:CT Structure excl Floors (Concrete) vs Cable Trays","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":175,"clashesNew":116,"clashesResolved":0,"groupsClashing":96,"groupsNew":78,"groupsResolved":0,"lastRunAt":"2026-07-26"},{"pairKey":"PFSC","testName":"SC:PF Structure excl Floors (Concrete) vs Pipework (Fire)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-20"},{"pairKey":"PDSC","testName":"SC:PD Structure excl Floors (Concrete) vs Pipework (Drainage)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":175,"clashesNew":149,"clashesResolved":0,"groupsClashing":91,"groupsNew":70,"groupsResolved":0,"lastRunAt":"2026-07-22"},{"pairKey":"PHSC","testName":"SC:PH Structure excl Floors (Concrete) vs Pipework (Hot and Cold Water)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":108,"clashesNew":97,"clashesResolved":0,"groupsClashing":56,"groupsNew":51,"groupsResolved":0,"lastRunAt":"2026-07-18"},{"pairKey":"PMSC","testName":"SC:PM Structure excl Floors (Concrete) vs Pipework (Mechanical)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-17"},{"pairKey":"DWSC","testName":"SC:DW Structure excl Floors (Concrete) vs Ductwork","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-30"},{"pairKey":"MESC","testName":"SC:ME Structure excl Floors (Concrete) vs Mechanical Equipment","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":56,"clashesNew":36,"clashesResolved":0,"groupsClashing":29,"groupsNew":21,"groupsResolved":0,"lastRunAt":"2026-07-24"},{"pairKey":"GESC","testName":"SC:GE Structure excl Floors (Concrete) vs General Equipment (Elec, Comms, Data, Sec, Fire)","clashType":"C","clearanceMm":25,"automation":"NA","clashesClashing":140,"clashesNew":96,"clashesResolved":0,"groupsClashing":99,"groupsNew":63,"groupsResolved":0,"lastRunAt":"2026-07-30"},{"pairKey":"LFSC","testName":"SC:LF Structure excl Floors (Concrete) vs Lighting Fixtures","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":108,"clashesNew":96,"clashesResolved":0,"groupsClashing":69,"groupsNew":57,"groupsResolved":0,"lastRunAt":"2026-07-30"},{"pairKey":"CTSF","testName":"SF:CT Structure (Floors Only) vs Cable Trays","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":116,"clashesNew":67,"clashesResolved":0,"groupsClashing":65,"groupsNew":47,"groupsResolved":0,"lastRunAt":"2026-07-19"},{"pairKey":"ATSF","testName":"SF:AT Structure (Floors Only) vs Air Terminals","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":123,"clashesNew":70,"clashesResolved":0,"groupsClashing":61,"groupsNew":35,"groupsResolved":0,"lastRunAt":"2026-07-18"},{"pairKey":"SFSS","testName":"SF:SS Structure (Floors Only) vs Structure excl Floors (Steel)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-25"},{"pairKey":"SCSF","testName":"SF:SC Structure (Floors Only) vs Structure excl Floors (Concrete)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":48,"clashesNew":34,"clashesResolved":0,"groupsClashing":28,"groupsNew":27,"groupsResolved":0,"lastRunAt":"2026-07-13"},{"pairKey":"DWSF","testName":"SF:DW Structure (Floors Only) vs Ductwork","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":50,"clashesNew":43,"clashesResolved":0,"groupsClashing":28,"groupsNew":22,"groupsResolved":0,"lastRunAt":"2026-07-14"},{"pairKey":"MESF","testName":"SF:ME Structure (Floors Only) vs Mechanical Equipment","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-16"},{"pairKey":"GESF","testName":"SF:GE Structure (Floors Only) vs General Equipment (Elec, Comms, Data, Sec, Fire)","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":103,"clashesNew":80,"clashesResolved":0,"groupsClashing":64,"groupsNew":42,"groupsResolved":0,"lastRunAt":"2026-07-14"},{"pairKey":"LFSF","testName":"SF:LF Structure (Floors Only) vs Lighting Fixtures","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":17,"clashesNew":8,"clashesResolved":0,"groupsClashing":10,"groupsNew":8,"groupsResolved":0,"lastRunAt":"2026-07-25"},{"pairKey":"PDSF","testName":"SF:PD Structure (Floors Only) vs Pipework (Drainage)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-21"},{"pairKey":"PFSF","testName":"SF:PF Structure (Floors Only) vs Pipework (Fire)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":157,"clashesNew":146,"clashesResolved":0,"groupsClashing":95,"groupsNew":90,"groupsResolved":0,"lastRunAt":"2026-07-16"},{"pairKey":"PHSF","testName":"SF:PH Structure (Floors Only) vs Pipework (Hot and Cold Water)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":175,"clashesNew":173,"clashesResolved":0,"groupsClashing":121,"groupsNew":87,"groupsResolved":0,"lastRunAt":"2026-07-12"},{"pairKey":"PMSF","testName":"SF:PM Structure (Floors Only) vs Pipework (Mechanical)","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-27"},{"pairKey":"PHSS","testName":"SS:PH Structure excl Floors (Steel) vs Pipework (Hot and Cold Water)","clashType":"C","clearanceMm":25,"automation":"NA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-20"},{"pairKey":"PMSS","testName":"SS:PM Structure excl Floors (Steel) vs Pipework (Mechanical)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":9,"clashesNew":7,"clashesResolved":0,"groupsClashing":5,"groupsNew":3,"groupsResolved":0,"lastRunAt":"2026-07-17"},{"pairKey":"PDSS","testName":"SS:PD Structure excl Floors (Steel) vs Pipework (Drainage)","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-18"},{"pairKey":"SCSS","testName":"SS:SC Structure excl Floors (Steel) vs Structure excl Floors (Concrete)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":38,"clashesNew":32,"clashesResolved":0,"groupsClashing":26,"groupsNew":22,"groupsResolved":0,"lastRunAt":"2026-07-16"},{"pairKey":"ATSS","testName":"SS:AT Structure excl Floors (Steel) vs Air Terminals","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":145,"clashesNew":142,"clashesResolved":0,"groupsClashing":69,"groupsNew":48,"groupsResolved":0,"lastRunAt":"2026-07-24"},{"pairKey":"CTSS","testName":"SS:CT Structure excl Floors (Steel) vs Cable Trays","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":50,"clashesNew":38,"clashesResolved":0,"groupsClashing":25,"groupsNew":13,"groupsResolved":0,"lastRunAt":"2026-07-19"},{"pairKey":"DWSS","testName":"SS:DW Structure excl Floors (Steel) vs Ductwork","clashType":"C","clearanceMm":25,"automation":"NA","clashesClashing":52,"clashesNew":37,"clashesResolved":0,"groupsClashing":26,"groupsNew":24,"groupsResolved":0,"lastRunAt":"2026-07-30"},{"pairKey":"MESS","testName":"SS:ME Structure excl Floors (Steel) vs Mechanical Equipment","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":64,"clashesNew":54,"clashesResolved":0,"groupsClashing":34,"groupsNew":25,"groupsResolved":0,"lastRunAt":"2026-07-10"},{"pairKey":"GESS","testName":"SS:GE Structure excl Floors (Steel) vs General Equipment (Elec, Comms, Data, Sec, Fire)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-28"},{"pairKey":"LFSS","testName":"SS:LF Structure excl Floors (Steel) vs Lighting Fixtures","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-18"},{"pairKey":"PFSS","testName":"SS:PF Structure excl Floors (Steel) vs Pipework (Fire)","clashType":"C","clearanceMm":25,"automation":"SA","clashesClashing":38,"clashesNew":29,"clashesResolved":0,"groupsClashing":26,"groupsNew":23,"groupsResolved":0,"lastRunAt":"2026-07-13"},{"pairKey":"STWN","testName":"ST:WN Stairs & Ramps vs Windows","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":113,"clashesNew":62,"clashesResolved":0,"groupsClashing":67,"groupsNew":50,"groupsResolved":0,"lastRunAt":"2026-07-18"},{"pairKey":"STWF","testName":"ST:WF Stairs & Ramps vs Walls (Fire Rated)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":141,"clashesNew":96,"clashesResolved":0,"groupsClashing":72,"groupsNew":39,"groupsResolved":0,"lastRunAt":"2026-07-24"},{"pairKey":"ATST","testName":"ST:AT Stairs & Ramps vs Air Terminals","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-23"},{"pairKey":"CTST","testName":"ST:CT Stairs & Ramps vs Cable Trays","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-20"},{"pairKey":"DWST","testName":"ST:DW Stairs & Ramps vs Ductwork","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-16"},{"pairKey":"LFST","testName":"ST:LF Stairs & Ramps vs Lighting Fixtures","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-28"},{"pairKey":"PDST","testName":"ST:PD Stairs & Ramps vs Pipework (Drainage)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-14"},{"pairKey":"PFST","testName":"ST:PF Stairs & Ramps vs Pipework (Fire)","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":12,"clashesNew":7,"clashesResolved":0,"groupsClashing":7,"groupsNew":6,"groupsResolved":0,"lastRunAt":"2026-07-25"},{"pairKey":"PHST","testName":"ST:PH Stairs & Ramps vs Pipework (Hot and Cold Water)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":30,"clashesNew":21,"clashesResolved":0,"groupsClashing":16,"groupsNew":14,"groupsResolved":0,"lastRunAt":"2026-07-14"},{"pairKey":"PMST","testName":"ST:PM Stairs & Ramps vs Pipework (Mechanical)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":11,"clashesNew":10,"clashesResolved":0,"groupsClashing":6,"groupsNew":4,"groupsResolved":0,"lastRunAt":"2026-07-24"},{"pairKey":"SFST","testName":"ST:SF Stairs & Ramps vs Structure (Floors Only)","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":97,"clashesNew":75,"clashesResolved":0,"groupsClashing":45,"groupsNew":38,"groupsResolved":0,"lastRunAt":"2026-07-25"},{"pairKey":"SSST","testName":"ST:SS Stairs & Ramps vs Structure excl Floors (Steel)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":168,"clashesNew":114,"clashesResolved":0,"groupsClashing":79,"groupsNew":78,"groupsResolved":0,"lastRunAt":"2026-07-11"},{"pairKey":"SCST","testName":"ST:SC Stairs & Ramps vs Structure excl Floors (Concrete)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-13"},{"pairKey":"DWWF","testName":"WF:DW Walls (Fire Rated) vs Ductwork","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":121,"clashesNew":65,"clashesResolved":0,"groupsClashing":56,"groupsNew":42,"groupsResolved":0,"lastRunAt":"2026-07-21"},{"pairKey":"MEWF","testName":"WF:ME Walls (Fire Rated) vs Mechanical Equipment","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-21"},{"pairKey":"LFWF","testName":"WF:LF Walls (Fire Rated) vs Lighting Fixtures","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":148,"clashesNew":119,"clashesResolved":0,"groupsClashing":85,"groupsNew":82,"groupsResolved":0,"lastRunAt":"2026-07-22"},{"pairKey":"PHWF","testName":"WF:PH Walls (Fire Rated) vs Pipework (Hot and Cold Water)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":105,"clashesNew":104,"clashesResolved":0,"groupsClashing":55,"groupsNew":32,"groupsResolved":0,"lastRunAt":"2026-07-23"},{"pairKey":"PMWF","testName":"WF:PM Walls (Fire Rated) vs Pipework (Mechanical)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-24"},{"pairKey":"PFWF","testName":"WF:PF Walls (Fire Rated) vs Pipework (Fire)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-21"},{"pairKey":"CTWF","testName":"WF:CT Walls (Fire Rated) vs Cable Trays","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-16"},{"pairKey":"ATWF","testName":"WF:AT Walls (Fire Rated) vs Air Terminals","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-28"},{"pairKey":"SCWF","testName":"WF:SC Walls (Fire Rated) vs Structure excl Floors (Concrete)","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":128,"clashesNew":69,"clashesResolved":0,"groupsClashing":61,"groupsNew":41,"groupsResolved":0,"lastRunAt":"2026-07-12"},{"pairKey":"WFWN","testName":"WN:WF Windows vs Walls (Fire Rated)","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":34,"clashesNew":27,"clashesResolved":0,"groupsClashing":19,"groupsNew":18,"groupsResolved":0,"lastRunAt":"2026-07-22"},{"pairKey":"SSWN","testName":"WN:SS Windows vs Structure excl Floors (Steel)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-14"},{"pairKey":"SCWN","testName":"WN:SC Windows vs Structure excl Floors (Concrete)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-26"},{"pairKey":"SFWN","testName":"WN:SF Windows vs Structure (Floors Only)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":93,"clashesNew":65,"clashesResolved":0,"groupsClashing":44,"groupsNew":34,"groupsResolved":0,"lastRunAt":"2026-07-16"},{"pairKey":"GEWN","testName":"WN:GE Windows vs General Equipment (Elec, Comms, Data, Sec, Fire)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":89,"clashesNew":83,"clashesResolved":0,"groupsClashing":65,"groupsNew":47,"groupsResolved":0,"lastRunAt":"2026-07-15"},{"pairKey":"PMWN","testName":"WN:PM Windows vs Pipework (Mechanical)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-20"},{"pairKey":"PFWN","testName":"WN:PF Windows vs Pipework (Fire)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-15"},{"pairKey":"CTWN","testName":"WN:CT Windows vs Cable Trays","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-19"},{"pairKey":"PDWN","testName":"WN:PD Windows vs Pipework (Drainage)","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-15"},{"pairKey":"PHWN","testName":"WN:PH Windows vs Pipework (Hot and Cold Water)","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":25,"clashesNew":14,"clashesResolved":0,"groupsClashing":13,"groupsNew":8,"groupsResolved":0,"lastRunAt":"2026-07-15"},{"pairKey":"ATWN","testName":"WN:AT Windows vs Air Terminals","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-24"},{"pairKey":"DWWN","testName":"WN:DW Windows vs Ductwork","clashType":"H","clearanceMm":null,"automation":"SA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-07-29"},{"pairKey":null,"testName":"Ad-hoc coordination check 1","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":39,"clashesNew":0,"clashesResolved":0,"groupsClashing":26,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-06-03"},{"pairKey":null,"testName":"Ad-hoc coordination check 2","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":2,"clashesNew":0,"clashesResolved":0,"groupsClashing":1,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-06-18"},{"pairKey":null,"testName":"Ad-hoc coordination check 3","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":16,"clashesNew":0,"clashesResolved":0,"groupsClashing":8,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-06-10"},{"pairKey":null,"testName":"Ad-hoc coordination check 4","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":24,"clashesNew":0,"clashesResolved":0,"groupsClashing":15,"groupsNew":0,"groupsResolved":0,"lastRunAt":"2026-06-19"},{"pairKey":null,"testName":"*TMP*: Architecture Defaults","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"0001-01-01 00:00:00"},{"pairKey":null,"testName":"*TMP*: Structure Defaults","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"0001-01-01 00:00:00"},{"pairKey":null,"testName":"*TMP*: Services (MEC) Defaults","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"0001-01-01 00:00:00"},{"pairKey":null,"testName":"*TMP*: Services (ELE) Defaults","clashType":"H","clearanceMm":null,"automation":"NA","clashesClashing":0,"clashesNew":0,"clashesResolved":0,"groupsClashing":0,"groupsNew":0,"groupsResolved":0,"lastRunAt":"0001-01-01 00:00:00"}],"spatial":[{"id":"levelName","label":"Level","group":"levels","src":"list_clashes.levelName (default)","distinct":8,"configured":true},{"id":"areaName","label":"Area","group":"areas","src":"list_clashes.areaName (default)","distinct":0,"configured":false},{"id":"zoneName","label":"Zone","group":"zones","src":"list_clashes.zoneName (default)","distinct":0,"configured":false},{"id":"roomName","label":"Room","group":null,"src":"list_clashes include: roomName","distinct":0,"configured":false},{"id":"spaceName","label":"Space","group":null,"src":"list_clashes include: spaceName","distinct":0,"configured":false},{"id":"grids","label":"Grid","group":null,"src":"list_clashes include: grids","distinct":42,"configured":true},{"id":"roadName","label":"Road + chainage","group":null,"src":"list_clashes include: roadName, roadDistanceFromStart","distinct":0,"configured":false}],"groupsSpanZones":false}}};
 const POL = DATA.policy, TAX = DATA.taxonomy;
@@ -2318,7 +2320,7 @@ const FAIL_TEXT = {
     return { k: "ratelimit", t: "The Revizto MCP is rate-limiting this artifact", d: "Too many calls in a short window. " + APP + " paces requests and retries automatically — wait a moment and press Re-check. If it persists, narrow the sample or reduce how much is read at once." };
   },
   allowlist: function () {
-    return { k: "allowlist", t: APP + "’s tools aren’t authorised for this artifact yet", d: "The Revizto MCP is connected, but this artifact’s own tool allowlist doesn’t cover it — connecting the connector and authorising its tools for this artifact are two separate steps. Re-create the artifact through the install skill (install the plugin, then run the project-intelligence-dashboard skill), which declares the read tools into the artifact. See the README “tools not authorised for this artifact” troubleshooting row." };
+    return { k: "allowlist", t: APP + "’s tools aren’t authorised for this artifact yet", d: "The Revizto MCP is connected, but this artifact’s own tool allowlist doesn’t cover it — connecting the connector and authorising its tools for this artifact are two separate steps. Re-create the artifact through the install skill (install the plugin, then run the project-intelligence-matrix skill), which declares the read tools into the artifact. See the README “tools not authorised for this artifact” troubleshooting row." };
   },
   nobridge: function () {
     return { k: "nobridge", t: "No MCP bridge in this host", d: "This page is not running inside Cowork, so it cannot reach any connector. There is nothing to fall back to — every figure is read live." };
@@ -3760,7 +3762,7 @@ var REMEDIES = {
     cannot: "A rate limit is a statement about call volume, not about entitlement. Nothing here says the read would have failed."
   },
   allowlist: {
-    r: ["Re-create the artifact through the install skill: install the plugin, then run the project-intelligence-dashboard skill.",
+    r: ["Re-create the artifact through the install skill: install the plugin, then run the project-intelligence-matrix skill.",
         "Connecting a connector and authorising its tools for an artifact are two separate steps — the first is done."],
     cannot: "The connector is reachable. This says nothing about what it would return once its tools are authorised here."
   },
@@ -4530,10 +4532,12 @@ try{ wireHostMeta(); }catch(e){ try{ console.error("[conn] host meta not wired",
   alias("projectsFailedFor", function(){ return _projectsFailedFor; },
                              function(v){ _projectsFailedFor = v||""; });
 })();
-async function pageClash(tool,args,cap){
+async function pageClash(tool,args,cap,pin){
   const out=[]; let page=1,total=null; const LIM=2000,MAXP=cap||30;
   while(page<=MAXP){
-    const r=await mcp(tool,Object.assign({},args,{limit:LIM,page}));
+    if(pin&&!pin.live()) throw readPinStale();
+    const a=Object.assign({},args,{limit:LIM,page});
+    const r=await (pin?callOn(pin.pfx,tool,a):mcp(tool,a));
     const ents=(r&&r.entities)||[];
     if(typeof r.count==="number") total=r.count;
     out.push.apply(out,ents);
@@ -4543,6 +4547,15 @@ async function pageClash(tool,args,cap){
   }
   return {rows:out,total,truncated:total!==null&&out.length<total};
 }
+function readPin(isCurrent){
+  const pin={pfx:DEDCONN, live:function(){ return pin.pfx===DEDCONN && (!isCurrent || !!isCurrent()); }};
+  return pin;
+}
+function pinCall(pin,tool,args,opt){
+  if(!pin.live()) return Promise.reject(readPinStale());
+  return callOn(pin.pfx,tool,args,opt);
+}
+function readPinStale(){ const e=new Error("read superseded"); e.readPinStale=true; return e; }
 const _coreProbeConnections = CONN_CORE.probeConnections;
 const _coreDedicate         = CONN_CORE.dedicate;
 probeConnections = async function(){
@@ -4716,7 +4729,7 @@ setShowArchived = function(v){
     document.getElementById("btnRead").disabled=!el.value;
   } else if(cur){ el.value=cur; }
 };
-function connMsg(cls,html){ const el=document.getElementById("connMsg"); el.className="connmsg "+cls; el.innerHTML=html; }
+function connMsg(cls,html){ const el=document.getElementById("connMsg"); el.className="connmsg "+cls; el.innerHTML=html; el.removeAttribute("data-read"); }
 var _modalReturn=null;   
 function modalFocusable(){
   const c=document.getElementById("confirmCard"); if(!c) return [];
@@ -5191,13 +5204,29 @@ const Tour=(function(){
     if(tourShouldAutoStart(v)) requestAnimationFrame(()=>start(document.getElementById("btnTour"))); }
   return {start,end,maybeAutoStart,isActive:()=>active};
 })();
+let LIVE_SEQ=0, _liveBusy=false, _liveAgain=false;
 async function readLive(){
-  const pu=document.getElementById("selProj").value; if(!pu) return;
-  const sel=document.getElementById("selProj");
-  S.conn.projectUuid=pu; S.conn.projectTitle=sel.options[sel.selectedIndex].textContent;
+  if(_liveBusy){ LIVE_SEQ++; _liveAgain=true; return; }
+  _liveBusy=true;
+  try{ do{ _liveAgain=false; await readLiveOnce(); }while(_liveAgain); }
+  finally{ _liveBusy=false; }
+}
+async function readLiveOnce(){
+  const sel=document.getElementById("selProj"), pu=sel.value; if(!pu) return;
+  const title=sel.options[sel.selectedIndex].textContent;
+  const my=++LIVE_SEQ;
+  const pin=(typeof readPin==="function")
+    ? readPin(()=>my===LIVE_SEQ && document.getElementById("selProj").value===pu) : null;
+  const live=()=>pin?pin.live():my===LIVE_SEQ;
+  const stop=()=>{ if(my!==LIVE_SEQ) return;
+    const el=document.getElementById("connMsg"); if(!el || el.getAttribute("data-read")!==String(my)) return;
+    const why=(pin && pin.pfx!==DEDCONN) ? "the server changed" : "the project changed";
+    connMsg("info",`Stopped reading <b>${esc(title)}</b> — ${why} before the read finished, so nothing from it was kept. Choose <b>Read clash data</b> to read the project now selected.`); };
   connMsg("info","Reading clash tests…");
+  { const el=document.getElementById("connMsg"); if(el) el.setAttribute("data-read",String(my)); }
   try{
-    const t=await pageClash("list_clash_tests",{projectUuid:pu,include:["issuesActive"]});
+    const t=await pageClash("list_clash_tests",{projectUuid:pu,include:["issuesActive"]},undefined,pin);
+    if(!live()) return stop();
     const tests=t.rows.map(x=>{ const cfg=readTestCfg(x); return {
       pairKey:null,testName:x.testName,raw:x,
       clashType:cfg.clashType.v, clearanceMm:cfg.clearanceMm.v, automation:cfg.automation.v,
@@ -5218,20 +5247,22 @@ async function readLive(){
       if(Array.isArray(v)){ if(v.length>1) spanned=true; v.forEach(x=>x&&seen[f.id].add(String(x))); }
       else if(v) seen[f.id].add(String(v)); })); }
     let src=null,nrows=0,trunc=false,where=null;
-    try{ const g=await pageClash("list_clash_groups",{projectUuid:pu},4);
+    try{ const g=await pageClash("list_clash_groups",{projectUuid:pu},4,pin);
       harvest(g.rows); src="clash groups"; nrows=g.rows.length; trunc=g.truncated;
       where=liveWhereTally(g.rows,"groups",{truncated:g.truncated,total:g.total});
-    }catch(eg){
-      try{ const c=await pageClash("list_clashes",{projectUuid:pu},3);
+    }catch(eg){ if(!live()) return stop();
+      try{ const c=await pageClash("list_clashes",{projectUuid:pu},3,pin);
         harvest(c.rows); src="clashes"; nrows=c.rows.length; trunc=c.truncated;
         where=liveWhereTally(c.rows,"clashes",{truncated:c.truncated,total:c.total});
         note=` · groups unavailable (${mcpFailKind(eg).k}); used individual clashes`;
-      }catch(ec){ note=` · spatial attribution unavailable (groups: ${mcpFailKind(eg).k}, clashes: ${mcpFailKind(ec).k}) — reported as unknown, never as “none configured”`;
+      }catch(ec){ if(!live()) return stop(); note=` · spatial attribution unavailable (groups: ${mcpFailKind(eg).k}, clashes: ${mcpFailKind(ec).k}) — reported as unknown, never as “none configured”`;
         where={src:null, why:"neither the clash groups ("+mcpFailKind(eg).k+") nor the clashes ("+mcpFailKind(ec).k+") answered"}; }
     }
+    if(!live()) return stop();
     if(src){ spatial=SPATIAL_FIELDS.map(f=>({id:f.id,label:f.label,group:f.group,src:f.src,
       distinct:seen[f.id].size,configured:seen[f.id].size>0}));
       note=` · ${nrows.toLocaleString()} ${src} sampled${trunc?" (truncated)":""}`+note; }
+    S.conn.projectUuid=pu; S.conn.projectTitle=title;
     S.live={label:"Live · "+S.conn.projectTitle,sets:[],pairs:[],tests,spatial,
             groupsSpanZones:spanned,where,readAt:new Date()};
     DATA.datasets.live=null; S.conn.readAt=S.live.readAt;
@@ -5241,8 +5272,10 @@ async function readLive(){
     setLiveBadge(true);
     connMsg("ok",`<b>${esc(S.conn.projectTitle)}</b> — ${tests.length.toLocaleString()} clash tests`+
       `${t.truncated?" (truncated)":""}${esc(note)}. Read at ${S.live.readAt.toLocaleTimeString()}.`);
-  }catch(e){ const k=mcpFailKind(e);
-    connMsg(k.k==="timeout"||k.k==="ratelimit"?"warn":"err",`<b>${esc(k.t)}</b> — ${esc(k.d)}`); }
+  }catch(e){ if(!live()) return stop();
+    const k=mcpFailKind(e);
+    connMsg(k.k==="timeout"||k.k==="ratelimit"?"warn":"err",`<b>${esc(k.t)}</b> — ${esc(k.d)}`+
+      (S.live&&S.conn.projectTitle?` Still showing the earlier read of <b>${esc(S.conn.projectTitle)}</b>.`:"")); }
 }
 function liveWhereTally(rows, unit, o){
   o=o||{}; const G=unit==="groups";
@@ -5508,6 +5541,7 @@ function obUseTemplate(){
     o.textContent=d.label+" — "+nWord(d.sets.length,"set"); sd.appendChild(o); }
   obSwitchDoc(id);
   markSaveTone(mxeSaveAndReport());
+  if(typeof mxeKeepOriginalOrSay==="function") mxeKeepOriginalOrSay(id);   
   obWrite({chose:true, ds:id});
   showView("matrix"); obFocusView("matrix");
   announce("Created “"+OB_TEMPLATE_LABEL+"” — "+obGoverned(d)+" required pairs. The original template is untouched.",
@@ -5774,13 +5808,25 @@ function riskScaleTop(){
     return t>0?t:6; });
 }
 function pairsByKey(){ return memo("pk",()=>{mxeCanonicaliseKeys(D());const m=Object.create(null);D().pairs.forEach(p=>m[p.key]=p);return m;}); }
-function testsByKey(){ return memo("tk",()=>{mxeCanonicaliseKeys(D());const m=Object.create(null);D().tests.forEach(t=>{if(!t.pairKey)return;(m[t.pairKey]=m[t.pairKey]||[]).push(t);});return m;}); }
+function testsByKey(){ return memo("tk",()=>{mxeCanonicaliseKeys(D());liveBindFresh();const m=Object.create(null);D().tests.forEach(t=>{if(!t.pairKey)return;(t.pairKeys||[t.pairKey]).forEach(k=>{(m[k]=m[k]||[]).push(t);});});return m;}); }
 function isTemplate(t){ return /^\*TMP\*:/.test(t.testName); }
 const RX_CONV=/^\s*([A-Za-z]{2,4})\s*:\s*([A-Za-z]{2,4})(\s|$)/;
+function liveOwnerIndex(){
+  const ix=Object.create(null);
+  if(typeof rgMultiOwners!=="function"||typeof rgOwnerName!=="function") return ix;
+  rgMultiOwners().forEach(o=>{ const n=rgOwnerName(o); if(n) (ix[n]=ix[n]||[]).push(o); });
+  return ix;
+}
+function liveOwnerSig(){
+  const ix=liveOwnerIndex();
+  return Object.keys(ix).sort().map(n=>n+"="+ix[n].map(o=>o.key+":"+o.pairs.map(p=>p.key).join(",")).join(";")).join("\n")+
+    "\n#xl="+(typeof xlStamp==="function"?xlStamp():"");
+}
 function bindLiveTests(){
-  const m=setsById(), ids=Object.keys(m), pk=pairsByKey();
-  let conv=0, contain=0, none=0;
+  const m=setsById(), ids=Object.keys(m), pk=pairsByKey(), own=liveOwnerIndex();
+  let conv=0, owner=0, contain=0, none=0, byName=0;
   D().tests.forEach(t=>{
+    delete t.pairKeys; delete t.ownerKey; delete t.ownerAmbiguous; delete t.ownerLate; delete t.ownerByName; delete t.ownerGone;
     if(isTemplate(t)){ t.pairKey=null; t.bindBy="template"; return; }
     t.pairKey=null; t.bindBy=null;
     const cm=RX_CONV.exec(t.testName);
@@ -5789,6 +5835,18 @@ function bindLiveTests(){
       const k=pairKeyOf(a,b);      
       if(pk[k]){ t.pairKey=k; t.bindBy="convention"; conv++; return; }
     }
+    const os=own[String(t.testName==null?"":t.testName).trim()];
+    if(os && os.length===1){
+      const nm=String(t.testName).trim(), cur=os[0].pairs.map(p=>p.key).filter(k=>pk[k]);
+      const led=(typeof xlEntry==="function") ? xlEntry(nm) : null;
+      const ks=led ? cur.filter(k=>led.keys.has(k)) : cur;
+      if(ks.length){ t.pairKeys=ks; t.pairKey=ks[0]; t.ownerKey=os[0].key; t.bindBy="owner"; owner++;
+        if(led){ const late=cur.filter(k=>!led.keys.has(k)); if(late.length) t.ownerLate={keys:late, at:led.at}; }
+        else { t.ownerByName=true; byName++; }
+        return; }
+      if(led && cur.length) t.ownerGone={at:led.at};
+    }
+    if(os && os.length>1){ t.ownerAmbiguous=os.map(o=>o.key); t.bindBy="ambiguous-owner-name"; none++; return; }
     const hit=ids.filter(id=>{
       const s1=m[id]; const n=(s1.bindName||s1.name||"");
       return n && t.testName.indexOf(n)>=0;
@@ -5799,8 +5857,16 @@ function bindLiveTests(){
     }
     none++;
   });
-  return {conv,contain,none};
+  if(S.live) S.live.__ownSig=liveOwnerSig();
+  return {conv,owner,contain,none,byName};
 }                            
+function liveBindFresh(){
+  if(!isLive()||!S.live||S.live.__ownSig===undefined||S.live.__rebinding) return;
+  if(liveOwnerSig()===S.live.__ownSig) return;
+  S.live.__rebinding=true;
+  try{ const r=bindLiveTests(); if(S.live.__bound) S.live.__bound=r; }
+  finally{ S.live.__rebinding=false; }
+}
 function grade(p){
   const m=setsById(), tk=testsByKey();
   if(bindState(m[p.a])===BIND_ABSENT || bindState(m[p.b])===BIND_ABSENT)
@@ -5923,9 +5989,11 @@ function confCounts(ps){
   const tk=testsByKey();
   let noTestPairs=0, stale=0, unmanaged=0, issues=0, issuesUnknown=0, issueTests=0, groupsNoIssue=0;
   const asOf=confAsOf(), staleDays=LENS.cover.staleDays;
+  const seen=new Set();
   ps.forEach(p=>{
     if(!(tk[p.key]||[]).length) noTestPairs++;
     (tk[p.key]||[]).forEach(t=>{
+      if(seen.has(t)) return; seen.add(t);
       if(!t.lastRunAt || (asOf && daysBetween(t.lastRunAt, asOf)>staleDays)) stale++;
       if(t.issuesActive==null) issuesUnknown++;
       else { issues+=t.issuesActive; if(t.issuesActive>0) issueTests++;
@@ -5940,9 +6008,10 @@ function cellAgg(ps){
   let clash=0, groups=0, gnew=0, cnew=0, tests=0, neverRun=0, oldest=null, newest=null;
   let maxD=-Infinity, designKnown=0;
   let worstP=0, maxR=-Infinity, prioKnown=0, riskKnown=0, cov={covered:0,missing:0,"no-set":0}, setupBad=0, setupUnknown=0, tolset=new Set();
-  const cc=confCounts(ps);
+  const cc=confCounts(ps), seen=new Set();   
   ps.forEach(p=>{
     (tk[p.key]||[]).forEach(t=>{
+      if(seen.has(t)) return; seen.add(t);
       tests++;
       clash  += t.clashesClashing||0;
       cnew   += t.clashesNew||0;
@@ -6463,7 +6532,8 @@ function confAnswerHtml(st, ag, ps){
       fixP(`build the test${nm?" (“"+esc(nm)+"”)":""}, run it, and read the project again.`);
   }
   if(k==="stale"){
-    const runs=[]; let never=0; ps.forEach(p=>(testsByKey()[p.key]||[]).forEach(t=>{ if(t.lastRunAt) runs.push(t.lastRunAt); else never++; }));
+    const runs=[], seen=new Set(); let never=0; ps.forEach(p=>(testsByKey()[p.key]||[]).forEach(t=>{ if(seen.has(t)) return; seen.add(t);   
+      if(t.lastRunAt) runs.push(t.lastRunAt); else never++; }));
     runs.sort(); const asOf=confAsOf();
     const ago=runs.length&&asOf?daysBetween(runs[0],asOf):null;
     return `<b>Not run recently</b> — `+(never?never+" test"+(never===1?"":"s")+" never run"+(runs.length?"; ":""):"")+
@@ -7526,7 +7596,7 @@ const INTEL_PROP_FILTERS = (function(){ const out=[], seen=new Set();
 const INTEL = {key:null, pu:null, tests:[], groups:null, gErr:null, gTrunc:[], clashes:Object.create(null), cErr:null,
   issues:Object.create(null), issueErr:Object.create(null), comments:Object.create(null), objects:Object.create(null),
   objErr:Object.create(null), wf:null, view:"pair", g:null, c:null, lvl:null, dim:"level", grid:null, test:null, cap:INTEL_PAGE, keys:[],
-  from:{g:null, c:null}, scroll:0, gscroll:0, seq:0, img:{avail:null, why:null}, imgs:Object.create(null),
+  from:{g:null, c:null}, scroll:0, gscroll:0, seq:0, pin:null, img:{avail:null, why:null}, imgs:Object.create(null),
   open:{}, q:null, find:"", cuesAll:false, histAll:false, clsAll:false, propsAll:false, live:false, ps:[]};
 function intelOn(){ return typeof isLive==="function" && isLive() && typeof mcp==="function" && !!(S.conn&&S.conn.projectUuid); }
 function intelPerson(s){
@@ -7564,6 +7634,8 @@ function intelSay(msg){
     el.setAttribute("role","status"); el.setAttribute("aria-live","polite"); d.appendChild(el); }
   el.textContent=msg;
 }
+function intelCall(tool,args){ return INTEL.pin ? pinCall(INTEL.pin,tool,args) : mcp(tool,args); }
+function intelCurrent(seq){ return seq===INTEL.seq && (!INTEL.pin || INTEL.pin.live()); }
 function intelTestsFor(ps){
   const out=[], seen=new Set();
   ps.forEach(p=>{ ((grade(p).tests)||[]).forEach(t=>{ const u=t.raw&&t.raw.uuid;
@@ -7574,7 +7646,7 @@ async function intelLoadWorkflow(){
   const pu=INTEL.pu;
   if(INTEL.wf && INTEL.wf.pu===pu && INTEL.wf.cat) return INTEL.wf;
   try{
-    const r=await mcp("list_workflows",{projectUuid:pu}), cat=Object.create(null);
+    const r=await intelCall("list_workflows",{projectUuid:pu}), cat=Object.create(null);
     ((r&&r.statuses)||[]).forEach(s=>{ if(s&&s.uuid) cat[s.uuid]=s.category||null; });
     if(INTEL.pu===pu) INTEL.wf={pu, cat};
   }catch(e){ if(INTEL.pu===pu) INTEL.wf={pu, err:e}; }
@@ -7585,27 +7657,28 @@ async function intelLoadGroups(){
   const wf=intelLoadWorkflow();
   try{
     for(const t of INTEL.tests){
-      const r=await pageClash("list_clash_groups",{projectUuid:INTEL.pu, testUuid:t.uuid, include:INTEL_GROUP_INCLUDE},5);
+      const r=await pageClash("list_clash_groups",{projectUuid:INTEL.pu, testUuid:t.uuid, include:INTEL_GROUP_INCLUDE},5,INTEL.pin);
       r.rows.forEach(g=>{ g._test=t; rows.push(g); });
       if(r.truncated) trunc.push({t, got:r.rows.length, total:r.total});
     }
     await wf;
+    if(INTEL.pin && !INTEL.pin.live()) return;
     if(seq!==INTEL.seq) return;
     INTEL.groups=rows; INTEL.gErr=null; INTEL.gTrunc=trunc;
     intelSay(rows.length+" clash group"+(rows.length===1?"":"s")+" read for this pair.");
-  }catch(e){ if(seq!==INTEL.seq) return; INTEL.gErr=e; INTEL.groups=null; intelSay("Clash groups could not be read."); }
+  }catch(e){ if(!intelCurrent(seq)) return; INTEL.gErr=e; INTEL.groups=null; intelSay("Clash groups could not be read."); }
   intelRender();
 }
 async function intelLoadClashes(t){
   if(INTEL.clashes[t.uuid]) return INTEL.clashes[t.uuid];
-  const r=await pageClash("list_clashes",{projectUuid:INTEL.pu, testUuid:t.uuid, include:INTEL_CLASH_INCLUDE},5);
+  const r=await pageClash("list_clashes",{projectUuid:INTEL.pu, testUuid:t.uuid, include:INTEL_CLASH_INCLUDE},5,INTEL.pin);
   INTEL.clashes[t.uuid]=r.rows; return r.rows;
 }
 async function intelLoadIssue(uuid){
   if(INTEL.issues[uuid]) return INTEL.issues[uuid];
   const [i,c]=await Promise.all([
-    mcp("get_issue",{projectUuid:INTEL.pu, uuid, include:INTEL_ISSUE_INCLUDE}),
-    mcp("list_issue_comments",{projectUuid:INTEL.pu, issueUuid:uuid, page:0})]);
+    intelCall("get_issue",{projectUuid:INTEL.pu, uuid, include:INTEL_ISSUE_INCLUDE}),
+    intelCall("list_issue_comments",{projectUuid:INTEL.pu, issueUuid:uuid, page:0})]);
   const list=(c&&c.comments)||[];
   INTEL.comments[uuid]={list, count:(c&&typeof c.count==="number")?c.count:list.length};
   INTEL.issues[uuid]=i; delete INTEL.issueErr[uuid]; return i;
@@ -7613,7 +7686,7 @@ async function intelLoadIssue(uuid){
 async function intelLoadObject(id){
   if(!id) return null;
   if(INTEL.objects[id]!==undefined) return INTEL.objects[id];
-  const r=await mcp("list_model_objects",{projectUuid:INTEL.pu, limit:1, elementsOnly:false, linearUnit:"mm",
+  const r=await intelCall("list_model_objects",{projectUuid:INTEL.pu, limit:1, elementsOnly:false, linearUnit:"mm",
     nodeFilters:{node:"filter", category:"Revizto", property:"objectReviztoId", operator:"equal", value:String(id)},
     propertyFilters:INTEL_PROP_FILTERS});
   INTEL.objects[id]=(r&&r.objects&&r.objects[0])||null; delete INTEL.objErr[id]; return INTEL.objects[id];
@@ -7631,7 +7704,7 @@ async function intelLoadImage(g){
   const uuid=g.issueUuid; if(!uuid || INTEL.img.avail===false) return;
   const have=INTEL.imgs[uuid]; if(have && have.state!=="err") return;
   try{
-    const r=await mcp(INTEL_IMG_TOOL,{projectUuid:INTEL.pu, issueUuid:uuid, size:"middle", maxBytes:1000000});
+    const r=await intelCall(INTEL_IMG_TOOL,{projectUuid:INTEL.pu, issueUuid:uuid, size:"middle", maxBytes:1000000});
     INTEL.img.avail=true; INTEL.imgs[uuid]=intelImageFrom(r, g.issueId);
     if(INTEL.imgs[uuid].state==="shape") try{ console.warn("[intel] "+INTEL_IMG_TOOL+": unrecognised reply shape — image area left dark"); }catch(x){}
   }catch(e){
@@ -7654,13 +7727,15 @@ function intelImageHtml(g){
 function intelOpen(ps, key){
   const host=document.getElementById("dossIntel"); if(!host) return;
   INTEL.live=false; INTEL.ps=ps;
-  if(!intelOn()){
+  INTEL.seq++;
+  if(!intelOn()){ INTEL.pin=null;
     host.innerHTML = (typeof canReachServer==="function" && canReachServer())
       ? "<div class='intel-empty'><b>Project intelligence</b><p class='sub'>Read a project (Connect Revizto) to explore this pair's "+
         "clash groups, linked issues and the elements in each clash.</p></div>" : "";
     intelGovSync(); return;
   }
-  INTEL.seq++; INTEL.key=key; INTEL.pu=S.conn.projectUuid; INTEL.tests=intelTestsFor(ps);
+  const seq=INTEL.seq; INTEL.key=key; INTEL.pu=S.conn.projectUuid;
+  INTEL.pin=(typeof readPin==="function") ? readPin(()=>seq===INTEL.seq && isLive()) : null; INTEL.tests=intelTestsFor(ps);
   INTEL.groups=null; INTEL.gErr=null; INTEL.gTrunc=[]; INTEL.view="pair"; INTEL.g=null; INTEL.c=null; INTEL.lvl=null;
   INTEL.test=null; INTEL.cap=INTEL_FIRST; INTEL.from={g:null, c:null}; INTEL.scroll=0; INTEL.gscroll=0;
   INTEL.dim="level"; INTEL.grid=null; INTEL.keys=ps.map(p=>p.key);
@@ -7981,7 +8056,7 @@ async function intelOpenGroup(id){
     jobs.push(intelLoadIssue(g.issueUuid).catch(e=>{ INTEL.issueErr[g.issueUuid]=e; }));
     jobs.push(intelLoadImage(g)); }
   await Promise.all(jobs);
-  if(seq===INTEL.seq && INTEL.view==="group" && INTEL.g===id){ intelRedrawKeepTop();
+  if(intelCurrent(seq) && INTEL.view==="group" && INTEL.g===id){ intelRedrawKeepTop();
     const rec=g.issueUuid&&INTEL.comments[g.issueUuid];
     intelSay((INTEL.cErr||(g.issueUuid&&INTEL.issueErr[g.issueUuid]))?"Part of this group could not be read.":
       (g.issueUuid?"Issue #"+g.issueId+" read, with "+(rec?rec.list.length:0)+" history entries.":"Group read.")); }
@@ -8028,7 +8103,7 @@ async function intelOpenClash(n){
   const seq=INTEL.seq;
   await Promise.all([c.objectAReviztoId,c.objectBReviztoId].map(id=>{ if(id) delete INTEL.objErr[id];
     return intelLoadObject(id).catch(e=>{ INTEL.objErr[id]=e; }); }));
-  if(seq===INTEL.seq && INTEL.view==="clash" && String(INTEL.c)===String(n)){ intelRedrawKeepTop();
+  if(intelCurrent(seq) && INTEL.view==="clash" && String(INTEL.c)===String(n)){ intelRedrawKeepTop();
     intelSay([c.objectAReviztoId,c.objectBReviztoId].some(id=>id&&INTEL.objErr[id])?"An element could not be read.":"Element properties read."); }
 }
 function intelRedrawKeepTop(){
@@ -8495,7 +8570,10 @@ function bindScope(){
 }
 function bindEvidence(){ const k=bindScope(); return k?(S.projSets[k]||null):null; }
 function haveProjSets(){ const e=bindEvidence(); return !!(e&&e.names.length); }
-function bindIdFor(name){ const e=bindEvidence(); return (e&&e.ids&&name in e.ids)?e.ids[name]:null; }
+function bindIdFor(name){ const e=bindEvidence(); if(bindAmbiguous(name)) return null;   
+  return (e&&e.ids&&name in e.ids)?e.ids[name]:null; }
+function bindAmbiguous(name){ const e=bindEvidence(); return (e&&e.amb&&e.amb[name])||null; }
+const bindPathText = pa => (pa&&pa.length) ? pa.join(" / ") : "the top level";
 function bindPathFor(name){ const e=bindEvidence(); return (e&&e.paths&&e.paths[name])||[]; }
 const NAME_CODE_PREFIX=/^(?:\s*(?:[A-Za-z0-9]{1,6}\s*:\s*[A-Za-z0-9]{1,6}|[A-Z0-9]{1,6})\s+-\s+)+/;
 const bindTail = n => { const t=String(n), m=NAME_CODE_PREFIX.exec(t); return (m?t.slice(m[0].length):t).trim(); };
@@ -8515,7 +8593,7 @@ function autoMatchSets(names, sets){
 }
 function bindMap(){
   const e=bindEvidence(); if(!e) return {};
-  return memo("bindmap|"+bindScope(), ()=>autoMatchSets(e.names, D().sets));
+  return memo("bindmap|"+bindScope(), ()=>autoMatchSets([...new Set(e.names)], D().sets));
 }
 function bindsFor(s){
   if(!s) return [];
@@ -8535,6 +8613,8 @@ function bindPill(s){
     return "<span class='pill' title='No search-set export has been read for this scope, so nothing is claimed either way.'>Not checked</span>";
   if(st===BIND_ABSENT)
     return "<span class='pill err' title='Read the export for this scope and this set was not in it.'>Not in project</span>";
+  const amb=n.filter(bindAmbiguous);
+  if(amb.length) return `<span class='pill warn' title='${esc(bindAmbiguityText(amb))}'>Name not unique</span>`;
   return `<span class='pill ok' title='${esc(n.join("\n"))}'>In project${n.length>1?" ×"+n.length:""}</span>`;
 }
 function nmOf(m,id){ return (m&&m[id]&&m[id].name)||String(id); }
@@ -8549,7 +8629,25 @@ function bindEvidenceSummary(){
   const absent=sets.filter(s=>bindState(s)===BIND_ABSENT);
   return {label:e.label||"a search-set export", names:e.names.length, readAt:e.readAt||e.at||null,
           present, absent:absent.length, absentNames:absent.map(s=>s.name), total:sets.length,
-          doc:(D()&&D().label)||"this document"};
+          ambiguous:bindAmbiguities(), doc:(D()&&D().label)||"this document"};
+}
+function bindAmbiguities(){
+  if(!bindEvidence()) return [];
+  const out=[], at=Object.create(null);
+  (D().sets||[]).forEach(s=>bindsFor(s).forEach(nm=>{ const en=bindAmbiguous(nm); if(!en) return;
+    if(!at[nm]){ at[nm]={name:nm, entries:en, sets:[]}; out.push(at[nm]); }
+    at[nm].sets.push(s.name); }));
+  return out;
+}
+function bindAmbiguityText(names){
+  return names.map(nm=>"“"+nm+"” is in "+(bindAmbiguous(nm)||[]).map(x=>bindPathText(x.path)).join(" and ")).join("; ")+
+    ". Rename one in Revizto and export the search sets again.";
+}
+function bindAmbiguityHtml(sm){
+  const a=(sm&&sm.ambiguous)||[]; if(!a.length) return "";
+  return `<div class='bindamb' style='margin-top:var(--s2)'><b>${a.length} search set name${a.length===1?" is":"s are"} not unique in this project</b> — `+
+    a.map(x=>`<b>${esc(x.name)}</b> (in ${x.entries.map(en=>esc(bindPathText(en.path))).join(" and ")})`).join(", ")+
+    `. A test can name only one set, so tests using ${a.length===1?"it":"them"} cannot be written. Rename one in Revizto and export the search sets again.</div>`;
 }
 const MXE_VER=2;
 const MXE_READ_FROM=1;
@@ -8632,10 +8730,18 @@ function mxeCanonicaliseKeys(d){
   d.__keyv=MXE_VER; d.__keyvOn=d.pairs;
   return {changed, rebound, orphaned, ambiguous:Object.keys(ambiguous), pairs:d.pairs.length};
 }
-let MXE_T=null;
+let MXE_T=null, MXE_T_ID=null;
 function mxeSave(){
+  if(MXE_T && MXE_T_ID!==S.ds) mxeFlush();     
   if(MXE_T) clearTimeout(MXE_T);
-  MXE_T=setTimeout(()=>{ MXE_T=null; mxeSaveNow(); }, 400);
+  const id=S.ds; MXE_T_ID=id;
+  MXE_T=setTimeout(()=>{ MXE_T=null; MXE_T_ID=null; mxeSaveNow(id); }, 400);
+}
+function mxeFlush(){
+  if(!MXE_T) return null;
+  clearTimeout(MXE_T);
+  const id=MXE_T_ID; MXE_T=null; MXE_T_ID=null;
+  return mxeSaveNow(id);
 }
 function mxeSnapshot(id,d){
   return {v:MXE_VER, ts:Date.now(), label:d.label, origin:docOrigin(id),
@@ -8647,18 +8753,19 @@ function mxeSnapshot(id,d){
     baseline:(d.baseline&&d.baseline.pairs)?d.baseline:null,   
     tests:docOrigin(id)==="import"?(d.tests||[]):null};
 }
-function mxeSaveNow(){
-  const d=DATA.datasets[S.ds]; if(!d||S.ds==="__live") return null;   
+function mxeSaveNow(id){
+  if(id==null) id=S.ds;              
+  const d=DATA.datasets[id]; if(!d||id==="__live") return null;   
   if(d.draft) return null;   
   mxeCanonicaliseKeys(d);           
   let okAll=true;
-  const snap=mxeSnapshot(S.ds,d);
-  try{ localStorage.setItem(mxeKey(S.ds), JSON.stringify(snap));
-       mxeIndexAdd(S.ds,d.label); }
+  const snap=mxeSnapshot(id,d);
+  try{ localStorage.setItem(mxeKey(id), JSON.stringify(snap));
+       mxeIndexAdd(id,d.label); }
   catch(e){ okAll=false; }
   if(!mxeSaveTax()) okAll=false;
-  MXE_QUOTA_FAIL=!okAll;
-  MXE_AUTOSAVED[S.ds]=true;
+  if(id===S.ds) MXE_QUOTA_FAIL=!okAll; else if(!okAll) MXE_QUOTA_FAIL=true;
+  MXE_AUTOSAVED[id]=true;
   return okAll;
 }
 function mxeWriteDocById(id){
@@ -8707,6 +8814,8 @@ function mxeUsage(){
   const other=[[MXE_DOCSKEY,"Document index"],[MXE_TAXKEY,"Sections and disciplines"],
                [MXE_PINKEY,"Search-set bindings"]]
     .map(([k,l])=>({key:k, label:l, bytes:mxeBytes(k)}));
+  other.push({key:MXE_ORIGKEY_PREFIX, label:"Imported originals (kept for Revert)", bytes:mxeOrigBytes()});
+  if(typeof xlBytes==="function") other.push({key:MXE_EXPLEDGER_PREFIX, label:"Export records (what each exported test holds)", bytes:xlBytes()});
   const docBytes=docs.reduce((n,x)=>n+x.bytes,0);
   const otherBytes=other.reduce((n,x)=>n+x.bytes,0);
   const total=docBytes+otherBytes;
@@ -8751,10 +8860,13 @@ function mxeDeletable(id){
 function mxeDeleteDoc(id){
   if(!mxeDeletable(id)) return {ok:false, why:"The shipped reference can't be deleted. Your edits always go to a copy."};
   if(id===S.ds) return {ok:false, why:"Switch to another matrix first."};
-  let raw=null; try{ raw=localStorage.getItem(mxeKey(id)); }catch(e){}
+  let raw=null, orig=null, xl=null; try{ raw=localStorage.getItem(mxeKey(id)); orig=localStorage.getItem(mxeOrigKey(id)); }catch(e){}
+  if(typeof MXE_EXPLEDGER_PREFIX!=="undefined"){ try{ xl=localStorage.getItem(MXE_EXPLEDGER_PREFIX+id); }catch(e){} }
   const doc=DATA.datasets[id];
   try{ if(raw!=null) localStorage.removeItem(mxeKey(id)); }
   catch(e){ return {ok:false, why:"This browser refused to remove it."}; }
+  try{ if(orig!=null) localStorage.removeItem(mxeOrigKey(id)); }catch(e){}   
+  try{ if(xl!=null){ localStorage.removeItem(MXE_EXPLEDGER_PREFIX+id); if(typeof XL_GEN!=="undefined") XL_GEN++; } }catch(e){}
   mxeIndexDrop(id);
   delete DATA.datasets[id];
   MXE_AUTOSAVED[id]=true;    
@@ -8762,7 +8874,7 @@ function mxeDeleteDoc(id){
   Object.keys(S.projSets||{}).forEach(k=>{ if(k.slice(-tail.length)===tail){ ev[k]=S.projSets[k]; delete S.projSets[k]; } });
   Object.keys(MXE_PINS||{}).forEach(k=>{ if(k.slice(-tail.length)===tail){ pins[k]=MXE_PINS[k]; delete MXE_PINS[k]; } });
   if(Object.keys(pins).length) mxeSavePins();
-  return {ok:true, snap:{id:id, label:doc.label||id, doc:doc, raw:raw, ev:ev, pins:pins}};
+  return {ok:true, snap:{id:id, label:doc.label||id, doc:doc, raw:raw, orig:orig, xl:xl, ev:ev, pins:pins}};
 }
 function mxeRestoreDoc(snap){
   if(!snap||!snap.id||!snap.doc) return {ok:false, why:"There is nothing to restore."};
@@ -8775,6 +8887,8 @@ function mxeRestoreDoc(snap){
   if(saved){ mxeIndexAdd(snap.id, snap.label);
     saved=mxeIndex().some(x=>x.id===snap.id);       
     MXE_AUTOSAVED[snap.id]=true; }
+  if(snap.orig!=null){ try{ localStorage.setItem(mxeOrigKey(snap.id), snap.orig); }catch(e){ MXE_ORIG_WHY[snap.id]=MXE_ORIG_WHY_QUOTA; } }
+  if(snap.xl!=null){ try{ localStorage.setItem(MXE_EXPLEDGER_PREFIX+snap.id, snap.xl); if(typeof XL_GEN!=="undefined") XL_GEN++; }catch(e){} }
   Object.keys(snap.ev||{}).forEach(k=>{ S.projSets[k]=snap.ev[k]; });
   if(snap.pins&&Object.keys(snap.pins).length){ Object.keys(snap.pins).forEach(k=>{ MXE_PINS[k]=snap.pins[k]; }); mxeSavePins(); }
   return {ok:true, saved:saved};
@@ -8862,8 +8976,64 @@ function mxeLoadDoc(id){
   return DATA.datasets[id];
 }
 function mxeHasSaved(id){ try{ return !!localStorage.getItem(mxeKey(id)); }catch(e){ return false; } }
+const mxeOrigKey = d => MXE_ORIGKEY_PREFIX+d;
+const MXE_ORIG_WHY=Object.create(null);   
+const MXE_ORIG_WHY_QUOTA="This browser had no room to keep a copy of this matrix as imported, so it can't be reverted. Export it to keep a copy.";
+const MXE_ORIG_WHY_NONE="No copy of this matrix as imported is kept in this browser, so there is nothing to revert to.";
+function mxeHasOriginal(id){ try{ return !!localStorage.getItem(mxeOrigKey(id)); }catch(e){ return false; } }
+function mxeKeepOriginal(id){
+  const d=id&&DATA.datasets?DATA.datasets[id]:null;
+  if(!d||d.draft||docOrigin(id)!=="import") return null;
+  mxeCanonicaliseKeys(d);              
+  try{ localStorage.setItem(mxeOrigKey(id), JSON.stringify(mxeSnapshot(id,d))); delete MXE_ORIG_WHY[id]; return true; }
+  catch(e){
+    try{ localStorage.removeItem(mxeOrigKey(id)); }catch(e2){}
+    MXE_ORIG_WHY[id]=MXE_ORIG_WHY_QUOTA; return false; }
+}
+function mxeKeepOriginalOrSay(id){
+  const r=mxeKeepOriginal(id);
+  if(r===false && typeof mxSay==="function") mxSay("warn","<b>Revert won't be available for this matrix.</b> "+esc(MXE_ORIG_WHY_QUOTA));
+  return r;
+}
+function mxeRevertable(id){
+  const d=id&&DATA.datasets?DATA.datasets[id]:null;
+  if(!d||id==="__live"||d.draft) return {ok:false, why:""};
+  if(docOrigin(id)!=="import") return {ok:mxeHasSaved(id), why:""};
+  if(mxeHasOriginal(id)) return {ok:true, why:""};
+  return {ok:false, why:MXE_ORIG_WHY[id]||MXE_ORIG_WHY_NONE};
+}
+function mxeSweepOriginals(){
+  let keys=[];
+  try{ if(typeof localStorage.key!=="function"||typeof localStorage.length!=="number") return 0;
+       for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.indexOf(MXE_ORIGKEY_PREFIX)===0) keys.push(k); } }
+  catch(e){ return 0; }
+  const live=new Set(mxeIndex().map(x=>mxeOrigKey(x.id)));
+  let n=0; keys.forEach(k=>{ if(!live.has(k)){ try{ localStorage.removeItem(k); n++; }catch(e){} } });
+  return n;
+}
+function mxeOrigBytes(){ return mxeIndex().reduce((n,r)=>n+mxeBytes(mxeOrigKey(r.id)),0); }
+function mxeRevertImport(id){
+  const d=DATA.datasets[id]; if(!d||d.draft) return false;
+  let r=null; try{ r=JSON.parse(localStorage.getItem(mxeOrigKey(id))||"null"); }catch(e){}
+  r=mxeUpgrade(r,null);
+  if(!r||!Array.isArray(r.sets)||!Array.isArray(r.pairs)||mxReservedEntry(r)) return false;
+  const cp=x=>JSON.parse(JSON.stringify(x));
+  d.sets=cp(r.sets);
+  d.pairs=cp(r.pairs);
+  if(r.riskModel) d.riskModel=cp(r.riskModel); else delete d.riskModel;
+  if(r.cells&&typeof r.cells==="object") d.cells=cp(r.cells); else delete d.cells;
+  d.tests=cp(r.tests||[]);
+  if(r.toleranceRules) d.toleranceRules=cp(r.toleranceRules); else delete d.toleranceRules;
+  if(r.priorityBands) d.priorityBands=cp(r.priorityBands); else delete d.priorityBands;
+  if(r.rank&&typeof r.rank==="object") d.rank=cp(r.rank); else delete d.rank;
+  mxeCanonicaliseKeys(d);
+  invalidateLiveView();            
+  return mxeSaveNow(id)===true ? true : "unsaved";
+}
 function mxeRevert(){
   const id=S.ds;
+  if(MXE_T){ if(MXE_T_ID===id){ clearTimeout(MXE_T); MXE_T=null; MXE_T_ID=null; } else mxeFlush(); }
+  if(docOrigin(id)==="import") return mxeRevertImport(id);
   try{ localStorage.removeItem(mxeKey(id)); }catch(e){}
   mxeIndexDrop(id);
   MXE_AUTOSAVED[id]=true;   
@@ -9745,17 +9915,18 @@ function renderRegTools(){
 }
 function regSetupCardHtml(where){
   const sm=(typeof bindEvidenceSummary==="function")?bindEvidenceSummary():null;
-  const absentLine=sm&&sm.absent?` · <b>${sm.absent.toLocaleString()} not in the project</b> — tests using ${sm.absent===1?"it":"them"} cannot be written`:"";
+  const absentLine=(sm&&sm.absent?` · <b>${sm.absent.toLocaleString()} not in the project</b> — tests using ${sm.absent===1?"it":"them"} cannot be written`:"")+
+    (sm&&sm.ambiguous&&sm.ambiguous.length?` · <b>${sm.ambiguous.length} name${sm.ambiguous.length===1?"":"s"} not unique in the project</b> — tests using ${sm.ambiguous.length===1?"it":"them"} cannot be written`:"");
   if(where==="reg"){
-    if(!sm||!sm.absent) return "";
+    if(!sm||!(sm.absent||sm.ambiguous.length)) return "";
     return `<div class='setupdone warn' role='status'>${icon("warn")}
       <span><b>Search sets:</b> ${sm.present.toLocaleString()} of ${sm.total.toLocaleString()} found in ${esc(sm.label)}${absentLine}</span>
       <button type='button' class='lnk' data-setupreview>Review…</button></div>`;
   }
   if(sm) return `<section class='expstep1 done' aria-labelledby='setupH-insp'><div class='expstep mono' id='setupH-insp'>1 · Search sets</div>
-    <div class='setupdone${sm.absent?" warn":""}' role='status'>${icon(sm.absent?"warn":"check")}
+    <div class='setupdone${sm.absent||sm.ambiguous.length?" warn":""}' role='status'>${icon(sm.absent||sm.ambiguous.length?"warn":"check")}
       <span>${sm.present.toLocaleString()} of ${sm.total.toLocaleString()} found in ${esc(sm.label)}${absentLine}</span>
-      ${sm.absent?`<button type='button' class='lnk' data-setupreview>Review…</button>`:""}
+      ${sm.absent||sm.ambiguous.length?`<button type='button' class='lnk' data-setupreview>Review…</button>`:""}
       <button type='button' class='lnk' data-setupload='insp'>Replace…</button></div></section>`;
   return `<section class='setupcard expstep1' aria-labelledby='setupH-insp'><div class='expstep mono' id='setupH-insp'>1 · Search sets</div>
     <p class='sub'>Revizto links each clash test to a search set by its ID, which only this project's search-set export
@@ -9779,7 +9950,8 @@ function expBlockShort(x){
   return ({codec:"the encoder is missing", nosets:"search sets unknown",
     unmapped:(x.sets?x.sets.length:0)+" set"+s(x.sets?x.sets.length:0)+" not mapped", nodist:n+" need"+(n===1?"s":"")+" a distance",
     badtype:n+" clash type"+s(n)+" not exported", stamps:"stamp codes not checked", stampmiss:"stamp codes not in the project",
-    dups:"duplicate test names", empty:"nothing to write", delta:"no project read"})[x.kind]||"blocked";
+    dups:"duplicate test names", empty:"nothing to write", delta:"no project read",
+    partial:"tests only partly in scope", ambiguous:"search set names not unique"})[x.kind]||"blocked";
 }
 function expFileVerdict(){
   const total=D().pairs.filter(p=>p.governed!==false).length;
@@ -10472,9 +10644,13 @@ function renderGroups(target, opts){
 function attachSearchSetExport(names, fileName, sets){
   S.bindFileScope="file:"+fileName;
   const scope=bindScope();
-  const ids=Object.create(null), paths=Object.create(null);
-  (sets||[]).forEach(x=>{ if(x&&x.name&&x.uuid&&!(x.name in ids)){ ids[x.name]=String(x.uuid).toLowerCase(); paths[x.name]=Array.isArray(x.path)?x.path.slice():[]; } });
-  S.projSets[scope]={names:names, ids, paths, pin:(MXE_PINS[scope]||{}),
+  const ids=Object.create(null), paths=Object.create(null), amb=Object.create(null);
+  (sets||[]).forEach(x=>{ if(!(x&&x.name&&x.uuid)) return;
+    const u=String(x.uuid).toLowerCase(), pa=Array.isArray(x.path)?x.path.slice():[];
+    if(!(x.name in ids)){ ids[x.name]=u; paths[x.name]=pa; return; }
+    if(amb[x.name] ? amb[x.name].some(e=>e.uuid===u) : ids[x.name]===u) return;
+    (amb[x.name]=amb[x.name]||[{uuid:ids[x.name], path:paths[x.name]}]).push({uuid:u, path:pa}); });
+  S.projSets[scope]={names:names, ids, paths, amb, pin:(MXE_PINS[scope]||{}),
     label:fileName, readAt:Date.now(), source:"vimsst"};
   resetCache();
   return scope;
@@ -10501,11 +10677,12 @@ function renderSetsPanel(){
   } else {
     const present=sets.filter(s=>bindState(s)===BIND_PRESENT).length;
     const absent=sets.filter(s=>bindState(s)===BIND_ABSENT);
-    h+=`<div class='msg ${absent.length?"warn":"ok"}' style='margin-top:var(--s3)'>
+    h+=`<div class='msg ${absent.length||bindAmbiguities().length?"warn":"ok"}' style='margin-top:var(--s3)'>
       <b>${present} of ${nWord(sets.length,"set")} found</b> in ${esc(ev.label)} (${nWord(ev.names.length,"set")} in the export,
       read ${esc(new Date(ev.readAt).toLocaleString())}).
       ${absent.length?`<b>${absent.length} not in the project.</b> A clash test naming one of these will not bind.`:`Every set on this matrix exists in the project.`}
       ${absent.length?`<div style='margin-top:var(--s2)'>Create them in Revizto — in the project's shared search-set folder, with exactly these names — or pick the project set each one should bind to below.</div>`:""}
+      ${bindAmbiguityHtml(bindEvidenceSummary())}
     </div>
     <table class='dt' style='margin-top:var(--s3)'><thead><tr><th>Set</th><th>State</th><th>Bound to</th><th></th></tr></thead><tbody>`;
     sets.slice().sort((a,b)=>a.name.localeCompare(b.name)).forEach(s=>{
@@ -10513,7 +10690,7 @@ function renderSetsPanel(){
       let pickHtml="—";
       if(ev.names.length){
         let o=`<option value=''>— not in this project —</option>`;
-        ev.names.forEach(nm=>o+=`<option value='${esc(nm)}' ${n.indexOf(nm)>=0?"selected":""}>${esc(nm)}</option>`);
+        [...new Set(ev.names)].forEach(nm=>o+=`<option value='${esc(nm)}' ${n.indexOf(nm)>=0?"selected":""}>${esc(nm)}</option>`);
         pickHtml=`<select data-pin='${esc(s.id)}' aria-label='Search set bound to ${esc(s.name)}'>${o}</select>`;
       }
       h+=`<tr><td>${esc(s.name)}</td><td>${bindPill(s)}</td>
@@ -10668,6 +10845,7 @@ const EXP = {
   busy:false,
   out:"",                  
   exclude:{ds:null, keys:new Set()},
+  whole:{ds:null, on:new Set(), off:new Set()},
   back:null,               
   checkOpen:false,         
   chkSaveFailed:false
@@ -10679,6 +10857,8 @@ function expScope(){
 }
 function expExcluded(key){ return EXP.exclude.ds===S.ds && EXP.exclude.keys.has(key); }
 function expExcludeCount(){ return EXP.exclude.ds===S.ds ? EXP.exclude.keys.size : 0; }
+function expWhole(){ if(EXP.whole.ds!==S.ds) EXP.whole={ds:S.ds, on:new Set(), off:new Set()}; return EXP.whole; }
+function expWholeOffCount(){ return EXP.whole.ds===S.ds ? EXP.whole.off.size : 0; }
 const RVZ_CT_PANE = "Clash Automation";
 const EXP_PROOF_CAVEAT = "<b>No generated file has yet been imported into Revizto.</b> "+
   "The file is built from a real Revizto export and checked against it, which is strong evidence that the "+
@@ -10776,6 +10956,8 @@ function rowExport(p){
       const n=bindsFor(m[id]);
       if(!n.length) blocks.push({text:"Selection "+side+" ("+nmOf(m,id)+") has no search set in this project. "+
         "The test would import cleanly and then bind to nothing."});
+      else if(typeof bindAmbiguous==="function" && n.some(bindAmbiguous)) blocks.push({text:"Selection "+side+" ("+nmOf(m,id)+") names a search set "+
+        "this project holds more than once — "+bindAmbiguityText(n.filter(bindAmbiguous))});
       else if(n.length>1) notes.push({text:"Selection "+side+" maps to "+n.length+" search sets here; only the first is written."});
     });
     if(EXP.stampBy!=="none"){
@@ -10799,17 +10981,40 @@ function rowExport(p){
 }
 const govPairs = () => D().pairs.filter(p => p.governed!==false);
 const deltaAvailable = () => isLive();
-function pairsForExportScope(scope){
+function expScopeBase(scope){
   const all = govPairs().filter(p => !expExcluded(p.key));
   if (scope === "all")      return all;
   if (scope === "selected") return all.filter(p => S.picked.has(p.key));
   const tk = testsByKey();
   return all.filter(p => !(tk[p.key]||[]).length);
 }
+function expScopeWhole(scope){
+  const tk=testsByKey(), base=expScopeBase(scope);
+  if(typeof rgResolve!=="function") return {pairs:base, partial:[], keeps:[]};
+  const inB=new Set(base.map(p=>p.key)), add=new Set(), drop=new Set(), partial=[], keeps=[];
+  const W=expWhole();
+  rgResolve().owners.filter(rgIsMulti).forEach(o=>{
+    const gov=o.pairs.filter(p=>p.governed!==false);
+    if(o.keep && W.off.has(o.key)) return;                 
+    let inn=gov.filter(p=>inB.has(p.key));
+    if(!inn.length) return;                                
+    const out=gov.filter(p=>expExcluded(p.key));
+    if(scope==="delta" && W.on.has(o.key) && !out.length){ gov.forEach(p=>{ if(!inB.has(p.key)) add.add(p.key); }); inn=gov; }
+    if(inn.length===gov.length){ if(o.keep) keeps.push(o); return; }
+    const inK=new Set(inn.map(p=>p.key)), missing=gov.filter(p=>!inK.has(p.key));
+    partial.push({o, key:o.key, keep:!!o.keep, name:rgOwnerName(o), shape:rgShape(o), of:gov.length, n:inn.length,
+      cause: out.length ? "excluded" : scope==="selected" ? "selected" : "covered",
+      covered: missing.filter(p=>(tk[p.key]||[]).length).length, keys:gov.map(p=>p.key)});
+    if(!o.keep) inn.forEach(p=>drop.add(p.key));
+  });
+  const pairs=govPairs().filter(p=>(inB.has(p.key)||add.has(p.key)) && !drop.has(p.key));
+  return {pairs, partial, keeps};
+}
+function pairsForExportScope(scope){ return expScopeWhole(scope).pairs; }
 function expScopeTests(scope){
-  const ps=pairsForExportScope(scope);
+  const x=expScopeWhole(scope), ps=x.pairs;
   if(typeof rgPairOwner!=="function") return ps.length;
-  return new Set(ps.map(p=>{ const o=rgPairOwner(p.key); return o?o.key:p.key; })).size;
+  return new Set(ps.map(p=>{ const o=rgPairOwner(p.key); return o?o.key:p.key; })).size + x.keeps.length;
 }
 function expSidesFor(setIds){
   const m=setsById(), seen=new Set(), sides=[];
@@ -10817,6 +11022,9 @@ function expSidesFor(setIds){
     const bs=bindsFor(m[id]);
     if(!bs.length) return {why:"has a side with no search set in this project"};
     for(const nm of bs){ if(seen.has(nm)) continue; seen.add(nm);
+      const amb=typeof bindAmbiguous==="function"?bindAmbiguous(nm):null;
+      if(amb) return {why:"names the search set “"+nm+"”, which this project holds "+amb.length+" times ("+
+        amb.map(x=>bindPathText(x.path)).join(", ")+") — rename one in Revizto and export the search sets again", amb:{name:nm, entries:amb}};
       const uuid=bindIdFor(nm);
       if(!uuid) return {why:"names the search set “"+nm+"”, whose project id is not known — read this project's search-set export (.vimsst) to export it", noid:true};
       sides.push({name:nm, uuid, path:bindPathFor(nm)}); }
@@ -10827,26 +11035,27 @@ function expSidesFor(setIds){
 function exportSpecs(scope){
   const specs=[], refused=[], m=setsById();
   const multi=new Map();
-  pairsForExportScope(scope).forEach(p => {
+  const sc=expScopeWhole(scope);
+  sc.pairs.forEach(p => {
     const o=(typeof rgPairOwner==="function")?rgPairOwner(p.key):null;
     if(o && o.kind!=="pair" && rgIsMulti(o)){ if(!multi.has(o.key)) multi.set(o.key,{o, pairs:[]}); multi.get(o.key).pairs.push(p); return; }
     const st=ctSettingFor(p);
     if(!st.ok){ refused.push({key:p.key, why:st.why}); return; }
     const A=expSidesFor([p.a]), B=expSidesFor([p.b]);
-    if(A.why||B.why){ const r=A.why?A:B; refused.push({key:p.key, why:r.why, noid:!!r.noid}); return; }
+    if(A.why||B.why){ const r=A.why?A:B; refused.push({key:p.key, why:r.why, noid:!!r.noid, amb:r.amb||null}); return; }
     specs.push({ name: testNameFor(p), sidesA: A.sides, sidesB: B.sides,
                  modeId: st.modeId, mm: st.mm, priority: ctPriorityLabel(p),
                  stampCode: ctStampFor(p), folders: foldersFor(p), __key:p.key });
   });
   if(typeof rgResolve==="function") rgResolve().owners.filter(o=>o.keep && rgIsMulti(o)).forEach(o=>{
-    const inScope=new Set(pairsForExportScope(scope).map(p=>p.key));
-    const ps=o.pairs.filter(p=>inScope.has(p.key)); if(ps.length) multi.set(o.key+"#keep",{o, pairs:ps, keep:true}); });
+    if(sc.keeps.indexOf(o)<0) return;
+    multi.set(o.key+"#keep",{o, pairs:o.pairs.filter(p=>p.governed!==false), keep:true}); });
   multi.forEach(({o, pairs, keep})=>{
     const rep=pairs[0], nm=rgOwnerName(o)+" ("+rgShape(o)+(keep?", kept":"")+")";
     const st=ctSettingFor(rep);
     if(!st.ok){ pairs.forEach(p=>refused.push({key:p.key, why:st.why, owner:o.key, ownerName:nm})); return; }
     const A=expSidesFor(o.aSets), B=expSidesFor(o.bSets);
-    if(A.why||B.why){ const r=A.why?A:B; pairs.forEach(p=>refused.push({key:p.key, why:r.why, noid:!!r.noid, owner:o.key, ownerName:nm})); return; }
+    if(A.why||B.why){ const r=A.why?A:B; pairs.forEach(p=>refused.push({key:p.key, why:r.why, noid:!!r.noid, amb:r.amb||null, owner:o.key, ownerName:nm})); return; }
     specs.push({ name: rgOwnerName(o), sidesA: A.sides, sidesB: B.sides,
                  modeId: st.modeId, mm: st.mm, priority: ctPriorityLabel(rep),
                  stampCode: ctStampFor(rep), folders: foldersFor(rep), __key: rep.key, __owner: o.key,
@@ -10854,28 +11063,35 @@ function exportSpecs(scope){
   });
   return {specs, refused};
 }
+function expConnNow(){ return (S.conn&&S.conn.prefix)||""; }
 async function loadStampTemplates(){
   const pu=S.conn.projectUuid;
   if(!pu){ EXP.stamps=null; EXP.stampState="unchecked"; EXP.stampWhy="no project is connected"; return EXP.stampState; }
+  const pin=(typeof readPin==="function") ? readPin(()=>pu===S.conn.projectUuid) : null;
+  const moved=()=>{ EXP.stamps=null; EXP.stampState="unchecked";
+    EXP.stampWhy="the server or project changed while the codes were being read, so nothing from that check was kept — check again";
+    return EXP.stampState; };
   try{
     const codes=new Set(); const LIM=100;
     for(let page=0; page<20; page++){
       const r=await mcp("list_stamp_templates",{projectUuid:pu, page, limit:LIM});
+      if(pin && !pin.live()) return moved();
       const ents=(r&&r.entities)||(Array.isArray(r)?r:[]);
       ents.forEach(e=>{ const a=e&&e.fields&&e.fields.stampAbbr;
         if(a!=null&&String(a)!=="") codes.add(String(a)); });
       if(ents.length<LIM) break;
     }
-    EXP.stamps={codes:[...codes], at:Date.now(), projectUuid:pu};
+    EXP.stamps={codes:[...codes], at:Date.now(), projectUuid:pu, pfx:pin?pin.pfx:expConnNow()};
     EXP.stampState="present"; EXP.stampWhy="";
   }catch(e){
+    if(pin && (e&&e.readPinStale || !pin.live())) return moved();
     EXP.stamps=null; EXP.stampState="failed"; EXP.stampWhy=mcpFailKind(e).t;
   }
   return EXP.stampState;
 }
 function stampCodes(){
   const s=EXP.stamps;
-  return (s && s.projectUuid && s.projectUuid===S.conn.projectUuid) ? s.codes : null;
+  return (s && s.projectUuid && s.projectUuid===S.conn.projectUuid && (s.pfx==null || s.pfx===expConnNow())) ? s.codes : null;
 }
 function exportWarnings(scope){
   const w=[], ps=pairsForExportScope(scope), m=setsById();
@@ -10915,13 +11131,27 @@ function exportWarnings(scope){
     expPairList(noId.map(r=>r.key))+". Revizto binds each selection to the search set's own id in the project. "+
     "Read this project's search-set export (<span class='mono'>.vimsst</span>) so the ids are known; nothing is written with a guessed one.",
     kind:"noid", keys:noId.map(r=>r.key)});
+  const ambR = refused.filter(r=>r.amb);
+  if(ambR.length){ const by=new Map(); ambR.forEach(r=>by.set(r.amb.name, r.amb.entries));
+    const nN=by.size, kk=[...new Set(ambR.map(r=>r.key))];
+    w.push({blocking:true, html:`<b>${nN} search set name${nN===1?" is":"s are"} not unique in this project</b> — `+
+      [...by].map(([nm,en])=>`<b>${esc(nm)}</b> is in ${en.map(x=>esc(bindPathText(x.path))).join(" and ")}`).join("; ")+
+      `. A clash test names one search set per entry, and the name alone cannot say which, so ${kk.length} pair${kk.length===1?"":"s"} using ${nN===1?"it":"them"} `+
+      `${kk.length===1?"is":"are"} held rather than tested against the wrong objects. Rename one of ${nN===1?"them":"each"} in Revizto, export the search sets again and read the new export.`,
+      kind:"ambiguous", names:[...by.keys()], keys:kk}); }
+  const part = expScopeWhole(scope).partial;
+  if(part.length) w.push({blocking:true, html:`<b>${part.length} multi-set test${part.length===1?" is":"s are"} only partly in scope</b> — `+
+    part.slice(0,6).map(t=>`<b>${esc(t.name)}</b> (${esc(t.shape)}): ${expPartialWhy(t)}`).join("; ")+(part.length>6?`; and ${part.length-6} more`:"")+
+    `. A test with more than one search set on a side names every set, so it is written whole or not at all — never cut down, and never widened without asking. Include the whole test, or leave it out.`,
+    kind:"partial", tests:part.map(t=>t.key), keys:[...new Set(part.flatMap(t=>t.keys))]});
   if(EXP.stampBy!=="none"){
     const codes=stampCodes();
     if(!codes) w.push({blocking:true, html:"<b>Stamp codes have not been checked against this project.</b> "+
       (EXP.stampState==="failed"
         ? `The project's stamp templates could not be read — ${esc(EXP.stampWhy||"the call did not answer")}. `+
           "That is a read that failed, not proof the codes are missing; nothing is claimed either way."
-        : "Check them against the project, or turn stamping off.")+
+        : (EXP.stampWhy ? esc(EXP.stampWhy.charAt(0).toUpperCase()+EXP.stampWhy.slice(1))+". " : "")+   
+          "Check them against the project, or turn stamping off.")+
       " An unmatched stamp code is accepted by the import and then does nothing.", kind:"stamps"});
     else {
       const want=[...new Set(specs.map(s=>s.stampCode).filter(Boolean))];
@@ -10956,6 +11186,12 @@ function exportWarnings(scope){
   }
   return w;
 }
+function expPartialWhy(t){
+  const of=t.of+" pair"+(t.of===1?"":"s");
+  if(t.cause==="excluded") return `${t.of-t.n} of its ${of} ${t.of-t.n===1?"is":"are"} left out`;
+  if(t.cause==="selected") return `${t.n} of its ${of} ${t.n===1?"is":"are"} selected`;
+  return `${t.covered} of its ${of} already ${t.covered===1?"has":"have"} a clash test in the project — whole, it would add a second; left out, the other ${t.n} stay without one`;
+}
 const EXP_SCOPES = [
   ["delta",   "Only what this project is missing"],
   ["selected","The pairs selected in the Clash Test Editor"],
@@ -10974,6 +11210,9 @@ function exportRemedies(x){
     case "delta":    return [["scope-all","Export every required pair instead"]];
     case "nosets":   return [["read-sets","Read your search-set export"]];
     case "noid":     return [["read-sets","Read your search-set export"]];
+    case "ambiguous":return [["read-sets","Read the new search-set export"]];
+    case "partial":  { const t=(x.tests||[]).length; return [["whole-in",t===1?"Include the whole test":`Include these ${t} tests whole`],
+                             ["whole-out",t===1?"Leave the test out":`Leave these ${t} tests out`]]; }
     case "unmapped": return [["map-sets",x.sets.length===1?"Map this set":`Map these ${x.sets.length} sets`],
                              ["leave-unmapped",n===1?"Leave this pair out":`Leave these ${n} pairs out`]];
     case "nodist":   return [["set-distance",`Set a distance for ${n} pair${pl(n)}`]];
@@ -10982,6 +11221,7 @@ function exportRemedies(x){
     case "stampmiss":return [["no-stamp","Don't stamp"]];
     case "dups":     return [["show-dups","Show in the Clash Test Editor"]];
     case "empty":    return expExcludeCount() ? [["include-all",`Put back the ${expExcludeCount()} left-out pair${pl(expExcludeCount())}`]]
+                          : expWholeOffCount() ? [["include-all","Put back the left-out tests"]]
                           : expScope()!=="all" ? [["scope-all","Export every required pair instead"]]
                           : [["open-reg","Back to the table"]];
   }
@@ -11000,7 +11240,27 @@ function expRemedy(id){
   const scope=expScope();
   if(id==="back") return expGoBack();
   if(id==="scope-all"){ EXP.scope="all"; EXP.out=""; renderStage(); return true; }
-  if(id==="include-all"){ EXP.exclude={ds:S.ds, keys:new Set()}; EXP.out=""; renderStage(); return true; }
+  if(id==="include-all"){ EXP.exclude={ds:S.ds, keys:new Set()}; expWhole().off.clear(); EXP.out=""; renderStage(); return true; }
+  if(id==="whole-in"||id==="whole-out"){
+    const pt=expScopeWhole(scope).partial; if(!pt.length){ renderStage(); return false; }
+    if(EXP.exclude.ds!==S.ds) EXP.exclude={ds:S.ds, keys:new Set()};
+    const W=expWhole(); let np=0;
+    pt.forEach(t=>{ np+=t.keys.length;
+      if(id==="whole-in"){ t.keys.forEach(k=>EXP.exclude.keys.delete(k));
+        if(scope==="selected") t.keys.forEach(k=>S.picked.add(k));
+        if(scope==="delta") W.on.add(t.key); }
+      else if(t.keep) W.off.add(t.key);
+      else t.keys.forEach(k=>EXP.exclude.keys.add(k)); });
+    if(!EXP.scope) EXP.scope=scope;             
+    const nt=pt.length, ts=nt===1?"":"s";
+    EXP.out = id==="whole-in"
+      ? `<b>Included ${nt} test${ts} whole</b> (${np} pair${np===1?"":"s"}).`+(scope==="delta"&&pt.some(t=>t.covered)?" The pairs the project already has will get a second test.":"")
+      : `<b>Left ${nt} test${ts} out of the export.</b> They stay required on the matrix; only the file leaves them out. `+
+        `<button class='btn' data-exprem='include-all'>Put them back</button>`;
+    EXP.outKind=id==="whole-in"?"ok":"info";
+    if(typeof renderRegister==="function"&&scope==="selected"&&S.view==="reg") renderRegister(); else renderStage();
+    return true;
+  }
   if(id==="open-health"){ showView("health"); return true; }
   if(id==="open-reg"){ expInspectorClose(true); return true; }
   const sh=/^show-(nodist|badtype|unmapped|collide|noid)$/.exec(id);
@@ -11105,12 +11365,12 @@ document.addEventListener("click", e=>{
 const EXP_FLIGHT = [
   ["codec",   "Encoder",                  ["codec"]],
   ["project", "Already in the project",   ["delta","collide"]],
-  ["sets",    "Search sets",              ["nosets","unmapped","multi"]],
+  ["sets",    "Search sets",              ["nosets","unmapped","multi","ambiguous"]],
   ["dist",    "Distances",                ["nodist"]],
   ["types",   "Clash types",              ["badtype"]],
   ["stamps",  "Stamps",                   ["stamps","stampmiss","stampnone"]],
   ["names",   "Test names",               ["dups","offconv"]],
-  ["scope",   "Scope",                    ["empty"]]
+  ["scope",   "Scope",                    ["partial","empty"]]
 ];
 function expFlightOk(id){
   if(id==="project") return isLive() ? [true,"No pair in scope already has a clash test in the project read."]
@@ -11133,6 +11393,8 @@ function expShortLine(x){
     case "multi":     { const n=(x.sets||[]).length; return n+" set"+s(n)+" map"+(n===1?"s":"")+" to more than one search set — the first is written."; }
     case "nodist":    return k+" pair"+s(k)+" need"+(k===1?"s":"")+" a distance.";
     case "noid":      return k+" pair"+s(k)+" name a search set whose project id is not known.";
+    case "ambiguous": { const n=(x.names||[]).length; return n+" search set name"+s(n)+" not unique in this project ("+k+" pair"+s(k)+" held)."; }
+    case "partial":   { const n=(x.tests||[]).length; return n+" multi-set test"+s(n)+" only partly in scope — include whole or leave out."; }
     case "badtype":   return k+" pair"+s(k)+" with a clash type the file can't carry.";
     case "stamps":    return EXP.stampState==="failed" ? "Stamp codes couldn't be read from this project." : "Stamp codes not checked against this project.";
     case "stampmiss": { const n=(x.codes||[]).length; return "Stamp code"+s(n)+" not in this project: "+(x.codes||[]).join(", ")+"."; }
@@ -11151,7 +11413,7 @@ function renderStage(){
   const w=exportWarnings(scope);
   const blocked=w.some(x=>x.blocking);
   const tpl=expTemplate();
-  const nx=expExcludeCount();
+  const nx=expExcludeCount(), nxt=expWholeOffCount();
   const firstBlk=w.find(y=>y.blocking);
   const tIn=expScopeTests(scope);
   const counts={selected:expScopeTests("selected"), delta:deltaAvailable()?expScopeTests("delta"):null, all:expScopeTests("all")};
@@ -11201,7 +11463,7 @@ function renderStage(){
           ${tpl.user?`<button class='btn' id='btnTplClear'>Use the built-in template</button>`:""}</div></details>
       <p class='sub ctcount'><b class='mono'>${specs.length.toLocaleString()}</b> test${specs.length===1?"":"s"} will be written
         ${tIn!==specs.length?`· <b>${(tIn-specs.length).toLocaleString()} of ${tIn.toLocaleString()} test${tIn===1?"":"s"} in scope cannot be written</b>`:""}
-        ${nx?`· ${nx.toLocaleString()} pair${nx===1?"":"s"} left out <button class='btn' data-exprem='include-all'>Put them back</button>`:""}</p>
+        ${nx||nxt?`· ${nx?`${nx.toLocaleString()} pair${nx===1?"":"s"}`:""}${nx&&nxt?" and ":""}${nxt?`${nxt} kept test${nxt===1?"":"s"}`:""} left out <button class='btn' data-exprem='include-all'>Put them back</button>`:""}</p>
       ${onlySets?"<p class='sub expwait'>Available once the search sets are read (step 1).</p>":""}
       <button class='btn pri expgo' id='btnExpCt'${(!specs.length||blocked||EXP.busy)?" disabled":""}>Download ${specs.length.toLocaleString()} clash test${specs.length===1?"":"s"} (.vimctst${HOST_SAVE_WRAP==="zip"?", zipped":""})</button>
       ${chkRecord()&&!EXP.checkOpen?`<button class='btn' id='btnChkOpen'>Open the import checklist</button>`:""}
@@ -11271,6 +11533,8 @@ async function exportVimctst(){
         `<b>into a scratch project first</b>. Importing does not overwrite: running this file twice creates two of every test.`;
     EXP.outKind="ok";
     chkRecordWrite(specs, inner, zipped?file:null);
+    if(!xlRecordWrite(specs)) EXP.out+=" <b>This browser refused to keep a record of what the file holds</b>, so Health will "+
+      "match its tests with several search sets by name alone.";
   }catch(e){
     EXP.out="<b>Could not build the .vimctst.</b> "+esc(e&&e.message?e.message:String(e))+" Nothing was written.";
     EXP.outKind="err";
@@ -11295,6 +11559,47 @@ function chkRecordWrite(specs, file, zip){
     sets, codes, stamped:EXP.stampBy!=="none"}};
   EXP.checkOpen=true;
   return chkSave(r);
+}
+const XL_MAX_NAMES=400;
+let XL_GEN=0;                     
+const XL_MEMO={id:null, gen:-1, map:null};
+function xlKey(id){ return MXE_EXPLEDGER_PREFIX+id; }
+function xlRead(id){
+  let r=null; try{ r=JSON.parse(localStorage.getItem(xlKey(id))||"null"); }catch(e){ r=null; }
+  return (r && r.v===1 && r.tests && typeof r.tests==="object") ? r : null;
+}
+function xlRecordWrite(specs){
+  const id=S.ds, pk=pairsByKey(), at=new Date().toISOString();
+  const r=xlRead(id)||{v:1, tests:{}};
+  let n=0;
+  specs.forEach(s=>{
+    if(!s.__owner || !Array.isArray(s.__pairs)) return;            
+    const pairs=s.__pairs.map(k=>pk[k]).filter(Boolean).map(p=>[p.a,p.b]);
+    if(pairs.length){ r.tests[s.name]={at, pairs}; n++; }
+  });
+  if(!n) return true;                                               
+  const names=Object.keys(r.tests);
+  if(names.length>XL_MAX_NAMES)
+    names.sort((x,y)=>String(r.tests[x].at).localeCompare(String(r.tests[y].at)))
+      .slice(0, names.length-XL_MAX_NAMES).forEach(x=>{ delete r.tests[x]; });
+  XL_GEN++;
+  try{ localStorage.setItem(xlKey(id), JSON.stringify(r)); return true; }
+  catch(e){ return false; }
+}
+function xlEntry(name){
+  const id=S.ds;
+  if(XL_MEMO.id!==id || XL_MEMO.gen!==XL_GEN){
+    const r=xlRead(id), map=Object.create(null);
+    if(r) Object.keys(r.tests).forEach(n=>{ const e=r.tests[n];
+      if(e && Array.isArray(e.pairs)) map[n]={at:e.at||null, keys:new Set(e.pairs.filter(ab=>Array.isArray(ab)&&ab.length===2).map(ab=>pairKeyOf(ab[0],ab[1])))}; });
+    XL_MEMO.id=id; XL_MEMO.gen=XL_GEN; XL_MEMO.map=map;
+  }
+  return XL_MEMO.map[name]||null;
+}
+function xlStamp(){ return S.ds+"#"+XL_GEN; }
+function xlBytes(){
+  const ids=new Set(Object.keys(DATA.datasets||{}).concat(mxeIndex().map(r=>r.id)));
+  let n=0; ids.forEach(id=>{ n+=mxeBytes(xlKey(id)); }); return n;
 }
 function chkItems(r){
   const w=r.written, n=w.sets.length, live=canReachServer();
@@ -11581,11 +11886,13 @@ function renderConf(){
   if(dr) dr.innerHTML = "";
   renderClaim(cap);
   if(isLive() && S.live.__bound){
-    const b=S.live.__bound, tot=b.conv+b.contain+b.none;
+    const b=S.live.__bound, own=b.owner||0, tot=b.conv+own+b.contain+b.none;   
     const el=document.getElementById("spatialCard");
     S.bindNote=`<div class='connmsg ${b.none>tot/2?"warn":"info"}' style='margin:0 0 16px'>`+
       `<b>Binding provenance.</b> ${tot.toLocaleString()} live clash tests: `+
       `<b>${b.conv}</b> matched by the <span class='mono'>XX:YY</span> convention, `+
+      (own?`<b>${own}</b> by the name this Matrix gives a test with several search sets`+
+        (b.byName?` (${b.byName===own?(own===1?"it":"all "+own):b.byName} by name alone — no record of that export in this browser)`:``)+`, `:``)+
       `<b>${b.contain}</b> by search-set name containment, `+
       `<b>${b.none}</b> unmatched (reported as effort outside the matrix, never silently dropped).`+
       (b.conv===0?" This project uses no naming convention at all — containment is doing all the work.":"")+
@@ -11751,10 +12058,10 @@ function imSetsBox(ev){
     return imBox(IMPV.setsMsg);
   const sm=(typeof bindEvidenceSummary==="function")?bindEvidenceSummary():null;
   if(!ev||!sm) return "";
-  return imBox(imMsg(sm.absent?"warn":"ok",
+  return imBox(imMsg(sm.absent||sm.ambiguous.length?"warn":"ok",
     `<b>${sm.names} search set${sm.names===1?"":"s"}</b> held from <b>${esc(sm.label)}</b> for `+
     `<b>${esc(sm.doc)}</b>, matched on set name. It confirms <b>${sm.present}</b> set`+
-    `${sm.present===1?"":"s"} and finds <b>${sm.absent}</b> absent.`));
+    `${sm.present===1?"":"s"} and finds <b>${sm.absent}</b> absent.`+bindAmbiguityHtml(sm)));
 }
 function imBox(m){ return m?`<div class='connmsg ${m.kind}' role='status' style='margin-top:var(--s4)'>${m.html}</div>`:""; }
 function imErr(e){ return esc(e&&e.message?e.message:String(e)); }
@@ -11769,7 +12076,7 @@ async function imReadSets(file){
     renderAll();
     const present=D().sets.filter(s=>bindState(s)===BIND_PRESENT).length;
     const absent=D().sets.filter(s=>bindState(s)===BIND_ABSENT).length;
-    IMPV.setsMsg=imMsg(r.anomalies.length?"warn":"ok",
+    IMPV.setsMsg=imMsg(r.anomalies.length||bindAmbiguities().length?"warn":"ok",
       `<b>${r.sets.length} search set${r.sets.length===1?"":"s"}</b> read from `+
       `<b>${esc(file.name)}</b> · ${r.folders.length} folder${r.folders.length===1?"":"s"}`+
       (r.templates.length?` · <b>${r.templates.length}</b> template set${r.templates.length===1?"":"s"} `+
@@ -11778,7 +12085,7 @@ async function imReadSets(file){
       `<b>${esc(D().label||"the current matrix")}</b> only — not about the connected project and not `+
       `about any other document. Matched on set name, because the export carries no identifier the `+
       `matrix shares. It confirms <b>${present}</b> set${present===1?"":"s"} and finds `+
-      `<b>${absent}</b> absent.</div>`+
+      `<b>${absent}</b> absent.</div>`+bindAmbiguityHtml(bindEvidenceSummary())+
       (r.anomalies.length?`<div style='margin-top:var(--s2)'><b>${r.anomalies.length} `+
         `entr${r.anomalies.length===1?"y":"ies"}</b> did not match the expected shape and `+
         `${r.anomalies.length===1?"was":"were"} classified by the filter definition instead: `+
@@ -12265,17 +12572,31 @@ function hxProjectTitle(){
   const o=el&&el.options&&el.options[el.selectedIndex];
   return (o&&o.textContent)||S.conn.projectTitle||"";
 }
+function hxConnPrefix(){ return (S.conn&&S.conn.prefix)||""; }
+function hxReadPin(){ return {prefix:hxConnPrefix(), uuid:hxProjectUuid(), title:hxProjectTitle()}; }
+function hxPinMoved(pin){
+  if(hxConnPrefix()!==pin.prefix) return "server";
+  if(pin.uuid!=null && hxProjectUuid()!==pin.uuid) return "project";
+  return "";
+}
+function hxAbandoned(what){
+  return {k:"warn", h:"<b>Read abandoned</b> — the "+what+" changed while it was running, so nothing it fetched is shown. "+
+    "Nothing below was changed."};
+}
 async function healthRead(){
   if(HX.busy) return;
-  const pu = hxProjectUuid();
+  const pin = hxReadPin(), pu = pin.uuid;
   if(!pu){ HX.msg={k:"warn", h:"<b>No project selected.</b> Choose a licence and a project from "+
     "Connect Revizto in the header, then read. Nothing was called."}; renderHealthSurface(); return; }
   HX.busy=true; HX.msg={k:"info", h:"Reading clash tests and clash statistics — four calls…"};
   renderHealthSurface();
   const notes=[]; let calls=0;
   try{
-    const t = await pageClash("list_clash_tests", {projectUuid:pu, include:HX_INCLUDE});
+    const pg = (typeof readPin==="function") ? readPin(()=>!hxPinMoved(pin)) : undefined;
+    const t = await pageClash("list_clash_tests", {projectUuid:pu, include:HX_INCLUDE}, undefined, pg);
     calls++;
+    let moved=hxPinMoved(pin);
+    if(moved){ HX.msg=hxAbandoned(moved); HX.busy=false; renderHealthSurface(); return; }
     if(t.truncated) notes.push("the clash-test list was truncated at "+t.rows.length.toLocaleString()+
       " of "+t.total.toLocaleString()+" — every count below is of what was read, not of the project");
     const stats=Object.create(null);
@@ -12287,27 +12608,32 @@ async function healthRead(){
       catch(e){ const fk=mcpFailKind(e);
         stats[k]=null; notes.push("The clash statistics "+(HX_STATS_WHAT[k]||"grouping")+" did not answer ("+
           fk.k+") — that card reports unknown, not zero"); }
+      moved=hxPinMoved(pin);
+      if(moved){ HX.msg=hxAbandoned(moved); HX.busy=false; renderHealthSurface(); return; }
     }
     HX.read={rows:t.rows, stats, at:new Date(), projectUuid:pu,
-             projectTitle:hxProjectTitle(), calls, notes, total:t.total};
+             projectTitle:pin.title, calls, notes, total:t.total};
     HX.msg={k:"ok", h:"<b>"+esc(HX.read.projectTitle||"Project")+"</b> — "+
       nWord(t.rows.length,"clash test")+" and "+nWord(calls-1,"statistics grouping")+" in "+
       nWord(calls,"call")+". Read at "+HX.read.at.toLocaleTimeString()+"."};
   }catch(e){
-    const k=mcpFailKind(e);
-    HX.msg={k:(k.k==="timeout"||k.k==="ratelimit")?"warn":"err",
+    const k=mcpFailKind(e), moved=hxPinMoved(pin);
+    HX.msg=moved ? hxAbandoned(moved) : {k:(k.k==="timeout"||k.k==="ratelimit")?"warn":"err",
             h:"<b>"+esc(k.t)+"</b> — "+esc(k.d)+" Nothing below was changed."};
   }
   HX.busy=false; renderHealthSurface();
 }
 async function healthReadAccounts(){
   if(HX.busy) return;
+  const pin={prefix:hxConnPrefix(), uuid:null};
   HX.busy=true; renderHealthSurface();
   try{
     const r = await mcp("list_accounts",{},{timeout:12000});
+    if(hxPinMoved(pin)){ HX.msg=hxAbandoned("server"); HX.busy=false; renderHealthSurface(); return; }
     const rows=(r&&(r.entities||r))||[];
     HX.accounts={rows:Array.isArray(rows)?rows:[], at:new Date()};
-  }catch(e){ const k=mcpFailKind(e); HX.accounts={error:k, at:new Date()}; }
+  }catch(e){ const k=mcpFailKind(e);
+    if(hxPinMoved(pin)) HX.msg=hxAbandoned("server"); else HX.accounts={error:k, at:new Date()}; }
   HX.busy=false; renderHealthSurface();
 }
 function healthSource(){
@@ -12588,13 +12914,20 @@ function hxTestsPanel(){
     " no search set on one selection, so there is nothing to test with yet.</p>";
   if(T.c.gaps.length) h+="<h4 class='hxh4'>Not created</h4><ul class='hxrows' role='list'>"+hxRowHead("Why","")+
     T.c.gaps.slice(0,300).map(g=>{ const p=pk[g.key], ns=p&&grade(p).cov==="no-set";
-      return hxRow(g.key, g.label, hxSw("notest")+(ns?"No search set":"Set exists, test never built"), ""); }).join("")+"</ul>"+
+      return hxRow(g.key, g.label, hxSw("notest")+(ns?"No search set":g.late?"Added to "+esc(g.late.test)+" after the last export — export again":"Set exists, test never built"), ""); }).join("")+"</ul>"+
     hxCapNote(T.c.gaps.length,300,"pairs");
+  if(T.c.lateCount) h+="<p class='hxn'>"+nWord(T.c.lateCount,"required pair")+" joined a test with several search sets after "+
+    "that test was exported, so "+(T.c.lateCount===1?"it is":"they are")+" not in the test in Revizto. Export again to add "+
+    (T.c.lateCount===1?"it":"them")+".</p>";
+  if(T.c.byName.length) h+="<p class='hxn'>"+nWord(T.c.byName.length,"test")+" with several search sets "+(T.c.byName.length===1?"is":"are")+
+    " matched by name alone — this browser holds no record of exporting "+(T.c.byName.length===1?"it":"them")+", so each is "+
+    "counted against every pair its test holds in this matrix now. If a search set joined that test since the file was written, "+
+    "the count is higher than what Revizto runs; export again from here to check it.</p>";
   if(T.c.orphans.length) h+="<h4 class='hxh4'>Off the matrix</h4><p class='hxn'>Tests that bind to no required pair — "+
     "effort outside the clash matrix. They have no pair to open.</p>"+hxList(T.c.orphans.map(o=>"<span class='mono'>"+esc(o.test)+
     "</span> — "+esc(o.why)),40);
   h+=hxSrcLine("source: the clash tests in force ("+(isLive()&&S.live?S.live.label:hxGovName())+
-      "), matched to pairs by naming convention or by search-set name, Selection A and B in either order");   
+      "), matched to pairs by naming convention, by the name this Matrix gives a test with several search sets (credited only with the pairs this browser exported it with, where it holds that record), or by search-set name, Selection A and B in either order");   
   h+=hxCheckCard();
   return h;
 }
@@ -12613,7 +12946,8 @@ function hxRunsPanel(live, runs, m){
   if(runs.late.length) h+="<h4 class='hxh4'>Not run in "+runs.sd+" days</h4><ul class='hxrows' role='list'>"+hxRowHead("Last run","Days")+
     runs.late.slice(0,300).map(x=>{ const t=x.t, p=t.pairKey?pairsByKey()[t.pairKey]:null, ms=setsById();
       const mid=x.d==null?"never run":"ran "+esc(String(t.lastRunAt).slice(0,10)), num=x.d==null?"—":x.d.toLocaleString();
-      return p ? hxRow(p.key, t.testName, mid, num, "Open "+nmOf(ms,p.a)+" × "+nmOf(ms,p.b)+" in the Matrix")
+      const more=(t.pairKeys&&t.pairKeys.length>1)?" (one of the "+t.pairKeys.length+" pairs this test covers)":"";   
+      return p ? hxRow(p.key, t.testName, mid, num, "Open "+nmOf(ms,p.a)+" × "+nmOf(ms,p.b)+more+" in the Matrix")
                : "<li><div class='hxrow static'><span class='pc mono'>—</span><span class='nm'>"+esc(t.testName)+
                  " <span class='pill'>off the matrix</span></span><span class='st'>"+mid+"</span><span class='num'>"+num+"</span><span></span></div></li>"; }).join("")+
     "</ul>"+hxCapNote(runs.late.length,300,"tests");
@@ -12660,15 +12994,18 @@ function hxWherePanel(live){
   if(w.none[d] && rows.length) h+="<p class='hxn'>"+nWord(w.none[d],"clashing "+u1,"clashing "+unit)+" carr"+(w.none[d]===1?"ies":"y")+
     " no "+d+".</p>";
   if(HX.lvl && w.byTest[d][HX.lvl]){
-    const per={}, off=[], byName={}; (D().tests||[]).forEach(t=>{ if(t.pairKey && !byName[t.testName]) byName[t.testName]=t.pairKey; });
-    Object.keys(w.byTest[d][HX.lvl]).forEach(tn=>{ const c=w.byTest[d][HX.lvl][tn], k=byName[tn];
-      if(k) per[k]=(per[k]||0)+c; else off.push([tn,c]); });
+    const per={}, off=[], multi=[], byName={}; (D().tests||[]).forEach(t=>{ if(t.pairKey && !byName[t.testName]) byName[t.testName]=t; });
+    Object.keys(w.byTest[d][HX.lvl]).forEach(tn=>{ const c=w.byTest[d][HX.lvl][tn], t=byName[tn];
+      if(t && t.pairKeys && t.pairKeys.length>1) multi.push([tn,c,t.pairKeys.length]);
+      else if(t) per[t.pairKey]=(per[t.pairKey]||0)+c; else off.push([tn,c]); });
     const st=hxPairStates(), sk={}; st.rows.forEach(r=>sk[r.key]=r);
     const list=Object.keys(per).map(k=>[k,per[k]]).filter(x=>sk[x[0]]).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
     h+="<h4 class='hxh4'>"+esc(HX.lvl)+" — required pairs, worst first</h4>"+
       (list.length?"<ul class='hxrows' role='list'>"+hxRowHead("State","Clashing "+unit)+list.slice(0,300).map(([k,c])=>{ const r=sk[k];
         return hxRow(k, r.name, hxSw(r.k)+esc(hxStateSpec(r.k).label), c.toLocaleString()); }).join("")+"</ul>"
         :"<p class='hxn'>None of the clashing "+unit+" on "+esc(HX.lvl)+" belongs to a test bound to a required pair.</p>")+
+      (multi.length?"<p class='hxn'>"+nWord(multi.length,"test")+" covering several required pairs also clash"+(multi.length===1?"es":"")+" here — "+
+        "their groups are not split between pairs: "+multi.map(o=>"<span class='mono'>"+esc(o[0])+"</span> ("+o[1]+", "+o[2]+" pairs)").join(", ")+".</p>":"")+
       (off.length?"<p class='hxn'>"+nWord(off.length,"test")+" off the matrix also clash"+(off.length===1?"es":"")+" here: "+
         off.map(o=>"<span class='mono'>"+esc(o[0])+"</span> ("+o[1]+")").join(", ")+".</p>":"");
   } else if(rows.length) h+="<p class='hxn'>Select a "+d+" to see its required pairs, worst first.</p>";
@@ -13041,16 +13378,25 @@ function hxPairCard(m){
   h+=hxSrcLine("source: get_clash_stats groupBy [clashSrcA, clashSrcB] · limit 100")+"</div>";
   return h;
 }
+function hxXlAt(at){ const d=at?new Date(at):null; return d&&!isNaN(d.getTime())?" (exported "+d.toISOString().slice(0,10)+")":""; }
 function healthCoverageFromTests(){
   const d=D(), governed=(d&&d.pairs||[]).filter(p=>p.governed!==false);
   const tk=testsByKey(), m=setsById();
+  const late=Object.create(null);
+  (d&&d.tests||[]).forEach(t=>{ if(t.pairKey && t.ownerLate) t.ownerLate.keys.forEach(k=>{ if(!late[k]) late[k]={test:t.testName, at:t.ownerLate.at}; }); });
   const hit=[], gaps=[];
   governed.forEach(p=>{ const ts=tk[p.key]||[]; if(ts.length) hit.push(p.key);
-    else gaps.push({key:p.key, label:nmOf(m,p.a)+" × "+nmOf(m,p.b)}); });
+    else gaps.push(Object.assign({key:p.key, label:nmOf(m,p.a)+" × "+nmOf(m,p.b)}, late[p.key]?{late:late[p.key]}:{})); });
   const orphans=(d&&d.tests||[]).filter(t=>!t.pairKey && !isTemplate(t))
-    .map(t=>({test:t.testName, why:"no required pair could be bound from this name"}));
+    .map(t=>({test:t.testName, why:t.ownerAmbiguous
+      ? "named for "+t.ownerAmbiguous.length+" tests with several search sets in this matrix, so which pairs it covers cannot be told"
+      : t.ownerGone
+      ? "none of the pairs it was exported with"+hxXlAt(t.ownerGone.at)+" is in that test in this matrix any more"
+      : "no required pair could be bound from this name"}));
+  const ambiguous=(d&&d.tests||[]).filter(t=>t.ownerAmbiguous && !t.pairKey).map(t=>({test:t.testName, owners:t.ownerAmbiguous.slice()}));
+  const byName=(d&&d.tests||[]).filter(t=>t.pairKey && t.ownerByName).map(t=>({test:t.testName, pairs:(t.pairKeys||[t.pairKey]).length}));
   return {source:"tests", tests:(d&&d.tests||[]).length, governed:governed.length,
-          covered:hit.length, gaps, orphans, ambiguous:[], doc:d&&d.label,
+          covered:hit.length, gaps, orphans, ambiguous, byName, lateCount:gaps.filter(g=>g.late).length, doc:d&&d.label,
           templatesExcluded:(d&&d.tests||[]).filter(isTemplate).length,
           complete: hit.length===governed.length,
           pct: governed.length ? Math.round(hit.length/governed.length*100) : null};
@@ -13402,7 +13748,8 @@ function wizCheckDone(){
   const from=WIZ.from; WIZ.mode="create"; WIZ.from=null; wizSyncSteps();
   if(!sm) return null;
   const msg="Search sets checked: "+sm.present+" of "+sm.total+" set"+(sm.total===1?"":"s")+" in “"+sm.doc+
-    "” found in "+sm.label+(sm.absent?", "+sm.absent+" not in the project":"")+".";
+    "” found in "+sm.label+(sm.absent?", "+sm.absent+" not in the project":"")+
+    (sm.ambiguous&&sm.ambiguous.length?", "+sm.ambiguous.length+" with a name the project holds more than once":"")+".";
   const actions=[];
   if((from==="export"||from==="setup")&&typeof renderRegister==="function"&&S.view==="reg") renderRegister();   
   if(from==="reg") actions.push({label:"Open the search-set panel", run:()=>{ showView("reg");
@@ -13422,11 +13769,13 @@ function wizCommit(){
   else { d=wizBuildDataset(); id="imp"+(++IMP_SEQ); DATA.datasets[id]=d; }
   if(typeof blIndex==="function") d.baseline={from:"the import", pairs:blIndex(d.pairs)};
   const sd=document.getElementById("selData");
+  if(typeof mxeFlush==="function") mxeFlush();   
   const o=document.createElement("option"); o.value=id;
   o.textContent=d.label+" — "+nWord(d.sets.length,"set")+" (imported)";
   sd.appendChild(o);
   sd.value=id; S.ds=id;
   invalidateLiveView(); S.picked.clear(); resetCache();
+  if(typeof mxeKeepOriginal==="function") mxeKeepOriginal(id);
   if(WIZ.vimsst && WIZ.vimsst.names && WIZ.vimsst.names.length && typeof attachSearchSetExport==="function")
     attachSearchSetExport(WIZ.vimsst.names.slice(), WIZ.vimsst.file, WIZ.vimsst.sets);
   UNDO.stack.length=0; UNDO.redo.length=0; disarm();   
@@ -13436,6 +13785,7 @@ function wizCommit(){
   document.getElementById("wiz").classList.remove("open");
   showView("matrix");
   wizAnnounce(d);
+  if(typeof MXE_ORIG_WHY!=="undefined"&&MXE_ORIG_WHY[id]&&typeof mxSay==="function") mxSay("warn","<b>Revert won't be available for this matrix.</b> "+esc(MXE_ORIG_WHY[id]));
   return d;
 }
 function wizCanAdvance(){
@@ -13522,7 +13872,7 @@ function renderWiz(){
       ${(typeof IMPV==="object"&&IMPV&&IMPV.setsMsg&&(IMPV.setsScope===bindScope()||!sm))?imBox(IMPV.setsMsg):""}
       ${sm?`<div class='connmsg ${sm.absent?"warn":"ok"}' style='margin-top:var(--s4)'><b>${sm.present} of
         ${sm.total}</b> set${sm.total===1?"":"s"} found in ${esc(sm.label)}${sm.absent?` · <b>${sm.absent} not in
-        the project</b>: ${esc(sm.absentNames.slice(0,8).join(", "))}${sm.absent>8?" …":""}`:""}.</div>`:""}`;
+        the project</b>: ${esc(sm.absentNames.slice(0,8).join(", "))}${sm.absent>8?" …":""}`:""}.${bindAmbiguityHtml(sm)}</div>`:""}`;
   }
   if(k==="sources"){ h=wizFileStepHtml(); }
   if(k==="sets" && typeof wizNewMatrix==="function" && wizNewMatrix()) h=wizSetsStepHtml();
@@ -14128,6 +14478,7 @@ function wizDraftEnsure(){
   const id="imp"+(++IMP_SEQ);
   WIZ.draft={id, prevDs:S.ds, base};
   DATA.datasets[id]=d;
+  if(typeof mxeFlush==="function") mxeFlush();   
   S.ds=id; invalidateLiveView(); S.picked.clear(); resetCache();
   UNDO.stack.length=0; UNDO.redo.length=0; disarm();
   return d;
@@ -14171,6 +14522,7 @@ function wizDraftDiscard(carry){
   WIZ.carry=(carry&&d)?wizDraftCarryTake(d):(carry?WIZ.carry:null);
   delete DATA.datasets[dr.id];
   try{ if(typeof mxeHasSaved==="function"&&mxeHasSaved(dr.id)) mxePrune(dr.id); }catch(e){}
+  if(typeof mxeFlush==="function") mxeFlush();   
   S.ds=dr.prevDs; invalidateLiveView(); S.picked.clear(); resetCache();
   UNDO.stack.length=0; UNDO.redo.length=0;
   dr.base.stack.forEach(x=>UNDO.stack.push(x)); dr.base.redo.forEach(x=>UNDO.redo.push(x));
@@ -14480,6 +14832,7 @@ document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !document.getEle
   if(typeof intelUp==="function" && intelUp()) return; dossReturn(); } });
 document.getElementById("dossFocus").onclick=()=>{ if(typeof dossFocusToggle==="function") dossFocusToggle(); };
 document.getElementById("selData").onchange=e=>{
+  if(typeof mxeFlush==="function") mxeFlush();
   S.ds=e.target.value;
   mxeLoadDoc(S.ds); UNDO.stack.length=0; UNDO.redo.length=0;
   S.colf={}; S.regCap=400; BULK={}; S.repointOpen=""; disarm();
@@ -14500,7 +14853,10 @@ function renderMxDocMenu(){
   const m=document.getElementById("mxDocMenu"), b=document.getElementById("btnMxDoc"); if(!m||!b) return;
   const can=typeof mxeDeletable==="function"&&mxeDeletable(S.ds);
   const exp=typeof expInspectorOpen==="function";
-  const rvOK=typeof mxeHasSaved==="function"&&mxeHasSaved(S.ds);
+  const rvImp=typeof docOrigin==="function"&&docOrigin(S.ds)==="import"&&typeof mxeRevertable==="function";
+  const rvR=rvImp?mxeRevertable(S.ds):null;
+  const rvOK=rvImp?rvR.ok:(typeof mxeHasSaved==="function"&&mxeHasSaved(S.ds));
+  const rvWhy=(rvImp&&!rvR.ok)?rvR.why:"";
   const use=typeof mxeUsage==="function"?mxeUsage():{pct:0,total:0,budget:0};
   const hot=use.pct>=0.8, nm="Matrix settings and actions"+(hot?" — browser storage needs attention":"");
   b.innerHTML=(typeof icon==="function"?icon("settings"):"")+(hot?"<span class='gearalert' aria-hidden='true'></span>":"");
@@ -14514,7 +14870,8 @@ function renderMxDocMenu(){
     "<div role='separator' class='menusep'></div>"+
     "<div role='group' aria-labelledby='mxGrpDoc'><div class='menuhd' id='mxGrpDoc' aria-hidden='true'>This matrix</div>"+
     (exp?"<button type='button' role='menuitem' data-mxdoc='export'>Export clash tests…</button>":"")+
-    (rvOK?"<button type='button' role='menuitem' class='danger' data-mxdoc='revert' title='Discard every change and go back to the document as imported'>"+(ARMED==="revert"?"Confirm revert":"Revert to imported…")+"</button>":"")+
+    (rvOK?"<button type='button' role='menuitem' class='danger' data-mxdoc='revert' title='Discard every change and go back to the document as imported'>"+(ARMED==="revert"?"Confirm revert":"Revert to imported…")+"</button>":
+      rvWhy?"<button type='button' role='menuitem' class='danger' data-mxdoc='revert' aria-disabled='true'>Revert to imported…<span class='menunote'>"+esc(rvWhy)+"</span></button>":"")+
     "<button type='button' role='menuitem' class='danger' data-mxdoc='delete'"+(can?">Delete matrix…":
       " aria-disabled='true'>Delete matrix…<span class='menunote'>"+esc(MXDOC_REF_WHY)+"</span>")+"</button></div>";
   m.hidden=!MXDOC.open;
@@ -14542,7 +14899,7 @@ function mxDocDelete(){
   const to=DATA.datasets.real?"real":((opts.find(o=>o.value!==id&&DATA.datasets[o.value])||{}).value||"");
   if(!to){ announce("Not deleted. There is no other matrix to show."); renderMxDocConfirm(); return null; }
   let stale=false;
-  if(MXE_T){ clearTimeout(MXE_T); MXE_T=null; stale=mxeSaveNow()!==true; }
+  if(MXE_T){ stale=mxeFlush()!==true; }   
   if(MXE_QUOTA_FAIL||S.dirty) stale=true;
   if(S.expOpen && typeof expInspectorClose==="function") expInspectorClose(false);
   if(!obSwitchDoc(to)){ announce("Not deleted. Couldn't switch to another matrix first."); renderMxDocMenu(); renderMxDocConfirm(); return null; }
@@ -14588,13 +14945,18 @@ document.addEventListener("click",e=>{
       renderMxDocMenu(); renderMxDocConfirm(); mxDocFocus("#mxDocMsg [data-mxdoc=cancel]"); return; }
     if(k==="cancel"){ mxDocClose(true); return; }
     if(k==="revert"){
+      if(a.getAttribute("aria-disabled")==="true"){ if(ARMED==="revert") disarm(); return; }
       if(ARMED!=="revert"){ ARMED="revert"; MXDOC.open=true; renderMxDocMenu();
         mxSay("warn","<b>Discard every change to this document?</b> Press Revert again to confirm. Export first if you want to keep this version.");
         mxDocFocus("#mxDocMenu [data-mxdoc=revert]"); return; }
       ARMED=null; MXDOC.open=false;
-      if(mxeRevert()){ UNDO.stack.length=0; UNDO.redo.length=0; resetCache(); markSaved(); renderAll();
-        mxSay("ok","Reverted to the document as imported."); }
-      else mxSay("warn","This document was imported, so there is no earlier version to go back to. Its saved copy has been cleared — reload to lose the import entirely, or keep editing.");
+      const rv=mxeRevert();
+      if(rv){ UNDO.stack.length=0; UNDO.redo.length=0; resetCache();
+        if(rv==="unsaved") mxeMarkSaveState(false); else markSaved();
+        renderAll();
+        if(rv==="unsaved") mxSay("err","<b>Reverted on screen, but this browser refused to save it.</b> Reload and the edits come back. Export it now, or prune a saved document under <b>Settings ▸ Browser storage…</b> and revert again.");
+        else mxSay("ok","Reverted to the document as imported."); }
+      else mxSay("warn","Not reverted. "+esc((typeof mxeRevertable==="function"&&mxeRevertable(S.ds).why)||"There is no earlier version of this matrix to go back to.")+" Nothing was changed or deleted.");
       renderMxDocMenu(); mxDocFocus("#btnMxDoc"); return; }
     if(k==="confirm"){ mxDocDelete(); return; }
   }
@@ -14766,6 +15128,7 @@ function mxeBoot(){
     const had=!!DATA.datasets[rec.id];
     if(!had && typeof docOrigin==="function" && docOrigin(rec.id)!=="import"){
       try{ localStorage.removeItem(mxeKey(rec.id)); }catch(e){}
+      try{ localStorage.removeItem(MXE_EXPLEDGER_PREFIX+rec.id); }catch(e){}   
       mxeIndexDrop(rec.id);
       return;
     }
@@ -14779,6 +15142,7 @@ function mxeBoot(){
     if(n) IMP_SEQ=Math.max(IMP_SEQ, Number(n[1]));   
   });
   mxePruneTaxOrphans(shipped);
+  if(typeof mxeSweepOriginals==="function") mxeSweepOriginals();   
   resetCache();
 }
 mxeBoot();

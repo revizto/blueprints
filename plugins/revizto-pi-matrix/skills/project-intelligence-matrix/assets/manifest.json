@@ -1,13 +1,13 @@
 {
-  "md5": "95a68d86e550a61e8e1eb32a0565753c",
+  "md5": "4d7908d14ad119b02ce75aeb883246ff",
   "file": "matrix.html",
   "product": "Revizto Project Intelligence Matrix",
   "version": "1.0.0",
   "stamp": "1.0.0",
   "tcsVersion": "1.1",
-  "buildDate": "2026-11-11",
-  "size": 1113572,
-  "sha256": "8eb6875532ac97d26488457309896c36bc82cd0b38ed5363f1aeeec6c538bead",
+  "buildDate": "2026-11-12",
+  "size": 1139110,
+  "sha256": "1580d33ef24bc1a3c3f74f91a09f912789cd1598d35960cb5ce003b3df39107f",
   "anchor": "/*@@INSTALL_CONNECTORS@@*/",
   "anchorCount": 1,
   "tools": {
