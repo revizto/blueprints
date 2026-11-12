@@ -1,5 +1,5 @@
-# The Blueprint ships as a single self-contained HTML file with no build pipeline, which is why
-# three defects of the same shape (WS28d, WS35, WS36) each reached production. These gates are the
+# Each plugin ships as a single self-contained HTML file with no build pipeline in this repository,
+# which is why three Blueprint defects of the same shape each reached production. These gates are the
 # pipeline. They are cheap, they run on every push, and they are the reason a hand-edit can no
 # longer quietly reintroduce a defect we have already paid for once.
 name: verify
@@ -7,9 +7,15 @@ on:
   push:
     branches: [main, 'release/**']
   pull_request:
+# Least privilege: the gates only read the checkout. (Code scanning: workflow did not limit GITHUB_TOKEN.)
+permissions:
+  contents: read
 jobs:
   verify:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mcp-blueprints/revizto-project-intelligence
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -18,3 +24,16 @@ jobs:
         run: node tools/build.mjs --check
       - name: regression gates (syntax, contract, taxonomy, hygiene, manifest)
         run: node tests/run.mjs
+  matrix:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: plugins/revizto-pi-matrix
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - name: the gates can fail (each injected defect must go red)
+        run: node tools/verify.mjs --selftest
+      - name: asset, public-safe, read-only, version and licence gates
+        run: node tools/verify.mjs
