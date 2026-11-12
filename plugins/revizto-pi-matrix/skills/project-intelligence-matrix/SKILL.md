@@ -89,12 +89,13 @@ try to repair the old artifact in place.
 **2 — Copy the bundled Matrix verbatim and check it against the manifest.** Do not open it to reproduce
 it — copy it:
 
-First resolve the plugin's own folder. Claude normally sets `$CLAUDE_PLUGIN_ROOT`; if it is empty, find
-the folder that holds this plugin's `.claude-plugin/plugin.json` (named `revizto-project-intelligence-matrix`)
+First resolve the plugin's own folder. Claude normally sets `$CLAUDE_PLUGIN_ROOT`, and it always wins; if
+it is empty, find the plugin folder — the one containing `.claude-plugin/plugin.json` whose `name` is
+`revizto-project-intelligence-matrix` —
 and set `PR` to it yourself (`PR=/path/to/that/folder`) before running the block. Every path below reads from `PR`, so there is one code path either way.
 
 ```bash
-PR="${PR:-${CLAUDE_PLUGIN_ROOT:-}}"
+PR="${CLAUDE_PLUGIN_ROOT:-${PR:-}}"
 if [ -z "$PR" ]; then
   echo "STOP: CLAUDE_PLUGIN_ROOT is not set. Set PR to the folder containing this plugin's .claude-plugin/plugin.json, then re-run this block."
   exit 1

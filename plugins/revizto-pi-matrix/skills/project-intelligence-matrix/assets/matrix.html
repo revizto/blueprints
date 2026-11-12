@@ -2341,7 +2341,7 @@ const FAIL_TEXT = {
     return { k: "error", t: "The Revizto MCP couldn’t serve the request", d: "The call failed" + (m ? " — “" + esc(String(m).slice(0, 160)) + "”" : "") + ". Reload to retry, or check the connector connection." };
   },
   noconn: function () {
-    return { k: "noconn", t: "Connect the Revizto MCP Server to enable live project intelligence", d: APP + " reads everything live from your Revizto projects through the Revizto MCP Server — nothing is cached or bundled, so there is nothing to show until a connection exists. Add the Revizto MCP Server connector to Claude (Settings → Connectors), then open the Connections panel and dedicate it. If the connector is already connected, its tools may not be authorised for THIS artifact yet — re-create the artifact through the install skill (install the plugin, then run the dashboard skill). See the README “tools not authorised for this artifact” troubleshooting." };
+    return { k: "noconn", t: "Connect the Revizto MCP Server to enable live project intelligence", d: APP + " reads everything live from your Revizto projects through the Revizto MCP Server — nothing is cached or bundled, so there is nothing to show until a connection exists. Add the Revizto MCP Server connector to Claude (Settings → Connectors), then open the Connections panel and dedicate it. If the connector is already connected, its tools may not be authorised for THIS artifact yet — re-create the artifact through the install skill (install the plugin, then run the project-intelligence-matrix skill). See the README “tools not authorised for this artifact” troubleshooting." };
   },
   nolicGated: function (n) {
     return { k: "nolic", t: "Every account on this server is unavailable through the MCP", d: "The connection answered and your Revizto user belongs to " + n + " account" + (n === 1 ? "" : "s") + " on it, but none of them is currently available through the MCP server, so no licence can be read. Open the Connections panel — each account is listed there with Revizto’s own explanation of what to change." };
@@ -8639,20 +8639,22 @@ function bindAmbiguities(){
     at[nm].sets.push(s.name); }));
   return out;
 }
+function bindAndList(xs){ return xs.length<2 ? xs.join("") : xs.slice(0,-1).join(", ")+" and "+xs[xs.length-1]; }
 function bindAmbiguityText(names){
-  return names.map(nm=>"“"+nm+"” is in "+(bindAmbiguous(nm)||[]).map(x=>bindPathText(x.path)).join(" and ")).join("; ")+
-    ". Rename one in Revizto and export the search sets again.";
+  return names.map(nm=>"“"+nm+"” is in "+bindAndList((bindAmbiguous(nm)||[]).map(x=>bindPathText(x.path)))).join("; ")+
+    ". Rename all but one of them in Revizto and export the search sets again.";
 }
 function bindAmbiguityHtml(sm){
   const a=(sm&&sm.ambiguous)||[]; if(!a.length) return "";
   return `<div class='bindamb' style='margin-top:var(--s2)'><b>${a.length} search set name${a.length===1?" is":"s are"} not unique in this project</b> — `+
-    a.map(x=>`<b>${esc(x.name)}</b> (in ${x.entries.map(en=>esc(bindPathText(en.path))).join(" and ")})`).join(", ")+
-    `. A test can name only one set, so tests using ${a.length===1?"it":"them"} cannot be written. Rename one in Revizto and export the search sets again.</div>`;
+    a.map(x=>`<b>${esc(x.name)}</b> (in ${bindAndList(x.entries.map(en=>esc(bindPathText(en.path))))})`).join(", ")+
+    `. A test can name only one set, so tests using ${a.length===1?"it":"them"} cannot be written. Rename all but one of them in Revizto and export the search sets again.</div>`;
 }
 const MXE_VER=2;
 const MXE_READ_FROM=1;
 const mxeKey = d => MXE_DOCKEY_PREFIX+d;
 let MXE_QUOTA_FAIL=false;          
+let MXE_DOC_UNSAVED={};            
 let MXE_DELSEC=[];                 
 let MXE_DELDISC=[];                
 let MXE_MIGRATED=[];               
@@ -8743,6 +8745,18 @@ function mxeFlush(){
   const id=MXE_T_ID; MXE_T=null; MXE_T_ID=null;
   return mxeSaveNow(id);
 }
+function mxeSwitchReady(){
+  const ids=[];
+  if(MXE_T&&MXE_T_ID!=null) ids.push(MXE_T_ID);
+  if(S.ds!=null&&ids.indexOf(S.ds)<0) ids.push(S.ds);
+  mxeFlush();
+  const stuck=ids.filter(id=>MXE_DOC_UNSAVED[id]&&DATA.datasets[id]&&!DATA.datasets[id].draft&&mxeSaveNow(id)!==true&&MXE_DOC_UNSAVED[id]);
+  if(!stuck.length) return true;
+  const d=DATA.datasets[stuck[0]], nm=(d&&d.label)||stuck[0];
+  if(stuck[0]===S.ds) mxeMarkSaveState(false);
+  return "This browser refused to save “"+nm+"”, so the matrix was not switched — switching now would lose its last edit. "+
+    "Export it to keep your work, or prune a saved document under Settings ▸ Browser storage… and try again.";
+}
 function mxeSnapshot(id,d){
   return {v:MXE_VER, ts:Date.now(), label:d.label, origin:docOrigin(id),
     sets:d.sets, pairs:d.pairs,
@@ -8761,8 +8775,9 @@ function mxeSaveNow(id){
   let okAll=true;
   const snap=mxeSnapshot(id,d);
   try{ localStorage.setItem(mxeKey(id), JSON.stringify(snap));
+       delete MXE_DOC_UNSAVED[id];   
        mxeIndexAdd(id,d.label); }
-  catch(e){ okAll=false; }
+  catch(e){ okAll=false; MXE_DOC_UNSAVED[id]=true; }
   if(!mxeSaveTax()) okAll=false;
   if(id===S.ds) MXE_QUOTA_FAIL=!okAll; else if(!okAll) MXE_QUOTA_FAIL=true;
   MXE_AUTOSAVED[id]=true;
@@ -9012,11 +9027,14 @@ function mxeSweepOriginals(){
   return n;
 }
 function mxeOrigBytes(){ return mxeIndex().reduce((n,r)=>n+mxeBytes(mxeOrigKey(r.id)),0); }
-function mxeRevertImport(id){
-  const d=DATA.datasets[id]; if(!d||d.draft) return false;
+function mxeReadOriginal(id){
   let r=null; try{ r=JSON.parse(localStorage.getItem(mxeOrigKey(id))||"null"); }catch(e){}
   r=mxeUpgrade(r,null);
-  if(!r||!Array.isArray(r.sets)||!Array.isArray(r.pairs)||mxReservedEntry(r)) return false;
+  return (!r||!Array.isArray(r.sets)||!Array.isArray(r.pairs)||mxReservedEntry(r)) ? null : r;
+}
+function mxeRevertImport(id){
+  const d=DATA.datasets[id]; if(!d||d.draft) return false;
+  const r=mxeReadOriginal(id); if(!r) return false;
   const cp=x=>JSON.parse(JSON.stringify(x));
   d.sets=cp(r.sets);
   d.pairs=cp(r.pairs);
@@ -9032,6 +9050,7 @@ function mxeRevertImport(id){
 }
 function mxeRevert(){
   const id=S.ds;
+  if(docOrigin(id)==="import"&&(!DATA.datasets[id]||DATA.datasets[id].draft||!mxeReadOriginal(id))) return false;
   if(MXE_T){ if(MXE_T_ID===id){ clearTimeout(MXE_T); MXE_T=null; MXE_T_ID=null; } else mxeFlush(); }
   if(docOrigin(id)==="import") return mxeRevertImport(id);
   try{ localStorage.removeItem(mxeKey(id)); }catch(e){}
@@ -11135,9 +11154,10 @@ function exportWarnings(scope){
   if(ambR.length){ const by=new Map(); ambR.forEach(r=>by.set(r.amb.name, r.amb.entries));
     const nN=by.size, kk=[...new Set(ambR.map(r=>r.key))];
     w.push({blocking:true, html:`<b>${nN} search set name${nN===1?" is":"s are"} not unique in this project</b> — `+
-      [...by].map(([nm,en])=>`<b>${esc(nm)}</b> is in ${en.map(x=>esc(bindPathText(x.path))).join(" and ")}`).join("; ")+
-      `. A clash test names one search set per entry, and the name alone cannot say which, so ${kk.length} pair${kk.length===1?"":"s"} using ${nN===1?"it":"them"} `+
-      `${kk.length===1?"is":"are"} held rather than tested against the wrong objects. Rename one of ${nN===1?"them":"each"} in Revizto, export the search sets again and read the new export.`,
+      [...by].map(([nm,en])=>`<b>${esc(nm)}</b> is in ${bindAndList(en.map(x=>esc(bindPathText(x.path))))}`).join("; ")+
+      `. A clash test names one search set per entry, and the name alone cannot say which. ${kk.length} pair${kk.length===1?" uses":"s use"} ${nN===1?"it":"them"}, `+
+      `so nothing can be downloaded until this is resolved — a test against the wrong objects would look like a clean result. `+
+      `In Revizto, rename all but one of the sets that share ${nN===1?"this name":"each name"}, export the search sets again and read the new export.`,
       kind:"ambiguous", names:[...by.keys()], keys:kk}); }
   const part = expScopeWhole(scope).partial;
   if(part.length) w.push({blocking:true, html:`<b>${part.length} multi-set test${part.length===1?" is":"s are"} only partly in scope</b> — `+
@@ -11197,10 +11217,19 @@ const EXP_SCOPES = [
   ["selected","The pairs selected in the Clash Test Editor"],
   ["all",     "Every required pair (full export)"]
 ];
+function expKeptMacroCovered(){
+  if(!deltaAvailable()||typeof rgResolve!=="function") return 0;
+  const kept=new Set(((rgResolve()||{}).owners||[]).filter(o=>o.keep).map(o=>o.key)); if(!kept.size) return 0;
+  const tk=testsByKey(); let n=0;
+  (D().tests||[]).forEach(t=>{ if(t.bindBy!=="owner"||!kept.has(t.ownerKey)) return;
+    (t.pairKeys||[]).forEach(k=>{ if((tk[k]||[]).every(x=>x===t)) n++; }); });
+  return n;
+}
 function scopeNote(scope){
-  if(scope==="delta") return deltaAvailable()
-    ? "Required pairs with no clash test in the project read. This is the scope that does not duplicate."
-    : "Unavailable — no project has been read, so what is already there is unknown.";
+  if(scope==="delta"){ if(!deltaAvailable()) return "Unavailable — no project has been read, so what is already there is unknown.";
+    const kn=expKeptMacroCovered();
+    return "Required pairs with no clash test in the project read. This is the scope that does not duplicate."+
+      (kn ? ` A kept macro test in the project covers ${kn.toLocaleString()} pair${kn===1?"":"s"} whose own tests it doesn't have, so those tests aren't offered here — choose “Every required pair” to write them.` : ""); }
   if(scope==="selected") return `${S.picked.size.toLocaleString()} pair${S.picked.size===1?"":"s"} are selected in the Clash Test Editor.`;
   return "Every required pair in this document, whether or not the project already has a test for it.";
 }
@@ -13763,6 +13792,8 @@ function wizCheckDone(){
 function wizCommit(){
   if(WIZ.mode==="check") return wizCheckDone();
   if(WIZ.mode==="update"){ const r=wizApplyUpdate(); if(r){ WIZ.taxSnap=null; WIZ.undoBase=null; WIZ.storeSnap=null; } return r; }
+  if(typeof mxeSwitchReady==="function"){ const ready=mxeSwitchReady();
+    if(ready!==true){ announce(ready); const e=new Error(ready); e.storage=true; WIZ.draftErr=e; renderWiz(); return null; } }
   let d, id;
   if(typeof wizDraftDoc==="function" && wizDraftDoc() && typeof rgSeedResponsibility==="function"){ resetCache(); rgSeedResponsibility(); rgStartAt(wizStartLevel()); }
   if(typeof wizDraftDoc==="function" && wizDraftDoc()){ id=WIZ.draft.id; d=wizDraftRelease(DATA.datasets[id]); }
@@ -14468,6 +14499,8 @@ function wizStoreRestore(){
 }
 function wizDraftEnsure(){
   const have=wizDraftDoc(); if(have) return have;
+  if(typeof mxeSwitchReady==="function"){ const ready=mxeSwitchReady();
+    if(ready!==true){ const e=new Error(ready); e.storage=true; WIZ.draftErr=e; return null; } }
   let d=null; try{ d=wizBuildDataset(); }catch(e){ WIZ.draftErr=e; return null; }
   WIZ.draftErr=null;
   wizDraftShape(d);
@@ -14522,7 +14555,7 @@ function wizDraftDiscard(carry){
   WIZ.carry=(carry&&d)?wizDraftCarryTake(d):(carry?WIZ.carry:null);
   delete DATA.datasets[dr.id];
   try{ if(typeof mxeHasSaved==="function"&&mxeHasSaved(dr.id)) mxePrune(dr.id); }catch(e){}
-  if(typeof mxeFlush==="function") mxeFlush();   
+  if(typeof mxeFlush==="function") mxeFlush();
   S.ds=dr.prevDs; invalidateLiveView(); S.picked.clear(); resetCache();
   UNDO.stack.length=0; UNDO.redo.length=0;
   dr.base.stack.forEach(x=>UNDO.stack.push(x)); dr.base.redo.forEach(x=>UNDO.redo.push(x));
@@ -14753,6 +14786,7 @@ function wizRequireStepWire(){
     if(!r.ok) wizMsg("wizReqMsg","warn","<b>Not applied.</b> "+esc(r.why)+"."); }; });
 }
 function wizDraftFailHtml(){
+  if(WIZ.draftErr&&WIZ.draftErr.storage) return `<div class='connmsg err'><b>Not saved.</b> ${esc(WIZ.draftErr.message)}</div>`;
   return `<div class='connmsg err'><b>The matrix could not be built from this file yet.</b> ${esc(WIZ.draftErr?(WIZ.draftErr.message||String(WIZ.draftErr)):wizWhyBlocked()||"Go back a step.")}</div>`;
 }
 function wizStepsWire(k){
@@ -14832,7 +14866,8 @@ document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !document.getEle
   if(typeof intelUp==="function" && intelUp()) return; dossReturn(); } });
 document.getElementById("dossFocus").onclick=()=>{ if(typeof dossFocusToggle==="function") dossFocusToggle(); };
 document.getElementById("selData").onchange=e=>{
-  if(typeof mxeFlush==="function") mxeFlush();
+  const ready=mxeSwitchReady();
+  if(ready!==true){ if(e.target) e.target.value=S.ds; announce(ready); if(typeof mxSay==="function") mxSay("err",esc(ready)); return; }
   S.ds=e.target.value;
   mxeLoadDoc(S.ds); UNDO.stack.length=0; UNDO.redo.length=0;
   S.colf={}; S.regCap=400; BULK={}; S.repointOpen=""; disarm();
@@ -14901,6 +14936,7 @@ function mxDocDelete(){
   let stale=false;
   if(MXE_T){ stale=mxeFlush()!==true; }   
   if(MXE_QUOTA_FAIL||S.dirty) stale=true;
+  if(typeof MXE_DOC_UNSAVED!=="undefined"){ if(MXE_DOC_UNSAVED[id]) stale=true; delete MXE_DOC_UNSAVED[id]; }
   if(S.expOpen && typeof expInspectorClose==="function") expInspectorClose(false);
   if(!obSwitchDoc(to)){ announce("Not deleted. Couldn't switch to another matrix first."); renderMxDocMenu(); renderMxDocConfirm(); return null; }
   const r=mxeDeleteDoc(id);

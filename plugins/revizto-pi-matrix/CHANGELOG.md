@@ -22,7 +22,8 @@ installed and versioned separately from the Project Intelligence Blueprint.
 Hardened before release in response to pre-merge code review:
 
 - **Edits are saved to the matrix they were made in**, even when you switch matrices, delete one or
-  finish an import within the autosave delay.
+  finish an import within the autosave delay. If the browser refuses to save, the Matrix stays on the
+  current matrix and tells you how to free space, rather than switching and losing the edit.
 - **Revert restores an imported matrix to how it was imported** and never deletes it. Matrices imported
   before this build show Revert as unavailable, with the reason.
 - **Multi-set clash tests export whole or not at all.** A test only partly selected, partly left out, or
@@ -30,10 +31,13 @@ Hardened before release in response to pre-merge code review:
   counts shown before export equal the file.
 - **Search sets with the same name in different folders are refused, not guessed.** Tests that use them
   are blocked at export with the folders named; rename one in Revizto and export the search sets again.
-- **04 Health recognises the multi-set tests the Matrix exported**, credits each with exactly the pairs
-  it was written with, and says when a pair was added after the last export.
+- **04 Health recognises the multi-set tests the Matrix exported.** When this browser made the export, it
+  credits each test with exactly the pairs it was written with and says when a pair was added after the
+  last export; otherwise it matches by name and says so.
 - **A live read stays with the project and server it started on.** Switching mid-read discards the old
   read instead of showing it under the new project; repeated Reads run one at a time, latest wins.
-- **The authorisation message names this plugin's install skill** (`project-intelligence-matrix`).
+- **Every message that tells you to re-create the artifact names this plugin's install skill**
+  (`project-intelligence-matrix`) — at start-up when no connection exists, and when a connector's tools
+  are not authorised for this artifact. A release check refuses any other product's install skill.
 - **The Geist font licence ships with the plugin** (`OFL.txt`).
 - **The install explains its one-off read calls** before making them (see README → Your data).
