@@ -23,7 +23,8 @@ Hardened before release in response to pre-merge code review:
 
 - **Edits are saved to the matrix they were made in**, even when you switch matrices, delete one or
   finish an import within the autosave delay. If the browser refuses to save, the Matrix stays on the
-  current matrix and tells you how to free space, rather than switching and losing the edit.
+  current matrix — from the picker, the template, an import or a resumed session — and tells you how to
+  free space, rather than switching and losing the edit.
 - **Revert restores an imported matrix to how it was imported** and never deletes it. Matrices imported
   before this build show Revert as unavailable, with the reason.
 - **Multi-set clash tests export whole or not at all.** A test only partly selected, partly left out, or
@@ -38,6 +39,7 @@ Hardened before release in response to pre-merge code review:
   read instead of showing it under the new project; repeated Reads run one at a time, latest wins.
 - **Every message that tells you to re-create the artifact names this plugin's install skill**
   (`project-intelligence-matrix`) — at start-up when no connection exists, and when a connector's tools
-  are not authorised for this artifact. A release check refuses any other product's install skill.
+  are not authorised for this artifact. A release check refuses the Project Intelligence Blueprint's
+  install skill, by full or short name.
 - **The Geist font licence ships with the plugin** (`OFL.txt`).
 - **The install explains its one-off read calls** before making them (see README → Your data).

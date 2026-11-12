@@ -5526,7 +5526,8 @@ function obFocusView(v){
 }
 function obUseTemplate(){
   const existing=obTemplateCopyId();
-  if(existing){ obSwitchDoc(existing); obWrite({chose:true}); showView("matrix"); obFocusView("matrix");
+  if(existing){ if(!obSwitchDoc(existing)) return "";   
+    obWrite({chose:true}); showView("matrix"); obFocusView("matrix");
     announce("Opened “"+OB_TEMPLATE_LABEL+"”. The original template is untouched.",
       [{label:"Open the Clash Test Editor",view:"reg"}]); return existing; }
   const src=DATA.datasets.real; if(!src) return "";
@@ -5539,7 +5540,7 @@ function obUseTemplate(){
   const sd=document.getElementById("selData");
   if(sd){ const o=document.createElement("option"); o.value=id;
     o.textContent=d.label+" — "+nWord(d.sets.length,"set"); sd.appendChild(o); }
-  obSwitchDoc(id);
+  if(!obSwitchDoc(id)){ delete DATA.datasets[id]; if(sd&&sd.lastChild&&sd.lastChild.value===id) sd.removeChild(sd.lastChild); return ""; }
   markSaveTone(mxeSaveAndReport());
   if(typeof mxeKeepOriginalOrSay==="function") mxeKeepOriginalOrSay(id);   
   obWrite({chose:true, ds:id});
