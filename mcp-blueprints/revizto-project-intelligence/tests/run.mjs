@@ -129,13 +129,16 @@ section('1  SYNTAX');
 {
   const blocks = inlineScript();
   ok('exactly one inline script block', blocks.length === 1, 'found ' + blocks.length);
-  const tmp = path.join(os.tmpdir(), 'bp-syntax-check.mjs');
+  /* A private, uniquely named directory rather than a fixed file name in the shared temp folder, which
+     another user or process could pre-create or swap (code scanning: insecure temporary file, CWE-377). */
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bp-syntax-'));
+  const tmp = path.join(dir, 'check.mjs');
   let syntaxOk = true, err = '';
   try {
-    fs.writeFileSync(tmp, blocks.join('\n;\n'));
+    fs.writeFileSync(tmp, blocks.join('\n;\n'), { mode: 0o600, flag: 'wx' });
     execFileSync(process.execPath, ['--check', tmp], { stdio: 'pipe' });
   } catch (e) { syntaxOk = false; err = String(e.stderr || e).slice(0, 500); }
-  finally { try { fs.unlinkSync(tmp); } catch {} }
+  finally { try { fs.rmSync(dir, { recursive: true, force: true }); } catch {} }
   ok('inline script parses', syntaxOk, err);
 }
 
