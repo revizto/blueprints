@@ -41,5 +41,9 @@ Hardened before release in response to pre-merge code review:
   (`project-intelligence-matrix`) — at start-up when no connection exists, and when a connector's tools
   are not authorised for this artifact. A release check refuses the Project Intelligence Blueprint's
   install skill, by full or short name.
+- **Selectors and announcements are escaped by one shared helper each** (code scanning, PR #2). Names
+  containing a backslash or quote no longer lose keyboard focus after Esc, rename-cancel or a Health level
+  click; tags in announcements are stripped until none remain; filter lists build only for a known column.
+  A release check refuses the unescaped shapes anywhere in the build.
 - **The Geist font licence ships with the plugin** (`OFL.txt`).
 - **The install explains its one-off read calls** before making them (see README → Your data).

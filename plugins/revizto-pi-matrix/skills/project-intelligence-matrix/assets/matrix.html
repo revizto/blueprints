@@ -5677,7 +5677,7 @@ function obUndo(redo){
   const e=redo?doRedoReported():doUndoReported();
   const msg=e?((redo?"Redone: ":"Undone: ")+(redo?(e.redoNote||e.label):(e.note||e.label)))
              :(redo?"Nothing to redo.":"Nothing to undo.");
-  const live=document.getElementById("obLive"); if(live) live.textContent=String(msg).replace(/<[^>]+>/g,"");
+  const live=document.getElementById("obLive"); if(live) live.textContent=htmlToText(msg);
   return e;
 }
 function obFocusFind(){
@@ -6521,7 +6521,7 @@ function closeDossier(){
   setTimeout(()=>{d.hidden=true;},200);
   const prev=S.sel; S.sel=null; renderMatrix();
   if(prev){ const [a,b]=prev.split("|");
-    const el=document.querySelector(`.cell[data-a="${CSS.escape(a)}"][data-b="${CSS.escape(b)}"]`);
+    const el=document.querySelector(`.cell[data-a="${cssAttr(a)}"][data-b="${cssAttr(b)}"]`);
     if(el){ el.scrollIntoView({block:"center",inline:"center"}); el.focus(); } }   
 }
 function confAnswerHtml(st, ag, ps){
@@ -9410,6 +9410,7 @@ function regRevealRow(j){
   return true;
 }
 const REG_VIEW_ORDER=["pair","a","b","clashType","clearanceMm","priority","exp"];
+function regColKnown(id){ return REG_COLS.some(c=>c.id===id); }
 function regColLabel(id){ return (REG_COLS.find(c=>c.id===id)||{label:id}).label; }
 function regHidden(){ return new Set(REG_COLS.map(c=>c.id).filter(id=>REG_VIEW_ORDER.indexOf(id)<0)); }
 function regVisibleCols(){ return REG_VIEW_ORDER.slice(); }
@@ -9459,27 +9460,28 @@ function regFilterSummary(id){
 }
 function regFilterControl(c){
   const open=S.fltOpen===c.id, on=colfList(c.id).length>0;
-  return `<button type='button' class='fltbtn${on?" on":""}' data-colfbtn='${c.id}' aria-haspopup='dialog' aria-expanded='${open?"true":"false"}'
+  return `<button type='button' class='fltbtn${on?" on":""}' data-colfbtn='${esc(c.id)}' aria-haspopup='dialog' aria-expanded='${open?"true":"false"}'
       aria-label='Filter ${esc(c.label)}: ${esc(regFilterSummary(c.id))}'><span class='ell'>${esc(regFilterSummary(c.id))}</span>${icon("caret-down")}</button>${
     open?regFilterPop(c):""}`;
 }
 function regFilterListHtml(id){
+  if(!regColKnown(id)) return "";
   const q=String(S.fltQ||"").toLowerCase(), on=new Set(colfList(id));
   const base=regRows(id), cnt=new Map();
   base.forEach(p=>{ let v=colValue(p,id); if((id==="a"||id==="b")&&S.colfEither) v=[colValue(p,"a"),colValue(p,"b")];
     (Array.isArray(v)?v:[v]).forEach(x=>cnt.set(String(x),(cnt.get(String(x))||0)+1)); });
   const opts=regFilterOpts(id).filter(([v,l])=>!q||l.toLowerCase().indexOf(q)>=0||v.toLowerCase().indexOf(q)>=0);
   if(!opts.length) return `<p class='sub fltnone' role='status'>Nothing matches “${esc(S.fltQ)}”.</p>`;
-  return opts.map(([v,l])=>`<label class='fltopt'><input type='checkbox' data-fltv='${esc(v)}' data-fltcol='${id}'${on.has(v)?" checked":""}>`+
+  return opts.map(([v,l])=>`<label class='fltopt'><input type='checkbox' data-fltv='${esc(v)}' data-fltcol='${esc(id)}'${on.has(v)?" checked":""}>`+
     `<span class='ell'>${esc(l)}</span><span class='n'>${(cnt.get(v)||0).toLocaleString()}</span></label>`).join("");
 }
 function regFilterPop(c){
   const id=c.id;
-  return `<div class='fltpop${["clashType","clearanceMm","priority","exp"].indexOf(id)>=0?" right":""}' role='dialog' aria-label='Filter ${esc(c.label)}' data-fltpop='${id}'>
-    <input type='search' class='fltq' data-fltq='${id}' value='${esc(S.fltQ||"")}' placeholder='Search ${esc(c.label.toLowerCase())}…' aria-label='Search ${esc(c.label)} values'>
-    <div class='fltacts'><button type='button' class='lnk' data-fltall='${id}'>Select shown</button><button type='button' class='lnk' data-fltclear='${id}'>Clear</button></div>
+  return `<div class='fltpop${["clashType","clearanceMm","priority","exp"].indexOf(id)>=0?" right":""}' role='dialog' aria-label='Filter ${esc(c.label)}' data-fltpop='${esc(id)}'>
+    <input type='search' class='fltq' data-fltq='${esc(id)}' value='${esc(S.fltQ||"")}' placeholder='Search ${esc(c.label.toLowerCase())}…' aria-label='Search ${esc(c.label)} values'>
+    <div class='fltacts'><button type='button' class='lnk' data-fltall='${esc(id)}'>Select shown</button><button type='button' class='lnk' data-fltclear='${esc(id)}'>Clear</button></div>
     ${id==="a"||id==="b"?`<label class='fltopt fltboth'><input type='checkbox' data-fltboth${S.colfEither?" checked":""}><span>Match either selection</span></label>`:""}
-    <div class='fltlist' data-fltlist='${id}'>${regFilterListHtml(id)}</div></div>`;
+    <div class='fltlist' data-fltlist='${esc(id)}'>${regFilterListHtml(id)}</div></div>`;
 }
 function regFilterSet(id,vals){
   const v=[...new Set(vals.map(String))];
@@ -9488,11 +9490,11 @@ function regFilterSet(id,vals){
 }
 function regFilterReopen(id,focusSel){
   renderRegister();
-  const f=document.querySelector(focusSel||("#regTable [data-fltq='"+id+"']")); if(f&&f.focus) f.focus();
+  const f=document.querySelector(focusSel||("#regTable [data-fltq='"+cssAttr(id)+"']")); if(f&&f.focus) f.focus();
 }
 function regFilterClose(back){
   const id=S.fltOpen; if(!id) return false; S.fltOpen=""; S.fltQ=""; renderRegisterRows();
-  if(back){ const b=document.querySelector("#regTable [data-colfbtn='"+id+"']"); if(b&&b.focus) b.focus(); }
+  if(back){ const b=document.querySelector("#regTable [data-colfbtn='"+cssAttr(id)+"']"); if(b&&b.focus) b.focus(); }
   return true;
 }
 document.addEventListener("click",e=>{
@@ -9500,11 +9502,11 @@ document.addEventListener("click",e=>{
   const fb=t.closest("[data-colfbtn]");
   if(fb){ const id=fb.getAttribute("data-colfbtn"); const was=S.fltOpen===id; S.fltOpen=was?"":id; S.fltQ="";
     S.statusOpen=""; S.setMenu=""; S.rowMenu="";
-    if(was){ renderRegisterRows(); const b=document.querySelector("#regTable [data-colfbtn='"+id+"']"); if(b&&b.focus) b.focus(); }
+    if(was){ renderRegisterRows(); const b=document.querySelector("#regTable [data-colfbtn='"+cssAttr(id)+"']"); if(b&&b.focus) b.focus(); }
     else regFilterReopen(id); return; }
   const fa=t.closest("[data-fltall]");
   if(fa){ const id=fa.getAttribute("data-fltall");
-    const shown=Array.from(document.querySelectorAll("#regTable [data-fltlist='"+id+"'] [data-fltv]")).map(x=>x.getAttribute("data-fltv"));
+    const shown=Array.from(document.querySelectorAll("#regTable [data-fltlist='"+cssAttr(id)+"'] [data-fltv]")).map(x=>x.getAttribute("data-fltv"));
     regFilterSet(id, colfList(id).concat(shown)); regFilterReopen(id); return; }
   const fc=t.closest("[data-fltclear]");
   if(fc){ const id=fc.getAttribute("data-fltclear"); regFilterSet(id,[]); S.fltQ=""; regFilterReopen(id); return; }
@@ -9514,14 +9516,15 @@ document.addEventListener("change",e=>{
   const t=e.target; if(!t||!t.getAttribute) return;
   if(t.hasAttribute("data-fltv")){ const id=t.getAttribute("data-fltcol"), v=t.getAttribute("data-fltv"), cur=colfList(id);
     regFilterSet(id, t.checked?cur.concat([v]):cur.filter(x=>x!==v));
-    renderRegister(); const f=Array.from(document.querySelectorAll("#regTable [data-fltlist='"+id+"'] [data-fltv]")).find(x=>x.getAttribute("data-fltv")===v);
+    renderRegister(); const f=Array.from(document.querySelectorAll("#regTable [data-fltlist='"+cssAttr(id)+"'] [data-fltv]")).find(x=>x.getAttribute("data-fltv")===v);
     if(f&&f.focus) f.focus(); return; }
   if(t.hasAttribute("data-fltboth")){ S.colfEither=!!t.checked; S.regCap=400; disarm(); regFilterReopen(S.fltOpen,"#regTable [data-fltboth]"); }
 });
 document.addEventListener("input",e=>{
   const t=e.target; if(!t||!t.getAttribute||!t.hasAttribute("data-fltq")) return;
-  S.fltQ=t.value; const l=document.querySelector("#regTable [data-fltlist='"+t.getAttribute("data-fltq")+"']");
-  if(l) l.innerHTML=regFilterListHtml(t.getAttribute("data-fltq"));
+  const id=t.getAttribute("data-fltq"); if(!regColKnown(id)) return;
+  S.fltQ=t.value; const l=document.querySelector("#regTable [data-fltlist='"+cssAttr(id)+"']");
+  if(l) l.innerHTML=regFilterListHtml(id);
 });
 function regFilterRow(cols){
   const ids=cols||REG_COLS.map(c=>c.id);
@@ -9551,7 +9554,7 @@ function renderRegFilters(){
     `<datalist id='regMmPicks'>${POL.clearanceOptions.map(v=>`<option value='${esc(String(v))}'></option>`).join("")}</datalist>`+
     `<div class='chips' id='regChips' ${act.length?"":"hidden"}>${act.map(a=>
        `<span class='chip'>${esc(a.text)}<button type='button' data-chipclear='${esc(a.id)}' aria-label='Remove filter ${esc(a.text)}'>${icon("close")}</button></span>`).join("")}</div>`;
-  if(back){ const f=back==="#regUngov"?document.getElementById("regUngov"):el.querySelector("[data-regcol='"+back+"']"); if(f&&typeof f.focus==="function") f.focus(); }
+  if(back){ const f=back==="#regUngov"?document.getElementById("regUngov"):el.querySelector("[data-regcol='"+cssAttr(back)+"']"); if(f&&typeof f.focus==="function") f.focus(); }
   return el;
 }
 function regClearAll(){
@@ -9688,7 +9691,7 @@ function renderRegisterRows(){
   const ae=document.activeElement, fBack=ae&&ae.getAttribute?ae.getAttribute("data-colf"):null;
   t.innerHTML=h+"</tbody>";
   { const pa=document.getElementById("regPickAll"); if(pa) pa.indeterminate=pa.getAttribute("data-mixed")==="1"; }   
-  if(fBack){ const f=t.querySelector("[data-colf='"+fBack+"']"); if(f&&typeof f.focus==="function") f.focus(); }
+  if(fBack){ const f=t.querySelector("[data-colf='"+cssAttr(fBack)+"']"); if(f&&typeof f.focus==="function") f.focus(); }
   S.regFocus=focusKey;
   const more=!sl.virtual && sl.total>sl.to;
   const el=document.getElementById("regCount");
@@ -9794,7 +9797,7 @@ document.addEventListener("keydown",e=>{
   if(e.key==="Escape" && (S.regPanel||S.statusOpen)){
     const was=S.regPanel, k=S.statusOpen; S.regPanel=""; S.statusOpen="";
     renderRegFilters(); renderRegisterRows();
-    const b=was?document.getElementById("regUngov"):document.querySelector("#regTable [data-status='"+String(k).replace(/'/g,"\\'")+"']");
+    const b=was?document.getElementById("regUngov"):document.querySelector("#regTable [data-status='"+cssAttr(k)+"']");
     if(b&&b.focus) b.focus();
     if(e.preventDefault) e.preventDefault(); return;
   }
@@ -9853,7 +9856,7 @@ document.addEventListener("click",e=>{
 function regRenameCommit(el, cancel){
   if(!el||!S.renameOpen) return false;
   const k=el.getAttribute("data-rename"); S.renameOpen="";
-  if(cancel){ renderRegisterRows(); const rb=document.querySelector("#regTable [data-rowmenu='"+String(k).replace(/'/g,"\\'")+"']"); if(rb&&rb.focus) rb.focus(); return false; }
+  if(cancel){ renderRegisterRows(); const rb=document.querySelector("#regTable [data-rowmenu='"+cssAttr(k)+"']"); if(rb&&rb.focus) rb.focus(); return false; }
   return renameWithUndo(k, el.value);
 }
 document.addEventListener("keydown",e=>{
@@ -10263,7 +10266,7 @@ function renderRiskPanel(target){
       again(); };
   });
   const readBands=()=>{ const cur=riskModel();
-    const bands=cur.bands.map((b,i)=>{ const f=el.querySelector("[data-bandlo='"+i+"']"); return {code:b.code, lo:f?Number(String(f.value).trim()===""?NaN:f.value):b.lo}; });
+    const bands=cur.bands.map((b,i)=>{ const f=el.querySelector("[data-bandlo='"+cssAttr(i)+"']"); return {code:b.code, lo:f?Number(String(f.value).trim()===""?NaN:f.value):b.lo}; });
     const tf=el.querySelector("[data-bandtop]"); return {bands, top:tf?Number(String(tf.value).trim()===""?NaN:tf.value):cur.top}; };
   Array.prototype.forEach.call(el.querySelectorAll("[data-bandlo],[data-bandtop]"),inp=>{
     inp.onchange=()=>{ const r=bandsWithUndo(readBands());
@@ -11515,7 +11518,7 @@ document.addEventListener("click", e=>{
   const b=e.target && e.target.closest ? e.target.closest("[data-expscope]") : null;
   if(!b || b.disabled) return;
   EXP.scope=b.getAttribute("data-expscope"); EXP.out=""; renderStage();
-  const f=document.querySelector("[data-expscope='"+EXP.scope+"']"); if(f&&f.focus) f.focus();
+  const f=document.querySelector("[data-expscope='"+cssAttr(EXP.scope)+"']"); if(f&&f.focus) f.focus();
 });
 async function exportVimctst(){
   const scope=expScope();
@@ -11696,7 +11699,7 @@ function chkTick(id, on){
   const r=chkRecord(); if(!r) return false;
   if(on) r.ticks[id]=true; else delete r.ticks[id];
   const ok=chkSave(r); renderChecklist();
-  const cb=document.querySelector("[data-chk='"+String(id).replace(/'/g,"")+"']"); if(cb&&cb.focus) cb.focus();
+  const cb=document.querySelector("[data-chk='"+cssAttr(id)+"']"); if(cb&&cb.focus) cb.focus();
   return ok;
 }
 async function expTplRead(f){ if(!f) return;
@@ -12236,7 +12239,7 @@ function fileDropDeliver(z, f){
   return false;
 }
 function fileDropSay(html){
-  const t=String(html||"").replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim(); if(!t) return;
+  const t=htmlToText(html).replace(/\s+/g," ").trim(); if(!t) return;
   if(typeof announce==="function") announce(t); fileDropMissShow(t);
 }
 function fileDropRefocus(id){
@@ -13191,7 +13194,7 @@ function hxRerender(sel){
 function hxFilter(k){
   HX.fil = HX.fil===k ? null : k;
   HX.sel = isLive() ? "cover" : "tests";
-  hxRerender(".hxlegend [data-hx-fil='"+k+"']");
+  hxRerender(".hxlegend [data-hx-fil='"+cssAttr(k)+"']");
   return HX.fil;
 }
 function hxOpenPair(key){
@@ -13230,9 +13233,9 @@ document.addEventListener("click", e=>{
   if(t.hasAttribute("data-hx-pair")) return hxOpenPair(t.getAttribute("data-hx-pair"));
   if(t.hasAttribute("data-hx-dec")) return hxDecide(t.getAttribute("data-hx-dec"));
   if(t.hasAttribute("data-hx-dim")){ HX.dim=t.getAttribute("data-hx-dim")==="zone"?"zone":"level"; HX.lvl=null;
-    return hxRerender("[data-hx-dim='"+HX.dim+"']"); }
+    return hxRerender("[data-hx-dim='"+cssAttr(HX.dim)+"']"); }
   if(t.hasAttribute("data-hx-lvl")){ const v=t.getAttribute("data-hx-lvl"); HX.lvl=HX.lvl===v?null:v;
-    return hxRerender("#hxPanel-where [data-hx-lvl='"+String(v).replace(/'/g,"\\'")+"']"); }
+    return hxRerender("#hxPanel-where [data-hx-lvl='"+cssAttr(v)+"']"); }
 });
 document.addEventListener("keydown", e=>{
   const t=e.target && e.target.closest ? e.target.closest("[data-hx-tab]") : null; if(!t) return;
@@ -14806,6 +14809,29 @@ function wizStepsWire(k){
       const i=WSTEP_KEYS.indexOf(x.getAttribute("data-wizgo")); if(i>=0){ wstep=i; renderWiz(); } }; }); }
 }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function cssAttr(v){
+  const s=String(v==null?"":v);
+  if(typeof CSS!=="undefined" && CSS && typeof CSS.escape==="function") return CSS.escape(s);
+  let out="";
+  for(let i=0;i<s.length;i++){
+    const ch=s.charAt(i), c=s.charCodeAt(i);
+    if(c===0){ out+=String.fromCharCode(0xFFFD); continue; }   
+    if((c>=1&&c<=31)||c===127||(i===0&&c>=48&&c<=57)||(i===1&&c>=48&&c<=57&&s.charCodeAt(0)===45)){ out+="\\"+c.toString(16)+" "; continue; }
+    if(i===0&&c===45&&s.length===1){ out+="\\-"; continue; }
+    if(c>=128||c===45||c===95||(c>=48&&c<=57)||(c>=65&&c<=90)||(c>=97&&c<=122)){ out+=ch; continue; }
+    out+="\\"+ch;
+  }
+  return out;
+}
+function htmlToText(s){
+  let t=String(s==null?"":s), prev, inner;
+  do{
+    prev=t;
+    do{ inner=t; t=t.replace(/<[^<>]*>/g,""); }while(t!==inner);   
+    t=t.replace(/<(?=[A-Za-z!\/?])/g,"");                        
+  }while(t!==prev);
+  return t;
+}
 function pairKeyUnpack(key){
   const dec=s=>String(s).replace(/%7C/gi,"|").replace(/%25/g,"%");
   const i=String(key==null?"":key).indexOf("|");
