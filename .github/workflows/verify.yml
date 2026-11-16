@@ -10,29 +10,34 @@ on:
 # Least privilege: the gates only read the checkout. (Code scanning: workflow did not limit GITHUB_TOKEN.)
 permissions:
   contents: read
+# Actions are pinned to full commit SHAs (tag in the comment): a tag can be moved by its owner, a SHA cannot.
+# The runner is pinned too, so an image change is a deliberate commit, not a surprise. Node 22 (LTS); the
+# actions' own Node 20 runtime was deprecated, hence v5.
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     defaults:
       run:
         working-directory: mcp-blueprints/revizto-project-intelligence
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20' }
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with: { persist-credentials: false }   # the gates never push; keep the token out of .git/config
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with: { node-version: '22' }
       - name: manifest describes the asset beside it
         run: node tools/build.mjs --check
       - name: regression gates (syntax, contract, taxonomy, hygiene, manifest)
         run: node tests/run.mjs
   matrix:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     defaults:
       run:
         working-directory: plugins/revizto-pi-matrix
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20' }
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with: { persist-credentials: false }   # the gates never push; keep the token out of .git/config
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        with: { node-version: '22' }
       - name: the gates can fail (each injected defect must go red)
         run: node tools/verify.mjs --selftest
       - name: asset, public-safe, read-only, version and licence gates
