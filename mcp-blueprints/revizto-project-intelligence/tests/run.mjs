@@ -129,13 +129,16 @@ section('1  SYNTAX');
 {
   const blocks = inlineScript();
   ok('exactly one inline script block', blocks.length === 1, 'found ' + blocks.length);
-  const tmp = path.join(os.tmpdir(), 'bp-syntax-check.mjs');
+  /* A private, uniquely named directory rather than a fixed file name in the shared temp folder, which
+     another user or process could pre-create or swap (code scanning: insecure temporary file, CWE-377). */
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bp-syntax-'));
+  const tmp = path.join(dir, 'check.mjs');
   let syntaxOk = true, err = '';
   try {
-    fs.writeFileSync(tmp, blocks.join('\n;\n'));
+    fs.writeFileSync(tmp, blocks.join('\n;\n'), { mode: 0o600, flag: 'wx' });
     execFileSync(process.execPath, ['--check', tmp], { stdio: 'pipe' });
   } catch (e) { syntaxOk = false; err = String(e.stderr || e).slice(0, 500); }
-  finally { try { fs.unlinkSync(tmp); } catch {} }
+  finally { try { fs.rmSync(dir, { recursive: true, force: true }); } catch {} }
   ok('inline script parses', syntaxOk, err);
 }
 
@@ -353,7 +356,10 @@ section('6  VERSION  (one release, one number, in every file that states it)');
   // silently serves customers an older plugin than the repo claims to ship.
   const read = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
   const plugin = JSON.parse(read('.claude-plugin/plugin.json')).version;
-  const market = JSON.parse(read('.claude-plugin/marketplace.json')).plugins[0].version;
+  // Declared change: the marketplace now lives at the repository root, two levels above this plugin,
+  // and lists more than one plugin. Read it there and take this plugin's own entry by name.
+  const marketFile = JSON.parse(fs.readFileSync(path.join(ROOT, '..', '..', '.claude-plugin/marketplace.json'), 'utf8'));
+  const market = ((marketFile.plugins || []).find(p => p.name === 'revizto-project-intelligence') || {}).version;
   const skill  = (/^\s*version:\s*"([^"]+)"/m.exec(read('skills/project-intelligence-dashboard/SKILL.md')) || [])[1];
   const readme = read('README.md');
   const changelog = (/^##\s*(\d+\.\d+\.\d+)/m.exec(read('CHANGELOG.md')) || [])[1];

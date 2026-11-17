@@ -16,7 +16,18 @@ import { execFileSync } from 'child_process';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const version = JSON.parse(fs.readFileSync(path.join(ROOT, '.claude-plugin/plugin.json'), 'utf8')).version;
 const OUT_DIR = path.join(ROOT, 'dist');
-const OUT = path.join(OUT_DIR, `revizto-project-intelligence-v${version}.plugin`);
+/* The version becomes part of a path this script deletes and then writes. It is read from a file, so it is
+   held to plain semver and the result must resolve inside dist/ — a version such as "../../x" is refused,
+   never followed (code scanning: path traversal, CWE-22). */
+if (typeof version !== 'string' || !/^\d+\.\d+\.\d+$/.test(version)) {
+  console.error(`package: plugin.json version ${JSON.stringify(version)} is not MAJOR.MINOR.PATCH - refusing to build.`);
+  process.exit(1);
+}
+const OUT = path.resolve(OUT_DIR, `revizto-project-intelligence-v${version}.plugin`);
+if (path.dirname(OUT) !== path.resolve(OUT_DIR)) {
+  console.error('package: output path escapes dist/ - refusing to build.');
+  process.exit(1);
+}
 
 console.log('verifying before packaging…');
 try {
