@@ -10,7 +10,7 @@ folder — [Blueprint](mcp-blueprints/revizto-project-intelligence/CHANGELOG.md)
   its use is subject to the **Revizto Open-Source Repository Terms and Conditions, Version 2.0 — 13 November
   2026** (`TERMS.md`). `NOTICE` names the copyright holder (Revizto SA), the Excluded Materials and the
   third-party components. They replace the Revizto Custom Licence (`LICENSE.md`, removed) and the
-  Blueprint's own Terms 1.1. Copies obtained under an earlier licence keep the rights granted with them.
+  Blueprint's own Terms 1.1.
 - **Copies per plugin.** Each plugin folder carries byte-identical copies of `LICENSE`, `NOTICE` and `TERMS.md`,
   and `OFL.txt` for the embedded Geist fonts. `plugin.json` declares `Apache-2.0`.
 - **Blueprint 1.0.5** and **Matrix 1.0.1** show the new Terms in their acceptance gates, word for word, and

@@ -137,23 +137,23 @@ because Claude installs a plugin from its own folder. Release tags name the plug
 
 ## Licence
 
-Everything in this repository, other than Revizto's names, logos and brand assets, is licensed under the
-[Apache License, Version 2.0](LICENSE) unless an item's own documentation says otherwise. Use of the
+Unless an item's own documentation says otherwise, the content of this repository is licensed under the
+[Apache License, Version 2.0](LICENSE), except for Revizto's names, logos, trademarks, service marks and other
+brand assets (the Excluded Materials, Section 5 of the Terms) and the third-party components listed in
+[NOTICE](NOTICE), which keep their own licences. Use of the
 repository content is also subject to the
 [Revizto Open-Source Repository Terms and Conditions, Version 2.0 — 13 November 2026](TERMS.md). [NOTICE](NOTICE)
 lists the copyright holder and the third-party components. Each plugin folder carries identical copies of
 `LICENSE`, `NOTICE` and `TERMS.md`, because Claude installs a plugin from its own folder.
 
-The Terms use the Revizto Project Intelligence Dashboard Showcase as an example of an item; in this
-repository that item is the Revizto Project Intelligence Blueprint.
+The Terms give the "Revizto Project Intelligence Dashboard Showcase" as an example of an item. Its published
+name is the Revizto Project Intelligence Blueprint.
 
-**Earlier licences.** Until this change the repository was published under the Revizto Custom Licence
-(`LICENSE.md`), and before that under the MIT License. Copies obtained under an earlier licence keep the
-rights granted with them; copies obtained from this change onwards are under the Apache License 2.0 and the
-Terms above.
+**History.** Until this change the repository was published under the Revizto Custom Licence
+(`LICENSE.md`), and before that under the MIT License.
 
-**Contributing.** Contributions are welcome by pull request. Each commit must be signed off (`git commit -s`),
-and contributions are licensed under the Apache License 2.0 as Section 12 of the Terms describes.
+**Contributing.** Contributions are welcome by pull request; Section 12 of the Terms covers how they are
+licensed. The repository accepts signed-off commits only (`git commit -s`).
 
 ## History
 
