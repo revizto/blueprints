@@ -3,6 +3,6 @@
   "version": "1.0.4",
   "description": "Live project intelligence, read-only by default over the Revizto MCP Server — a six-view Cowork dashboard plus the curated Revizto platform skills. Discovers the installing user's own licence and project at runtime; headline totals are exact, sampled detail is always labelled.",
   "author": { "name": "Revizto" },
-  "license": "SEE LICENSE IN LICENSE.md",
+  "license": "Apache-2.0",
   "keywords": ["revizto", "bim", "coordination", "mcp", "project-intelligence", "aeco"]
 }

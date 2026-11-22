@@ -5,7 +5,7 @@
 // built and guarded outside this repository and packaged here with a manifest written from the file.
 // These gates re-check, on every push, that nothing in this folder has drifted from that release:
 // a hand-edit to the HTML, a version stated differently in two places, a tool list that no longer
-// matches the build, or a licence copy that no longer matches the root.
+// matches the build, or a licence, notice or terms copy that no longer matches the root.
 //
 //   node tools/verify.mjs              run every gate (exit 1 on any failure)
 //   node tools/verify.mjs --selftest   inject each defect the gates exist to catch; every one must go red
@@ -28,10 +28,17 @@ function load() {
     skill: r(path.join(ROOT, SKILL, 'SKILL.md')),
     changelog: r(path.join(ROOT, 'CHANGELOG.md')),
     readme: r(path.join(ROOT, 'README.md')),
-    licence: r(path.join(ROOT, 'LICENSE.md'), null),
+    // Apache 2.0 LICENSE, NOTICE and the Repository Terms (TERMS.md): each a byte-identical copy of the root file,
+    // because Claude installs a plugin from its own folder. Optional at load so a missing copy is a gate, not a crash.
+    licence: fs.existsSync(path.join(ROOT, 'LICENSE')) ? r(path.join(ROOT, 'LICENSE'), null) : Buffer.alloc(0),
+    notice: fs.existsSync(path.join(ROOT, 'NOTICE')) ? r(path.join(ROOT, 'NOTICE'), null) : Buffer.alloc(0),
+    terms: fs.existsSync(path.join(ROOT, 'TERMS.md')) ? r(path.join(ROOT, 'TERMS.md'), null) : Buffer.alloc(0),
+    oldLicence: fs.existsSync(path.join(ROOT, 'LICENSE.md')),
     // The embedded Geist fonts' licence. Optional at load so its absence is reported as a gate, not a crash.
     ofl: fs.existsSync(path.join(ROOT, 'OFL.txt')) ? r(path.join(ROOT, 'OFL.txt')) : '',
-    rootLicence: r(path.join(REPO, 'LICENSE.md'), null),
+    rootLicence: r(path.join(REPO, 'LICENSE'), null),
+    rootNotice: r(path.join(REPO, 'NOTICE'), null),
+    rootTerms: r(path.join(REPO, 'TERMS.md'), null),
   };
 }
 
@@ -103,7 +110,17 @@ function gates(f, out = () => {}) {
   ok('readme-version', 'README states this version', f.readme.includes('`v' + v + '`') && f.readme.includes('version **' + v + '**'));
 
   out('5  LICENCE');
-  ok('licence', 'LICENSE.md is a byte-identical copy of the root licence', Buffer.compare(f.licence, f.rootLicence) === 0);
+  // The Apache License 2.0 text, verbatim from apache.org (sha256 of LICENSE-2.0.txt). GitHub reads it as Apache-2.0.
+  const APACHE_SHA256 = 'cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30';
+  ok('apache', 'the root LICENSE is the Apache License 2.0, unaltered', crypto.createHash('sha256').update(f.rootLicence).digest('hex') === APACHE_SHA256);
+  ok('licence', 'LICENSE is a byte-identical copy of the root licence', f.licence.length > 0 && Buffer.compare(f.licence, f.rootLicence) === 0);
+  ok('notice', 'NOTICE is a byte-identical copy of the root notice', f.notice.length > 0 && Buffer.compare(f.notice, f.rootNotice) === 0);
+  ok('terms', 'TERMS.md is a byte-identical copy of the root Terms', f.terms.length > 0 && Buffer.compare(f.terms, f.rootTerms) === 0);
+  ok('old-licence', 'no LICENSE.md (the retired Revizto Custom Licence) in this folder', !f.oldLicence);
+  ok('plugin-licence', 'plugin.json declares Apache-2.0', (() => { try { return JSON.parse(f.plugin).license === 'Apache-2.0'; } catch { return false; } })());
+  // The in-app Terms gate names the Repository Terms and Apache 2.0, never the retired licence, at the Terms version.
+  ok('gate-terms', 'the build names the Repository Terms and Apache 2.0, not the Custom Licence',
+     /Revizto Open-Source Repository/.test(text) && /Apache License/.test(text) && !/Custom Licen[cs]e/.test(text));
   // The build embeds Geist and Geist Mono and its About text says the OFL ships beside it.
   const embedsGeist = /Geist/.test(text) && /SIL Open Font License/.test(text);
   ok('ofl', 'OFL.txt ships with the plugin and carries the Geist copyright and the OFL 1.1 text',
@@ -134,6 +151,13 @@ function selftest() {
     ['html-version',      mod('manifest', s => json(s, o => { o.version = '9.9.9'; }))],
     ['readme-version',    mod('readme', s => s.split('version **').join('version __'))],
     ['licence',           mod('licence', b => Buffer.concat([b, Buffer.from('x')]))],
+    ['licence',           mod('licence', () => Buffer.alloc(0))],
+    ['apache',            mod('rootLicence', b => Buffer.concat([b, Buffer.from(' ')]))],
+    ['notice',            mod('notice', b => Buffer.concat([b, Buffer.from('x')]))],
+    ['terms',             mod('terms', b => Buffer.from(b.toString().replace('CHF 1', 'CHF 10')))],
+    ['old-licence',       mod('oldLicence', () => true)],
+    ['plugin-licence',    mod('plugin', s => json(s, o => { o.license = 'SEE LICENSE IN LICENSE.md'; }))],
+    ['gate-terms',        mod('html', b => str(b.toString().replace('Revizto Open-Source Repository', 'Revizto Custom Licence')))],
     ['ofl',               mod('ofl', () => '')],
   ];
   const clean = gates(base);

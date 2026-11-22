@@ -1,0 +1,19 @@
+Revizto Blueprints
+Copyright 2026 Revizto SA
+
+This repository is the Revizto Open-Source Repository. Unless the documentation of an item states
+otherwise, its content is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Use of the repository content is also subject to the Revizto Open-Source Repository Terms and
+Conditions, Version 2.0 — 13 November 2026 (see TERMS.md).
+
+Revizto names, logos, trademarks, service marks and other brand assets are Excluded Materials and
+are not licensed under the Apache License (see TERMS.md, Section 5).
+
+Third-party components
+- Geist and Geist Mono typefaces. Copyright 2024 The Geist Project Authors. Licensed under the SIL
+  Open Font License, Version 1.1 (see OFL.txt). Embedded in the Revizto Project Intelligence
+  Blueprint and the Revizto Project Intelligence Matrix.
+- Chart.js 4.5.0. Copyright Chart.js Contributors. Licensed under the MIT License. Loaded at run
+  time from cdn.jsdelivr.net by the Revizto Project Intelligence Blueprint; not included in this
+  repository.
