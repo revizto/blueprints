@@ -1,7 +1,15 @@
 # Changelog
 
-## 1.0.1 — drag and drop is the only way to bring a file in
+## 1.0.1 — the Repository Terms 2.0 and the Apache License 2.0; drag and drop is the only way to bring a file in
 
+- **Licence.** The Matrix is licensed under the Apache License, Version 2.0 (`LICENSE`), with `NOTICE`, and is
+  subject to the **Revizto Open-Source Repository Terms and Conditions, Version 2.0 — 13 November 2026**
+  (`TERMS.md`). These replace the Revizto Custom Licence (`LICENSE.md`). Copies obtained under an earlier
+  licence keep the rights granted with them.
+- **In-app Terms.** The Terms gate shows the Repository Terms in full, word for word, followed by notes on
+  what the Matrix reads and keeps (the notes describe the Matrix; they are not terms). The Terms version moves
+  from 1.1 to 2.0, so every connection is asked to accept the Terms once more before its first live read.
+  About names Apache 2.0 and the Repository Terms.
 - **Files are brought in by drag and drop only.** Every drop zone (Import, the import wizard, the Clash Test
   Editor's setup card, the export template and 04 Health's check) reads a file you drag onto it from Finder or
   File Explorer. The keyboard routes that 1.0.0 carried but did not show — pasting a copied file onto a
@@ -11,8 +19,7 @@
 - Drop zones are no longer stops in the Tab order (a stop that does nothing when reached is a dead end for a
   keyboard user). A screen reader describes each one as drag and drop only. When a file is refused, focus
   still returns to the zone and the reason is announced.
-- No other behaviour changes. Saved matrices, Terms acceptance and the declared read-only tools are as in
-  1.0.0; re-run the `project-intelligence-matrix` skill to update an artifact you have already created.
+- No other behaviour changes. Saved matrices and the declared read-only tools are as in 1.0.0; re-run the `project-intelligence-matrix` skill to update an artifact you have already created.
 
 ## 1.0.0 — first public release
 
