@@ -178,10 +178,10 @@ CHANGELOG.md · CONNECTORS.md · SKILLS-MANIFEST.md · LICENSE · NOTICE · TERM
 
 ## Licence and terms
 
-This item is licensed under the [Apache License, Version 2.0](LICENSE), and its use is subject to the
-[Revizto Open-Source Repository Terms and Conditions, Version 2.0 — 13 November 2026](TERMS.md). Revizto
-names, logos and other brand assets are not licensed under the Apache License (see [NOTICE](NOTICE) and
-Section 5 of the Terms). Copies obtained under an earlier licence keep the rights granted with them.
+This item is licensed under the [Apache License, Version 2.0](LICENSE), except for Revizto's names, logos,
+trademarks, service marks and other brand assets (the Excluded Materials, Section 5 of the Terms) and the
+third-party components listed in [NOTICE](NOTICE), which keep their own licences. Its use is subject to the
+[Revizto Open-Source Repository Terms and Conditions, Version 2.0 — 13 November 2026](TERMS.md).
 
 The Matrix embeds the Geist and Geist Mono typefaces (Copyright 2024 The Geist Project Authors), used
 under the SIL Open Font License 1.1 — see [OFL.txt](OFL.txt).

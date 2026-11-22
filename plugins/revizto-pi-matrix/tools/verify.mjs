@@ -121,6 +121,21 @@ function gates(f, out = () => {}) {
   // The in-app Terms gate names the Repository Terms and Apache 2.0, never the retired licence, at the Terms version.
   ok('gate-terms', 'the build names the Repository Terms and Apache 2.0, not the Custom Licence',
      /Revizto Open-Source Repository/.test(text) && /Apache License/.test(text) && !/Custom Licen[cs]e/.test(text));
+  // The gate's Terms block, word for word against this folder's TERMS.md (which is the root copy, pinned to
+  // legal's text), and the re-gate version equal to the version TERMS.md states.
+  const words = t => t.replace(/<\/?(b|strong|em|i|a)\b[^>]*>/g, '').replace(/<[^>]+>/g, ' ')
+    .replace(/&mdash;/g, '—').replace(/&amp;/g, '&').replace(/[*_#]/g, '').split(/\s+/).filter(Boolean);
+  const ti = text.indexOf('<div class="tcs-terms" id="tcsTerms">'), tj = ti < 0 ? -1 : text.indexOf('<h4 class="tcs-notes">', ti);
+  const gateW = ti < 0 || tj < 0 ? [] : words(text.slice(ti, tj));
+  const termsTxt = f.terms.toString('utf8');
+  const refW = words(termsTxt.split(/\n## Terms and Conditions\n/)[1] || '');
+  let k = 0; while (k < refW.length && refW[k] === gateW[k]) k++;
+  ok('gate-words', 'the in-app Terms are TERMS.md word for word (' + refW.length + ' words)',
+     refW.length > 1000 && gateW.length === refW.length && k === refW.length,
+     'first difference at word ' + k + ': "' + refW.slice(k, k + 5).join(' ') + '" vs "' + gateW.slice(k, k + 5).join(' ') + '"');
+  const termsV = (/^_Version (\d+\.\d+) — /m.exec(termsTxt) || [])[1];
+  const tcsV = (/tcsVersion\s*:\s*"([^"]+)"/.exec(text) || [])[1];
+  ok('gate-version', 'the in-app Terms re-gate at the version TERMS.md states', !!termsV && tcsV === termsV, tcsV + ' vs ' + termsV);
   // The build embeds Geist and Geist Mono and its About text says the OFL ships beside it.
   const embedsGeist = /Geist/.test(text) && /SIL Open Font License/.test(text);
   ok('ofl', 'OFL.txt ships with the plugin and carries the Geist copyright and the OFL 1.1 text',
@@ -158,6 +173,8 @@ function selftest() {
     ['old-licence',       mod('oldLicence', () => true)],
     ['plugin-licence',    mod('plugin', s => json(s, o => { o.license = 'SEE LICENSE IN LICENSE.md'; }))],
     ['gate-terms',        mod('html', b => str(b.toString().replace('Revizto Open-Source Repository', 'Revizto Custom Licence')))],
+    ['gate-words',        mod('html', b => str(b.toString().replace('(b) CHF 1 (one Swiss franc)', '(b) CHF 10 (ten Swiss francs)')))],
+    ['gate-version',      mod('html', b => str(b.toString().replace('tcsVersion:"2.0"', 'tcsVersion:"1.1"')))],
     ['ofl',               mod('ofl', () => '')],
   ];
   const clean = gates(base);

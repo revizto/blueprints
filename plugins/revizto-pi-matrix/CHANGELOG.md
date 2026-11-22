@@ -4,10 +4,11 @@
 
 - **Licence.** The Matrix is licensed under the Apache License, Version 2.0 (`LICENSE`), with `NOTICE`, and is
   subject to the **Revizto Open-Source Repository Terms and Conditions, Version 2.0 — 13 November 2026**
-  (`TERMS.md`). These replace the Revizto Custom Licence (`LICENSE.md`). Copies obtained under an earlier
-  licence keep the rights granted with them.
+  (`TERMS.md`). These replace the Revizto Custom Licence (`LICENSE.md`). Revizto's brand assets and the
+  third-party components listed in `NOTICE` are not licensed under the Apache License.
 - **In-app Terms.** The Terms gate shows the Repository Terms in full, word for word, followed by notes on
-  what the Matrix reads and keeps (the notes describe the Matrix; they are not terms). The Terms version moves
+  what the Matrix reads and keeps (the notes describe the Matrix; they are not terms). The agreement names
+  the Revizto MCP Server Terms as well, for the Matrix's live reads. The Terms version moves
   from 1.1 to 2.0, so every connection is asked to accept the Terms once more before its first live read.
   About names Apache 2.0 and the Repository Terms.
 - **Files are brought in by drag and drop only.** Every drop zone (Import, the import wizard, the Clash Test
