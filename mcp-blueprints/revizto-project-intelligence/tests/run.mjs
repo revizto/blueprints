@@ -389,7 +389,7 @@ section('7  TERMS  (the gate carries the Repository Terms word for word; one ver
   // The in-app gate shows legal's Revizto Open-Source Repository Terms in full. They are compared WORD FOR
   // WORD with this folder's TERMS.md (itself a byte copy of the root file, derived from legal's docx and
   // pinned by sha256 in the release pre-flight), so a hand-edit to either can never ship unnoticed.
-  const words = t => t.replace(/<\/?(b|strong|em|i)\b[^>]*>/g, '').replace(/<[^>]+>/g, ' ')
+  const words = t => t.replace(/<\/?(b|strong|em|i|a)\b[^>]*>/g, '').replace(/<[^>]+>/g, ' ')
     .replace(/&mdash;/g, '—').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
     .replace(/[*_#]/g, '').split(/\s+/).filter(Boolean);
   const i = SRC.indexOf('<div class="tcs-terms" id="tcsTerms">'), j = i < 0 ? -1 : SRC.indexOf('</div>', i);

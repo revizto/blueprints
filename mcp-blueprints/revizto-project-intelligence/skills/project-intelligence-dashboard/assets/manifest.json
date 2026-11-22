@@ -6,9 +6,9 @@
   "contractCaptured": "2026-08-28",
   "asset": {
     "file": "dashboard.html",
-    "bytes": 1008212,
+    "bytes": 1008648,
     "lines": 5453,
-    "sha256": "93e27ff0c314659ff64f53954c5ede329a1f3990c73c40a58aaef554eb081d8c"
+    "sha256": "fdbf0555efacec1a88311fbd850ba714b0b78c66898aca04304e708013eb78d2"
   },
   "tools": {
     "read": [
