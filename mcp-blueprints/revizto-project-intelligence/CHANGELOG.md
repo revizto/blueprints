@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.0.5 — 2026-11-23 (the Revizto Open-Source Repository Terms 2.0 and the Apache License 2.0; build `2026-11-23.1`)
+
+The Blueprint now carries the repository's new licensing model. No behaviour changes.
+
+> **Action required.** Re-run the `project-intelligence-dashboard` skill. Every connection asks you to accept
+> the Terms again, because they have changed.
+
+- **Licence.** The Blueprint is licensed under the Apache License, Version 2.0 (`LICENSE`), with `NOTICE`,
+  and is subject to the **Revizto Open-Source Repository Terms and Conditions, Version 2.0 — 13 November
+  2026** (`TERMS.md`). These replace the Revizto Custom Licence (`LICENSE.md`) and the Blueprint's own
+  Terms 1.1. Copies obtained under an earlier licence keep the rights granted with them.
+- **In-app Terms.** The acceptance gate shows the Repository Terms in full, word for word, and the Terms
+  version moves from 1.1 to 2.0, so every connection is asked to accept them once.
+- **Fonts.** `OFL.txt` now ships with the Blueprint, for the embedded Geist and Geist Mono typefaces.
+
 ## 1.0.4 — 2026-08-28 (the `_cb` outage; an argument contract; no environment concept; guards that cannot go stale; build `2026-08-28.2`)
 
 A customer reported every connection showing *"Connected · licences not readable."* The connections were

@@ -384,6 +384,32 @@ section('6  VERSION  (one release, one number, in every file that states it)');
        ((/build `([^`]+)`/.exec(topSection) || [])[1] || '(none)'));
 }
 
+section('7  TERMS  (the gate carries the Repository Terms word for word; one version, everywhere)');
+{
+  // The in-app gate shows legal's Revizto Open-Source Repository Terms in full. They are compared WORD FOR
+  // WORD with this folder's TERMS.md (itself a byte copy of the root file, derived from legal's docx and
+  // pinned by sha256 in the release pre-flight), so a hand-edit to either can never ship unnoticed.
+  const words = t => t.replace(/<\/?(b|strong|em|i)\b[^>]*>/g, '').replace(/<[^>]+>/g, ' ')
+    .replace(/&mdash;/g, '—').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/[*_#]/g, '').split(/\s+/).filter(Boolean);
+  const i = SRC.indexOf('<div class="tcs-terms" id="tcsTerms">'), j = i < 0 ? -1 : SRC.indexOf('</div>', i);
+  const gate = i < 0 || j < 0 ? [] : words(SRC.slice(i, j));
+  const termsFile = fs.existsSync(path.join(ROOT, 'TERMS.md')) ? fs.readFileSync(path.join(ROOT, 'TERMS.md'), 'utf8') : '';
+  // TERMS.md = a version line, the two-line title, then the Terms. The gate carries its own title.
+  const body = termsFile.split(/\n## Terms and Conditions\n/)[1] || '';
+  const ref = words(body);
+  let k = 0; while (k < ref.length && ref[k] === gate[k]) k++;
+  ok('the gate carries the Repository Terms (#tcsTerms)', gate.length > 1000, 'found ' + gate.length + ' words');
+  ok('...word for word against TERMS.md (' + ref.length + ' words)', ref.length > 1000 && gate.length === ref.length && k === ref.length,
+     'first difference at word ' + k + ': TERMS.md "' + ref.slice(k, k + 6).join(' ') + '" vs gate "' + gate.slice(k, k + 6).join(' ') + '"');
+  const ver = (/^_Version (\d+\.\d+) — /m.exec(termsFile) || [])[1];
+  const tcs = (/tcsVersion:"([^"]+)"/.exec(SRC) || [])[1];
+  ok('the gate re-gates at the Terms version TERMS.md states', !!ver && tcs === ver, 'TERMS.md ' + ver + ' vs tcsVersion ' + tcs);
+  ok('no retired Custom Licence wording, and LICENSE + NOTICE ship beside the plugin',
+     !/Custom Licen[cs]e/.test(SRC) && fs.existsSync(path.join(ROOT, 'LICENSE')) && fs.existsSync(path.join(ROOT, 'NOTICE')) &&
+     !fs.existsSync(path.join(ROOT, 'LICENSE.md')));
+}
+
 /* ---------------------------------------------------------------- verdict */
 console.log('\n' + '-'.repeat(58));
 console.log(`${pass} passed, ${fail} failed`);
