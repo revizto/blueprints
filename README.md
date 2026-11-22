@@ -1,13 +1,14 @@
 # Revizto Blueprints
 
 Blueprints, Claude plugins and tools for working with Revizto, published by Revizto as a head start for
-customers and partners building their own solutions. Read [LICENSE.md](LICENSE.md) before you take a copy.
+customers and partners building their own solutions. Licensed under the [Apache License 2.0](LICENSE) and
+subject to the [Revizto Open-Source Repository Terms and Conditions](TERMS.md) — read both before you take a copy.
 
 ## What's here
 
 | Item | Version | What it does | Revizto MCP connector |
 |---|---|---|---|
-| [Revizto Project Intelligence Blueprint](mcp-blueprints/revizto-project-intelligence/) | `1.0.4` | Live project intelligence: a six-view Cowork dashboard over your Revizto licences and projects, plus curated Revizto platform skills. Opens read-only every session; approved writes when you allow them. | Required |
+| [Revizto Project Intelligence Blueprint](mcp-blueprints/revizto-project-intelligence/) | `1.0.5` | Live project intelligence: a six-view Cowork dashboard over your Revizto licences and projects, plus curated Revizto platform skills. Opens read-only every session; approved writes when you allow them. | Required |
 | [Revizto Project Intelligence Matrix](plugins/revizto-pi-matrix/) | `1.0.1` | Clash governance: build clash tests from your project's search sets or the Codifying Coordination v2.0 template and export them for Revizto to import. Live clash data in 04 Health, read-only. | Optional |
 | [Converters](plugins/converters/) | — | Reserved for Revizto ↔ JSON converters. Nothing published yet. | — |
 
@@ -78,7 +79,7 @@ automatically" OFF** → **Sync**. Then install either or both:
 
 | Plugin | Install | The install detail should list |
 |---|---|---|
-| Blueprint | **revizto-project-intelligence** | 3 skills at version 1.0.4 |
+| Blueprint | **revizto-project-intelligence** | 3 skills at version 1.0.5 |
 | Matrix | **revizto-project-intelligence-matrix** | 1 skill at version 1.0.1 |
 
 > **Added this marketplace before the rename?** It was previously published as `revizto/project-intelligence-blueprint`.
@@ -136,10 +137,23 @@ because Claude installs a plugin from its own folder. Release tags name the plug
 
 ## Licence
 
-[LICENSE.md](LICENSE.md) is the Revizto Custom Licence and governs this repository.
+Everything in this repository, other than Revizto's names, logos and brand assets, is licensed under the
+[Apache License, Version 2.0](LICENSE) unless an item's own documentation says otherwise. Use of the
+repository content is also subject to the
+[Revizto Open-Source Repository Terms and Conditions, Version 2.0 — 13 November 2026](TERMS.md). [NOTICE](NOTICE)
+lists the copyright holder and the third-party components. Each plugin folder carries identical copies of
+`LICENSE`, `NOTICE` and `TERMS.md`, because Claude installs a plugin from its own folder.
 
-The licence text currently names the Revizto Project Intelligence Blueprint. Broader wording covering every
-item in this repository is in preparation.
+The Terms use the Revizto Project Intelligence Dashboard Showcase as an example of an item; in this
+repository that item is the Revizto Project Intelligence Blueprint.
+
+**Earlier licences.** Until this change the repository was published under the Revizto Custom Licence
+(`LICENSE.md`), and before that under the MIT License. Copies obtained under an earlier licence keep the
+rights granted with them; copies obtained from this change onwards are under the Apache License 2.0 and the
+Terms above.
+
+**Contributing.** Contributions are welcome by pull request. Each commit must be signed off (`git commit -s`),
+and contributions are licensed under the Apache License 2.0 as Section 12 of the Terms describes.
 
 ## History
 

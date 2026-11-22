@@ -214,9 +214,16 @@ skills/
   skill-aeco-innovation-revizto/       Revizto platform knowledge
   skill-aeco-innovation-revizto-api/   Revizto API / MCP reference
 tools/ · tests/ · package.json       build and verification gates (see RELEASING.md)
-CHANGELOG.md · CONNECTORS.md · SKILLS-MANIFEST.md · TERMS.md · LICENSE.md
+CHANGELOG.md · CONNECTORS.md · SKILLS-MANIFEST.md · LICENSE · NOTICE · TERMS.md · OFL.txt
 ```
 
-## Licence
+## Licence and terms
 
-See [LICENSE.md](LICENSE.md).
+This item is licensed under the [Apache License, Version 2.0](LICENSE), and its use is subject to the
+[Revizto Open-Source Repository Terms and Conditions, Version 2.0 — 13 November 2026](TERMS.md). Revizto
+names, logos and other brand assets are not licensed under the Apache License (see [NOTICE](NOTICE) and
+Section 5 of the Terms). Copies obtained under an earlier licence keep the rights granted with them.
+
+The Blueprint embeds the Geist and Geist Mono typefaces (Copyright 2024 The Geist Project Authors), used
+under the SIL Open Font License 1.1 — see [OFL.txt](OFL.txt). It loads Chart.js 4.5.0 (MIT) from
+`cdn.jsdelivr.net` at run time.

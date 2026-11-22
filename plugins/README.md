@@ -12,5 +12,5 @@ Anything that needs a live MCP connection to do its job belongs in [`../mcp-blue
 — see the rule in the [repository README](../README.md).
 
 A Claude plugin added here gets its own folder with a `.claude-plugin/plugin.json`, a byte-identical copy of
-the root `LICENSE.md`, and an entry in the root `.claude-plugin/marketplace.json`. Standalone tools have no
+the root `LICENSE`, `NOTICE` and `TERMS.md`, and an entry in the root `.claude-plugin/marketplace.json`. Standalone tools have no
 marketplace entry.

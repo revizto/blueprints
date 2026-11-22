@@ -173,12 +173,15 @@ skills/
     assets/matrix.html                 the Matrix (single self-contained file)
     assets/manifest.json               size, checksums, version, tools — written at release
 tools/verify.mjs                       repository gates (asset, public-safe, read-only, version, licence; --selftest)
-CHANGELOG.md · CONNECTORS.md · SKILLS-MANIFEST.md · LICENSE.md · OFL.txt
+CHANGELOG.md · CONNECTORS.md · SKILLS-MANIFEST.md · LICENSE · NOTICE · TERMS.md · OFL.txt
 ```
 
-## Licence
+## Licence and terms
 
-See [LICENSE.md](LICENSE.md).
+This item is licensed under the [Apache License, Version 2.0](LICENSE), and its use is subject to the
+[Revizto Open-Source Repository Terms and Conditions, Version 2.0 — 13 November 2026](TERMS.md). Revizto
+names, logos and other brand assets are not licensed under the Apache License (see [NOTICE](NOTICE) and
+Section 5 of the Terms). Copies obtained under an earlier licence keep the rights granted with them.
 
 The Matrix embeds the Geist and Geist Mono typefaces (Copyright 2024 The Geist Project Authors), used
 under the SIL Open Font License 1.1 — see [OFL.txt](OFL.txt).
