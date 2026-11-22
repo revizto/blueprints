@@ -690,7 +690,6 @@ div.riskwhy{margin-top:var(--s1)}
 .fdrop-t{display:flex;flex-direction:column;gap:var(--s1);font-size:var(--fs-2)}
 .fdrop-t span{color:var(--muted);font-size:var(--fs-1)}
 .fdrop:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
-.fdrop-pick{margin-left:auto;min-height:44px}
 #v-import .imlanes{display:grid;gap:var(--s3);grid-template-columns:repeat(2,1fr);
   margin-top:var(--s4)}
 #v-import .imlane h3{font-size:var(--fs-2);font-weight:600;margin:0}
@@ -1756,7 +1755,7 @@ conn*/about class. ===== */
   <div class="wrap" id="wizBody" style="max-width:1100px"></div>
 </div>
 <script>
-const BUILD={stamp:"1.0.0",version:"1.0.0",tcsVersion:"1.1"};
+const BUILD={stamp:"1.0.1",version:"1.0.1",tcsVersion:"1.1"};
 const APP_NAME="Revizto Project Intelligence Matrix";
 const HOST_REGION_NAMES={
   "ap-southeast-2":"ANZ / APAC (Sydney)", "ap-southeast-1":"Southeast Asia (Singapore)",
@@ -1772,7 +1771,6 @@ const CONNECTORS=[/*@@INSTALL_CONNECTORS@@*/];
 const CONN_NS="rvz-pimx1-";
 const LS_DED=CONN_NS+"ded";
 const TOUR_KEY=CONN_NS+"tour";
-const HOST_FILE_PICKER=false;
 const HOST_SAVE_WRAP=null;
 const MX_NS="rvz-pimx1-";
 const MXE_DOCSKEY=MX_NS+"docs", MXE_TAXKEY=MX_NS+"tax", MXE_PINKEY=MX_NS+"pins";
@@ -12183,7 +12181,7 @@ function imHowInfo(){
 function renderImport(){
   const el=document.getElementById("v-import"); if(!el) return;
   const doc=esc(docName((D()&&D().label)||"this document"));
-  const zone=(id,line)=>`<div class="imdrop fdrop" id="${id}" data-fdrop="${id}" role="group" aria-labelledby="${id}T" aria-describedby="${id}K" tabindex="0">
+  const zone=(id,line)=>`<div class="imdrop fdrop" id="${id}" data-fdrop="${id}" role="group" aria-labelledby="${id}T" aria-describedby="${id}K" tabindex="-1">
       <div class="imdrop-t"><span id="${id}T">${line}</span>${fileDropKeysHtml(id)}</div></div>`;
   const rg=typeof rgDefaultResp==="function";
   const t=(typeof DATA==="object"&&DATA&&DATA.datasets)?DATA.datasets.real:null;
@@ -12216,22 +12214,15 @@ function renderImport(){
     ${imBox(IMPV.anyMsg)}
   </div>`;
 }
-const FILE_DROP_WHY_PICK="Drag a file here, choose one, or copy it and paste it here (Cmd+V or Ctrl+V).";
-const FILE_DROP_WHY_NOPICK="Drag a file here, or copy it in Finder or Explorer and paste it here (Cmd+V or Ctrl+V).";
-let FILE_PICKER_DEAD=false;
-let FILE_DROP_WHY=HOST_FILE_PICKER?FILE_DROP_WHY_PICK:FILE_DROP_WHY_NOPICK;
-const filePickerLive=()=>HOST_FILE_PICKER&&!FILE_PICKER_DEAD;
+const FILE_DROP_WHY="From Finder or File Explorer.";
+const FILE_DROP_KEYS="Files are read by drag and drop only: drag the file from Finder or File Explorer onto this box.";
 function fileDropKeysHtml(id){
-  return `<span class='sr-only' id='${id}K'>To paste a file: copy it, then press Cmd+V or Ctrl+V while this box is selected.`+
-    (filePickerLive()?" Or press Enter to choose a file.":"")+`</span>`;
-}
-function fileDropPickHtml(id){
-  return filePickerLive()?`<button type='button' class='btn fdrop-pick' data-fpick='${id}'>Choose a file</button>`:"";
+  return `<span class='sr-only' id='${id}K'>${FILE_DROP_KEYS}</span>`;
 }
 function fileDropHtml(id, o){
   o=o||{};
-  return `<div class='fdrop${o.compact?" compact":""}' id='${id}' data-fdrop='${id}' role='group' aria-labelledby='${id}T' aria-describedby='${id}K' tabindex='0'>
-    <div class='fdrop-t'><b id='${id}T'>${esc(o.title||"Drag a file here")}</b><span>${o.sub||"Or select this box and paste a copied file (Cmd+V or Ctrl+V)."}</span>${fileDropKeysHtml(id)}</div>${fileDropPickHtml(id)}</div>`;
+  return `<div class='fdrop${o.compact?" compact":""}' id='${id}' data-fdrop='${id}' role='group' aria-labelledby='${id}T' aria-describedby='${id}K' tabindex='-1'>
+    <div class='fdrop-t'><b id='${id}T'>${esc(o.title||"Drag a file here")}</b>${o.sub?`<span>${o.sub}</span>`:""}${fileDropKeysHtml(id)}</div></div>`;
 }
 function fileDropDeliver(z, f){
   const run=z&&FILE_DROP_ROUTES[z.getAttribute("data-fdrop")];
@@ -12245,27 +12236,6 @@ function fileDropSay(html){
 function fileDropRefocus(id){
   const z=document.getElementById(id); if(z&&typeof z.focus==="function"){ z.focus(); return true; }
   return false;
-}
-function fileDropPickerGone(){
-  FILE_PICKER_DEAD=true; FILE_DROP_WHY=FILE_DROP_WHY_NOPICK;
-  document.querySelectorAll("[data-fpick]").forEach(b=>{ if(b.parentNode) b.parentNode.removeChild(b); });
-  document.querySelectorAll("[data-fdrop] span").forEach(sp=>{ if(sp.textContent===FILE_DROP_WHY_PICK) sp.textContent=FILE_DROP_WHY_NOPICK; });
-  document.querySelectorAll("[data-fdrop]").forEach(z=>{ const k=document.getElementById(z.id+"K");
-    if(k) k.textContent="To paste a file: copy it, then press Cmd+V or Ctrl+V while this box is selected."; });
-  fileDropSay("This window can't open a file browser. Select the box and paste the file (Cmd+V or Ctrl+V), or drag it in.");
-}
-function fileDropPick(z){
-  if(!filePickerLive()||!z) return false;
-  const inp=document.createElement("input"); inp.type="file"; inp.hidden=true;
-  const t0=Date.now(); let settled=false;
-  const done=()=>{ settled=true; if(inp.parentNode) inp.parentNode.removeChild(inp); };
-  inp.addEventListener("change",()=>{ const f=inp.files&&inp.files[0]; done(); if(f) fileDropDeliver(z,f); });
-  inp.addEventListener("cancel",()=>{ const quick=Date.now()-t0<250; done(); if(quick) fileDropPickerGone(); });
-  document.body.appendChild(inp);
-  try{ inp.click(); }catch(e){ done(); fileDropPickerGone(); return false; }
-  setTimeout(()=>{ if(settled) return;
-    if(typeof document.hasFocus==="function" && document.hasFocus()){ done(); fileDropPickerGone(); } }, 600);
-  return true;
 }
 const FILE_DROP_ROUTES=Object.create(null);
 function fileDropWire(id, onFile){ FILE_DROP_ROUTES[id]=onFile; return id; }
@@ -12287,37 +12257,9 @@ document.addEventListener("drop",e=>{
   const z=fileDropZoneOf(e);
   if(z){ if(z.classList) z.classList.remove("over");
     if(fileDropDeliver(z, e.dataTransfer.files&&e.dataTransfer.files[0])) return; }
-  const msg="That file was not read. Drop it on a dashed box, or select a box and paste the file (Cmd+V or Ctrl+V).";
+  const msg="That file was not read. Drop it on a dashed box.";
   if(typeof announce==="function") announce(msg); else if(typeof showRegMsg==="function") showRegMsg("warn",esc(msg));
   fileDropMissShow(msg);
-});
-document.addEventListener("paste",e=>{
-  const a=document.activeElement, z=fileDropZoneOf({target:a}); if(!z) return;
-  const cd=e.clipboardData, f=cd&&cd.files&&cd.files[0];
-  if(!f){
-    if(a===z) fileDropSay("Nothing to read: the clipboard holds no file. Copy the file itself in Finder or Explorer, then paste it here.");
-    return; }
-  if(e.preventDefault) e.preventDefault();
-  if(/^image\//.test(String(f.type||""))){
-    fileDropSay("That paste was an image, not the file — this host put the file's picture on the clipboard. Drag the file in instead.");
-    return; }
-  fileDropDeliver(z, f);
-});
-document.addEventListener("keydown",e=>{
-  if(e.key!=="Enter"&&e.key!==" ") return;
-  const t=e.target; if(!t||!t.hasAttribute||!t.hasAttribute("data-fdrop")) return;
-  if(e.preventDefault) e.preventDefault();
-  if(fileDropPick(t)) return;
-  fileDropSay("To read a file from the keyboard: copy it in Finder or Explorer, then press Cmd+V or Ctrl+V while this box is selected.");
-});
-document.addEventListener("click",e=>{
-  const t=e.target; if(!t||typeof t.closest!=="function") return;
-  const b=t.closest("[data-fpick]");
-  if(b){ if(!fileDropPick(document.getElementById(b.getAttribute("data-fpick"))))
-      fileDropSay("This window can't open a file browser. Select the box and paste the file (Cmd+V or Ctrl+V), or drag it in.");
-    return; }
-  if(t.hasAttribute&&t.hasAttribute("data-fdrop")&&!fileDropPick(t))
-    fileDropSay("To read a file from the keyboard: copy it in Finder or Explorer, then press Cmd+V or Ctrl+V while this box is selected.");
 });
 function fileDropMissShow(msg){
   const w=document.getElementById("wiz"), b=document.getElementById("wizBody");

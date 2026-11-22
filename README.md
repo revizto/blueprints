@@ -8,7 +8,7 @@ customers and partners building their own solutions. Read [LICENSE.md](LICENSE.m
 | Item | Version | What it does | Revizto MCP connector |
 |---|---|---|---|
 | [Revizto Project Intelligence Blueprint](mcp-blueprints/revizto-project-intelligence/) | `1.0.4` | Live project intelligence: a six-view Cowork dashboard over your Revizto licences and projects, plus curated Revizto platform skills. Opens read-only every session; approved writes when you allow them. | Required |
-| [Revizto Project Intelligence Matrix](plugins/revizto-pi-matrix/) | `1.0.0` | Clash governance: build clash tests from your project's search sets or the Codifying Coordination v2.0 template and export them for Revizto to import. Live clash data in 04 Health, read-only. | Optional |
+| [Revizto Project Intelligence Matrix](plugins/revizto-pi-matrix/) | `1.0.1` | Clash governance: build clash tests from your project's search sets or the Codifying Coordination v2.0 template and export them for Revizto to import. Live clash data in 04 Health, read-only. | Optional |
 | [Converters](plugins/converters/) | — | Reserved for Revizto ↔ JSON converters. Nothing published yet. | — |
 
 Each plugin installs on its own. Install one or both.
@@ -79,7 +79,7 @@ automatically" OFF** → **Sync**. Then install either or both:
 | Plugin | Install | The install detail should list |
 |---|---|---|
 | Blueprint | **revizto-project-intelligence** | 3 skills at version 1.0.4 |
-| Matrix | **revizto-project-intelligence-matrix** | 1 skill at version 1.0.0 |
+| Matrix | **revizto-project-intelligence-matrix** | 1 skill at version 1.0.1 |
 
 > **Added this marketplace before the rename?** It was previously published as `revizto/project-intelligence-blueprint`.
 > Remove that marketplace and add `revizto/blueprints` instead. The Blueprint now lives in

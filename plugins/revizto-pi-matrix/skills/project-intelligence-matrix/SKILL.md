@@ -9,7 +9,7 @@ description: >
   with this plugin) as a Cowork artifact, optionally pointed at the installing
   user's own Revizto MCP connectors for live, read-only clash data.
 metadata:
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Project Intelligence Matrix — install action

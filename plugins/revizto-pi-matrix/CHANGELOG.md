@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.1 — drag and drop is the only way to bring a file in
+
+- **Files are brought in by drag and drop only.** Every drop zone (Import, the import wizard, the Clash Test
+  Editor's setup card, the export template and 04 Health's check) reads a file you drag onto it from Finder or
+  File Explorer. The keyboard routes that 1.0.0 carried but did not show — pasting a copied file onto a
+  focused drop zone, and pressing Enter for a file browser — are removed. Neither could be relied on in
+  Cowork, which closes every file dialog an artifact opens, and a hidden route that may not work is worse
+  than none.
+- Drop zones are no longer stops in the Tab order (a stop that does nothing when reached is a dead end for a
+  keyboard user). A screen reader describes each one as drag and drop only. When a file is refused, focus
+  still returns to the zone and the reason is announced.
+- No other behaviour changes. Saved matrices, Terms acceptance and the declared read-only tools are as in
+  1.0.0; re-run the `project-intelligence-matrix` skill to update an artifact you have already created.
+
 ## 1.0.0 — first public release
 
 The Revizto Project Intelligence Matrix joins the Revizto Blueprints marketplace as its own plugin,

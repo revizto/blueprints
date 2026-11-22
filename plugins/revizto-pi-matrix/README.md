@@ -11,7 +11,7 @@ Authoring and export work **offline**. With the Revizto MCP connector, **04 Heal
 those clash tests are running in a live project. Live reads are **read-only, always**: this build has
 no write path to Revizto.
 
-**Status:** `v1.0.0`. Version history in [CHANGELOG.md](CHANGELOG.md).
+**Status:** `v1.0.1`. Version history in [CHANGELOG.md](CHANGELOG.md).
 
 > ### Upgrading? Re-run the install skill.
 >
@@ -77,7 +77,7 @@ serves the Matrix — do not add a second one.
 **Add the marketplace by URL.** In Claude: **Directory → Plugins → Personal → +** → `revizto/blueprints`
 → turn **"Sync automatically" off** → **Sync** → install **revizto-project-intelligence-matrix**.
 
-The install detail should list **1 skill** at version **1.0.0**.
+The install detail should list **1 skill** at version **1.0.1**.
 
 > **Upgrading?** Remove the old entry before installing the new one, or Claude keeps serving the cached
 > version.
@@ -104,7 +104,7 @@ If Claude starts *designing* a matrix instead, the skill is not enabled — go b
 
 - The Matrix opens on **Start here**, offering your search-set export or the Codifying Coordination v2.0
   template.
-- **About** reads version **1.0.0**.
+- **About** reads version **1.0.1**.
 - **Live data (if connected):** open **04 Health** and read a project. The **Terms** gate appears at that
   first read — not when the Matrix opens. Accept it, and the read runs.
 
@@ -120,7 +120,7 @@ If Claude starts *designing* a matrix instead, the skill is not enabled — go b
 | Plugin stuck on an old version after reinstall | Cache. Quit Claude, then `chflags -R nouchg ~/.claude/plugins 2>/dev/null; rm -rf ~/.claude/plugins/cache ~/.claude/plugins/marketplaces/revizto`, reopen and re-add. On Windows: `%USERPROFILE%\.claude\plugins\`. |
 | A licence is not readable | Check the three conditions under Prerequisites. "This account isn't authorised for MCP yet" is fixed under Step 2. |
 | Connector fails, or shows "no longer registered" | Re-add it with client ID `revizto-mcp` and a blank secret (Step 2), then re-run the skill — re-adding mints a new connector id and the artifact is bound to the old one. |
-| A "Choose a file" button does nothing | Cowork does not let artifacts open file dialogs. Drag the file onto the drop zone instead. |
+| Pasting a file, or pressing Enter on a drop zone, does nothing | Expected. Files come in by drag and drop only: drag the file from Finder or File Explorer onto the dashed box. |
 
 Every live call inherits your own Revizto role and project membership — the Matrix cannot see anything you
 cannot see in Revizto itself.

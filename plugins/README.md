@@ -5,7 +5,7 @@ depend on one (they may use it optionally), and standalone tools you run outside
 
 | Item | Type | Status |
 |---|---|---|
-| [revizto-pi-matrix](revizto-pi-matrix/) | Claude plugin — Revizto Project Intelligence Matrix | `1.0.0`. Works offline; the Revizto MCP connector adds read-only live data. |
+| [revizto-pi-matrix](revizto-pi-matrix/) | Claude plugin — Revizto Project Intelligence Matrix | `1.0.1`. Works offline; the Revizto MCP connector adds read-only live data. |
 | [converters](converters/) | Standalone tools | Reserved — nothing published yet |
 
 Anything that needs a live MCP connection to do its job belongs in [`../mcp-blueprints/`](../mcp-blueprints/)
