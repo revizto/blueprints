@@ -86,6 +86,25 @@ export function withoutShim(text) {
   return text.slice(0, a) + text.slice(e < 0 ? text.length : e + 1);
 }
 
+// The page with every <script>…</script> block taken out, by position (case-insensitive, any attributes, any end-tag
+// spelling); the pieces are joined with a newline so text on either side of a removed block can never join into a
+// new tag. Used only to ask "is a document-skeleton tag left in the markup?" — never to make text safe.
+export function outsideScripts(text) {
+  const low = String(text).toLowerCase(), t = String(text), out = [];
+  let pos = 0;
+  for (;;) {
+    let i = low.indexOf('<script', pos);
+    while (i >= 0 && /[a-z0-9_-]/.test(low.charAt(i + 7))) i = low.indexOf('<script', i + 7);   // <scripts…> is not a script tag
+    if (i < 0) { out.push(t.slice(pos)); break; }
+    out.push(t.slice(pos, i));
+    const j = low.indexOf('</script', i + 7);
+    if (j < 0) break;                                   // an unclosed script runs to the end of the document
+    const k = t.indexOf('>', j);
+    pos = k < 0 ? t.length : k + 1;
+  }
+  return out.join('\n');
+}
+
 // The port shim's own script body, by the same marker (for the runtime harness).
 export function shimScript(text) {
   const k = text.indexOf('PORT SHIM');
@@ -271,7 +290,7 @@ export function port(product, src) {
     throw new PortError('a native dialog survives (the claude.ai viewer blocks confirm, alert and prompt)');
   }
   if (/mcp__[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(out)) throw new PortError('a connector id is baked in');
-  if (/^<!doctype|<html[\s>]|<\/?body>|<\/?head>/im.test(out.replace(/<script\b[^>]*>[\s\S]*?<\/script[^>]*>/gi, ''))) {
+  if (/^<!doctype|<html[\s>]|<\/?body>|<\/?head>/im.test(outsideScripts(out))) {
     throw new PortError('a document skeleton tag survives (the Artifact tool supplies it)');
   }
   return out;
@@ -340,6 +359,22 @@ export function selftest() {
   refuses('blueprint: discard anchor moved', () => port('blueprint', b.replace('if(confirm("Discard tracking for this job? The "', 'if(window.confirm("Discard tracking for this job? The "')));
   refuses('blueprint: brief copy moved', () => port('blueprint', b.replace('open in Cowork with the MCP connected', 'open Cowork with the MCP connected')));
   refuses('unknown product', () => port('carbon', m));
+  // the skeleton check looks only outside scripts, however a script tag is spelt
+  const SKEL = /^<!doctype|<html[\s>]|<\/?body>|<\/?head>/im;
+  const cases = [
+    ['a stray <body> outside scripts is found', 'x<body>y', true],
+    ['a <body> inside a script is ignored', '<script>var a="<body>";</script>', false],
+    ['an upper-case <SCRIPT> block is ignored', '<SCRIPT type="x">var a="<body>"</SCRIPT >', false],
+    ['nested script spelling cannot hide a tag', '<scr<script></script>ipt><body>', true],
+    ['nested script spelling does not rebuild a script tag', '<scr<script></script>ipt>', false],
+    ['an unclosed script runs to the end', 'a<script>var b="<body>"', false],
+    ['<scripts> is not a script tag', '<scripts><body></scripts>', true],
+  ];
+  for (const [name, input, want] of cases) {
+    const rest = outsideScripts(input);
+    const got = SKEL.test(rest) || (name.includes('rebuild') && /<script/i.test(rest));
+    if (got !== want) bad.push('outsideScripts: ' + name);
+  }
   return bad;
 }
 
