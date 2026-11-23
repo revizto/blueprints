@@ -14,6 +14,7 @@ async function run(product, file, table, tableDecl) {
   const calls = [];
   const mcp = { callTool: async (server, tool, args) => { calls.push([server, tool, args]);
     if (tool === 'list_projects') { const e = new Error('nope'); e.code = 'not_granted'; throw e; }
+    if (tool === 'list_licenses') { const e = new Error('not connected'); e.code = 'server_not_connected'; throw e; }
     return { payload: { ok: true, tool } }; } };
   const sample = Object.assign(async (input, opts) => ({ text: 'ANSWER:' + JSON.stringify(input).length }), {});
   const body = { classList: { add(){} } };
@@ -31,6 +32,9 @@ async function run(product, file, table, tableDecl) {
   ok(product + ': an unnamed connector is refused with the classified message', r2.isError && /Failed to parse SSE message .*run the install skill again/.test(r2.content[0].text), JSON.stringify(r2));
   const r3 = await B.callMcpTool('mcp__' + id + '__delete_everything', {});
   ok(product + ': an undeclared tool is refused before the platform', r3.isError && /Unknown tool/.test(r3.content[0].text));
+  const r4 = await B.callMcpTool('mcp__' + id + '__list_licenses', {});
+  ok(product + ': a connector the viewer has not connected is its own kind, never the removed-connector signature',
+     r4.isError && /connector not connected for this viewer/.test(r4.content[0].text) && !/Failed to parse SSE/.test(r4.content[0].text), JSON.stringify(r4));
   let threw = ''; try { await B.callMcpTool('mcp__' + id + '__list_projects', {}); } catch (e) { threw = e.message; }
   ok(product + ': declined consent surfaces as no bridge', /not granted/.test(threw), threw);
   return w;

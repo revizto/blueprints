@@ -29,6 +29,11 @@
 //       claude.ai port did): the host can paint native checkboxes, radios and text fields dark on a light page.
 //       Checkboxes and radios are drawn white (teal when ticked); fields are white with ink text. Every Revizto
 //       artifact carries this — a black box or field on a light page is a defect.
+//   R7  the Matrix seeds its connector names from the install's `name` (as R4 does for the Blueprint), so a
+//       connection is labelled by its name before the first read; and a connector the viewer has not
+//       connected keeps its own kind (`noconn`, worded as the Blueprint's) instead of the `gone` signature the
+//       first Matrix port gave it, which skipped the connector and told the viewer to reinstall. Both found by
+//       PR review (Greptile).
 // Not carried over, with reasons: the Matrix port's private-name scan (the release build is scanned for
 // names before packaging; the shims are fixed files checked here), and its connector cut (a release
 // bakes no connector). Its runtime harness is tools/claudeai/shim.test.mjs.
@@ -164,9 +169,17 @@ function portMatrix(src) {
     'Connector ids are per-install, so a rebuild always issues new ones.', GONE);
   src = rep(src, '    r: ["Add the connector\'s new id via the Add box, then press Re-check — a rebuilt connector always issues a new id.",',
     '    r: ["Run the install skill again — this page reaches only the connectors the install named, so a rebuilt or renamed connector needs a new install.",');
-  // 7. the Cowork meta block does not exist here (as the live port)
+  // 7. connector names and the not-connected kind (R7)
+  src = rep(src, 'function connHostNames() {\n  if (_connNames) return _connNames;\n  _connNames = {};\n',
+    'function connHostNames() {\n  if (_connNames) return _connNames;\n  _connNames = {};\n' +
+    '  try { (CONNECTORS || []).forEach(function (c) { if (c && c.prefix && c.name) _connNames[c.prefix] = String(c.name); }); } catch (e) {}\n');
+  src = rep(src, '   if (/Failed to parse SSE/i.test(m)) return FAIL_TEXT.gone(m);',
+    '   if (/connector not connected for this viewer/i.test(m)) return { k: "noconn", t: "This Revizto connector isn’t connected for you", ' +
+    'd: "Connect it in Claude (Settings → Connectors), allow it for this page when asked, then Reload." };\n' +
+    '   if (/Failed to parse SSE/i.test(m)) return FAIL_TEXT.gone(m);');
+  // 8. the Cowork meta block does not exist here (as the live port)
   src = rep(src, 'cowork-artifact-meta', 'cowork-artifact-meta-unverified', 2);
-  // 8. the host flag: saves are zipped (the downloads capability refuses the .vimctst extension)
+  // 9. the host flag: saves are zipped (the downloads capability refuses the .vimctst extension)
   src = rep(src, 'const HOST_SAVE_WRAP=null;', 'const HOST_SAVE_WRAP="zip";');
   if (src.includes('createObjectURL')) throw new PortError('an object-URL download survives');
   return src;
@@ -296,6 +309,8 @@ export function selftest() {
   refuses('matrix: nobridge remedy moved', () => port('matrix', m.replace('Open this artifact inside Cowork.', 'Open this artifact in Cowork.')));
   refuses('matrix: gone remedy moved', () => port('matrix', m.replace('add the new id via the Add box, then', 'add the new id via the Add box and then')));
   refuses('blueprint: noconn anchor moved', () => port('blueprint', b.replace('if(/Failed to parse SSE/i.test(m))return{k:"gone",', 'if(/Failed to parse SSE/.test(m))return{k:"gone",')));
+  refuses('matrix: names anchor moved', () => port('matrix', m.replace('function connHostNames() {\n  if (_connNames)', 'function connHostNames() {\n if (_connNames)')));
+  refuses('matrix: gone signature moved', () => port('matrix', m.replace('   if (/Failed to parse SSE/i.test(m)) return FAIL_TEXT.gone(m);', '   if (/Failed to parse SSE/.test(m)) return FAIL_TEXT.gone(m);')));
   refuses('matrix: unported bridge use', () => port('matrix', m.replace('</script>', 'top.cowork.callMcpTool;</script>')));
   refuses('blueprint: wrong head', () => port('blueprint', b.replace('<!doctype html><html lang="en">', '<!DOCTYPE html><html lang="en">')));
   refuses('blueprint: baked connector', () => port('blueprint', b.replace('const CONFIG={connectors:[\n', 'const CONFIG={connectors:[\n{prefix:"x"},\n')));

@@ -1929,7 +1929,7 @@ input[type=checkbox]:disabled,input[type=radio]:disabled{cursor:not-allowed;opac
     if(code === "rate_limited") return errResult("rate limit (429): " + msg);
     if(code === "timeout") return errResult("timed out waiting for server: " + msg);
     if(code === "server_not_connected" || code === "server_not_found")
-      return errResult("Failed to parse SSE message (connector not connected for this viewer: " + msg + ")");
+      return errResult("Revizto connector not connected for this viewer: " + msg);
     if(code === "not_granted" || code === "unavailable" || code === "denied")
       throw new Error("No MCP bridge: connector access was not granted (" + (code||"") + ")");
     if(code === "tool_not_found" || code === "unknown_tool" || code === "tool_not_declared") return errResult("Unknown tool: " + msg);
@@ -2314,6 +2314,7 @@ function setHostMeta(meta) { _hostMeta = meta || null; _connNames = null; _declT
 function connHostNames() {
   if (_connNames) return _connNames;
   _connNames = {};
+  try { (CONNECTORS || []).forEach(function (c) { if (c && c.prefix && c.name) _connNames[c.prefix] = String(c.name); }); } catch (e) {}
   try {
     var meta = _hostMeta || {};
     var tools = meta.mcpTools || meta.mcp_tools || [], names = meta.mcpServerNames || meta.mcp_server_names || [];
@@ -2562,6 +2563,7 @@ function mcpFailKind(e) {
    if (/(?:in)?sufficient rights|enough rights/i.test(m)) return FAIL_TEXT.rights(m);
    if (/direct api access is forbidden/i.test(m)) return FAIL_TEXT.xregion(m);
    if (/entity not found/i.test(m)) return FAIL_TEXT.notfound(m);
+   if (/connector not connected for this viewer/i.test(m)) return { k: "noconn", t: "This Revizto connector isn’t connected for you", d: "Connect it in Claude (Settings → Connectors), allow it for this page when asked, then Reload." };
    if (/Failed to parse SSE/i.test(m)) return FAIL_TEXT.gone(m);
   if (/Additional object propert|additionalProperties/i.test(m)) return FAIL_TEXT.clientargs(m);
    if (/Invalid parameters for tool|Missing required propert/i.test(m)) return FAIL_TEXT.drift(m);

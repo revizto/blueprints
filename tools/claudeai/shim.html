@@ -59,7 +59,7 @@
     if(code === "rate_limited") return errResult("rate limit (429): " + msg);
     if(code === "timeout") return errResult("timed out waiting for server: " + msg);
     if(code === "server_not_connected" || code === "server_not_found")
-      return errResult("Failed to parse SSE message (connector not connected for this viewer: " + msg + ")");
+      return errResult("Revizto connector not connected for this viewer: " + msg);
     if(code === "not_granted" || code === "unavailable" || code === "denied")
       throw new Error("No MCP bridge: connector access was not granted (" + (code||"") + ")");
     if(code === "tool_not_found" || code === "unknown_tool" || code === "tool_not_declared") return errResult("Unknown tool: " + msg);

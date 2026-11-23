@@ -31,9 +31,9 @@
   "packagedBy": "package_release.py",
   "claudeai": {
     "file": "matrix-claudeai.html",
-    "size": 1180296,
-    "md5": "045eb88ef2885209f2567d3594d75749",
-    "sha256": "666eb8bdc183e8cee7804a8440ad47eb49e0dffdddb268cb9c1fd46be1362eee",
+    "size": 1180646,
+    "md5": "0f581a3780694a55810f2996873b6fad",
+    "sha256": "75758661feb6ed68b8c507669ef6365e215c583b5500bf0d409d460e3718459b",
     "portOf": {
       "file": "matrix.html",
       "sha256": "d7783d2f51b2c7943df26aaa3af52c29168d79f62f5aaba6b9ccf59a447434c0"
