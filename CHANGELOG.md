@@ -11,6 +11,8 @@ folder — [Blueprint](mcp-blueprints/revizto-project-intelligence/CHANGELOG.md)
   2026** (`TERMS.md`). `NOTICE` names the copyright holder (Revizto SA), the Excluded Materials and the
   third-party components. They replace the Revizto Custom Licence (`LICENSE.md`, removed) and the
   Blueprint's own Terms 1.1.
+- **Terms as approved by legal.** The Terms name the Revizto Project Intelligence Blueprint, by its published
+  name, as their example of an Item, and carry no bold text.
 - **Copies per plugin.** Each plugin folder carries byte-identical copies of `LICENSE`, `NOTICE` and `TERMS.md`,
   and `OFL.txt` for the embedded Geist fonts. `plugin.json` declares `Apache-2.0`.
 - **Blueprint 1.0.5** and **Matrix 1.0.1** show the new Terms in their acceptance gates, word for word, and
@@ -24,7 +26,7 @@ folder — [Blueprint](mcp-blueprints/revizto-project-intelligence/CHANGELOG.md)
   claude.ai build from its Cowork build; both plugins' gates re-derive it on every push and fail on any
   byte of difference. Both claude.ai builds draw their own checkboxes, radios and text fields
   (`tools/claudeai/controls.css`), so none renders black in a dark host theme.
-- **Security (Blueprint build 2026-11-24.1).** CodeQL found a project title and the Compare search text spliced into
+- **Security (Blueprint build 2026-11-24.2).** CodeQL found a project title and the Compare search text spliced into
   the page as HTML; the audit behind it found the same in other views (titles, issue fields, member names,
   status and workflow names, server errors, stored jobs and milestones, Claude's plans). Every such value is now
   escaped, issue links are URL-encoded and colours validated, and `tests/run.mjs` section 9 fails on any new

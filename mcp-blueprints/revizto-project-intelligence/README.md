@@ -15,7 +15,7 @@ The Blueprint **opens read-only every session**. Read-only is a toggle you contr
 the write surface becomes available, so you can push reassignments, status changes and more into your
 Revizto project. Every write runs count-first targeting, a diff preview, and an explicit approval step.
 
-**Status:** `v1.0.5` (build `2026-11-24.1`). Version history in [CHANGELOG.md](CHANGELOG.md).
+**Status:** `v1.0.5` (build `2026-11-24.2`). Version history in [CHANGELOG.md](CHANGELOG.md).
 
 > ### Upgrading? Re-run the install skill.
 >
@@ -142,7 +142,7 @@ If Claude starts *designing* a dashboard instead, the skill is not enabled — g
   archived**, tagged when it does.
 - **06 Action anything shows a padlock on first load.** Correct — toggle the **Read-only** pill off to
   enable writes.
-- About / footer reads build **`2026-11-24.1`**.
+- About / footer reads build **`2026-11-24.2`**.
 
 ### Troubleshooting
 
@@ -154,7 +154,7 @@ If Claude starts *designing* a dashboard instead, the skill is not enabled — g
 | "Tools aren't authorised for this artifact" / "Licence not accessible" / no projects | Cowork live-artifact installs only: you ran the install **in the cloud**. Re-run it on your computer (Step 1). This is the usual cause. |
 | An approved 06 Action write fails | A connector tool you set to need approval for every use cannot be used by an artifact. Allow `update_issues` for the connector, or keep the Blueprint read-only. |
 | Asking Claude to open the Blueprint does nothing, or it starts **designing** one | The `project-intelligence-dashboard` skill is not enabled (Step 4). It should copy a file, never author one. |
-| Build stamp older than `2026-11-24.1` | The deployed artifact predates the plugin update. Re-run the skill (Step 5). |
+| Build stamp older than `2026-11-24.2` | The deployed artifact predates the plugin update. Re-run the skill (Step 5). |
 | Marketplace add fails: `github_repo_not_accessible`, or a prompt about the Claude GitHub App | "Sync automatically" was left **on**. Remove the entry and re-add with it off (Step 3). |
 | Adding the marketplace says it needs **admin** | You are on the **Organization** tab. Use **Personal** — per-user, no admin. |
 | Plugin stuck on an old version after reinstall | Cache. Quit Claude, then `chflags -R nouchg ~/.claude/plugins 2>/dev/null; rm -rf ~/.claude/plugins/cache ~/.claude/plugins/marketplaces/revizto`, reopen and re-add. On Windows: `%USERPROFILE%\.claude\plugins\`. |
@@ -187,7 +187,7 @@ One `CONFIG` object at the top of `dashboard.html`:
 | `connectors` | `[]` | One entry per connected region, `{prefix, env, wsHost, missing}`. The install skill fills this with your own `mcp__<connector-id>__` prefixes; connections can also be added at runtime from the MCP Server panel. |
 | `readOnly` | `false` | The Read-only pill is a live per-session toggle. The Blueprint opens read-only regardless; this constant only controls whether the toggle can be turned off. Set `true` to hard-lock read-only and disable writes entirely. |
 | `tcsVersion` | `"2.0"` | Terms version (Revizto Open-Source Repository Terms 2.0). Bumping it re-prompts acceptance on every connection. |
-| `buildStamp` | `"2026-11-24.1"` | Shown in About and the Terms footer, for support. |
+| `buildStamp` | `"2026-11-24.2"` | Shown in About and the Terms footer, for support. |
 
 ## Trust posture
 

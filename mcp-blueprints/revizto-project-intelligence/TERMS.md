@@ -4,7 +4,7 @@ _Version 2.0 — 13 November 2026_
 
 ## Terms and Conditions
 
-Welcome to the Revizto Open-Source Repository (the “Repository”). The Repository is where Revizto publishes blueprints, showcases, tools, templates, sample code and other items for its customers and the wider community to explore and build upon. These Terms and Conditions apply to all such content (the **“Repository Content”**). The Repository Content is experimental and illustrative only. It is **not** a product, not a service, not a beta version, and not a commitment by Revizto to deliver anything. By accessing, downloading, enabling or using any Repository Content in any way, you agree to these Terms and Conditions (the **“Terms”**), and, where an Item connects to the Revizto MCP Server, to the Revizto MCP Server Terms and Conditions available here https://revizto.com/legal/revizto-mcp-server. Please read them carefully. If you do not agree with them in full, do not access or use the Repository Content. Unless the Documentation of an Item states otherwise, all Repository Content, other than Excluded Materials, is licensed under the Apache License, Version 2.0 (see Section 5).
+Welcome to the Revizto Open-Source Repository (the “Repository”). The Repository is where Revizto publishes blueprints, showcases, tools, templates, sample code and other items for its customers and the wider community to explore and build upon. These Terms and Conditions apply to all such content (the “Repository Content”). The Repository Content is experimental and illustrative only. It is not a product, not a service, not a beta version, and not a commitment by Revizto to deliver anything. By accessing, downloading, enabling or using any Repository Content in any way, you agree to these Terms and Conditions (the “Terms”), and, where an Item connects to the Revizto MCP Server, to the Revizto MCP Server Terms and Conditions available here https://revizto.com/legal/revizto-mcp-server. Please read them carefully. If you do not agree with them in full, do not access or use the Repository Content. Unless the Documentation of an Item states otherwise, all Repository Content, other than Excluded Materials, is licensed under the Apache License, Version 2.0 (see Section 5).
 
 ## 1. What the Repository Content Is — and What It Is Not
 
@@ -18,35 +18,35 @@ Any Item may or may not function. It may be incomplete, unstable, unavailable, w
 
 In these Terms, the following definitions apply.
 
-**“AI Client”** means any application, assistant, agent or other software that connects to or operates any Item, including third-party large language model (“LLM”) products. Certain Items may be designed to operate only with a specific AI Client, as stated in their Documentation (see Section 4).
+“AI Client” means any application, assistant, agent or other software that connects to or operates any Item, including third-party large language model (“LLM”) products. Certain Items may be designed to operate only with a specific AI Client, as stated in their Documentation (see Section 4).
 
-**“AI Provider”** means the third party that operates an AI Client or its underlying model, including, for example, Anthropic in respect of Claude AI.
+“AI Provider” means the third party that operates an AI Client or its underlying model, including, for example, Anthropic in respect of Claude AI.
 
-**“Analytics”** means any metrics, calculations, aggregations, insights, charts or other analytical Output presented through any Item.
+“Analytics” means any metrics, calculations, aggregations, insights, charts or other analytical Output presented through any Item.
 
-**“Apache License”** means the Apache License, Version 2.0, available at https://www.apache.org/licenses/LICENSE-2.0 and in the LICENSE file at the root of the Repository.
+“Apache License” means the Apache License, Version 2.0, available at https://www.apache.org/licenses/LICENSE-2.0 and in the LICENSE file at the root of the Repository.
 
-**“Authorized Users”** means the individuals you permit to access or use the Repository Content on your behalf, including under your Revizto subscription where applicable.
+“Authorized Users” means the individuals you permit to access or use the Repository Content on your behalf, including under your Revizto subscription where applicable.
 
-**“Documentation”** means the README, LICENSE, NOTICE and other files, instructions or descriptions accompanying an Item in the Repository.
+“Documentation” means the README, LICENSE, NOTICE and other files, instructions or descriptions accompanying an Item in the Repository.
 
-**“Excluded Materials”** means the Revizto names, logos, trademarks, service marks and other brand assets, wherever they appear in the Repository and whether or not they are identified as such in the Documentation.
+“Excluded Materials” means the Revizto names, logos, trademarks, service marks and other brand assets, wherever they appear in the Repository and whether or not they are identified as such in the Documentation.
 
-**“Item”** means each individual blueprint, showcase, tool, template, script, sample, dataset or other item made available in the Repository, including, for example, the Revizto Project Intelligence Dashboard Showcase.
+“Item” means each individual blueprint, showcase, tool, template, script, sample, dataset or other item made available in the Repository, including, for example, the Revizto Project Intelligence Blueprint.
 
-**“MCP Server”** means Revizto’s Model Context Protocol server, as defined in the Revizto MCP Server Terms and Conditions.
+“MCP Server” means Revizto’s Model Context Protocol server, as defined in the Revizto MCP Server Terms and Conditions.
 
-**“Open-Source License”** means the Apache License, which applies by default to all Repository Content other than Excluded Materials, or any other open-source license that the Documentation of an Item, or a LICENSE file in the relevant folder of the Repository, identifies as applying to that Item instead.
+“Open-Source License” means the Apache License, which applies by default to all Repository Content other than Excluded Materials, or any other open-source license that the Documentation of an Item, or a LICENSE file in the relevant folder of the Repository, identifies as applying to that Item instead.
 
-**“Output”** means any response, content, converted or generated file, summary, suggestion, analytic, metric, visualisation, recommendation or action generated, produced or surfaced through any Item or by an AI Client using data obtained through any Item.
+“Output” means any response, content, converted or generated file, summary, suggestion, analytic, metric, visualisation, recommendation or action generated, produced or surfaced through any Item or by an AI Client using data obtained through any Item.
 
-**“Repository”** means Revizto’s public GitHub repository located at https://github.com/revizto/blueprints, and any other repository or location where Revizto makes Items available under these Terms.
+“Repository” means Revizto’s public GitHub repository located at https://github.com/revizto/blueprints, and any other repository or location where Revizto makes Items available under these Terms.
 
-**“Repository Content”** means all Items and other content made available by Revizto in the Repository, including any related code, endpoints, tools, sample queries, Documentation and access credentials made available to you in connection with them.
+“Repository Content” means all Items and other content made available by Revizto in the Repository, including any related code, endpoints, tools, sample queries, Documentation and access credentials made available to you in connection with them.
 
-**“Third-Party Components”** means any software, libraries, models, services or other materials owned by third parties that are included in, required by or used with an Item.
+“Third-Party Components” means any software, libraries, models, services or other materials owned by third parties that are included in, required by or used with an Item.
 
-**“Your Data”** means the project data, content and information you have entered in the Revizto platform, and that is accessible through your account, together with any files or other data you process using any Item; it is commonly referred to as “Customer Data” by Revizto.
+“Your Data” means the project data, content and information you have entered in the Revizto platform, and that is accessible through your account, together with any files or other data you process using any Item; it is commonly referred to as “Customer Data” by Revizto.
 
 ## 3. Experimental Content — No Guarantee of Functionality
 
@@ -58,7 +58,7 @@ Nothing about the Repository Content constitutes a commitment by Revizto to deve
 
 ## 4. Third-Party AI Clients, Services and Components
 
-Certain Items are designed to operate only with a specific AI Client (for example, the Revizto Project Intelligence Dashboard Showcase is currently designed to operate only with Claude AI, an AI Client operated by its AI Provider, Anthropic), and Items may rely on Third-Party Components. To use such an Item you will need your own access to and license for the relevant AI Client or Third-Party Component, on the relevant third party’s own terms and at your own cost and risk.
+Certain Items are designed to operate only with a specific AI Client (for example, the Revizto Project Intelligence Blueprint is currently designed to operate only with Claude AI, an AI Client operated by its AI Provider, Anthropic), and Items may rely on Third-Party Components. To use such an Item you will need your own access to and license for the relevant AI Client or Third-Party Component, on the relevant third party’s own terms and at your own cost and risk.
 
 Revizto does not provide, control, endorse or assume any responsibility for any AI Client, AI Provider or Third-Party Component, or their availability, performance, security, data handling practices, pricing, terms or Outputs. Your use of any AI Client or Third-Party Component in connection with the Repository Content is governed solely by your agreement with the relevant AI Provider or other third party, and any issues arising from it are between you and that third party.
 
@@ -68,13 +68,13 @@ Third-Party Components are not licensed to you by Revizto under the Apache Licen
 
 ## 5. License
 
-**Open-Source Licenses.** Unless the Documentation of an Item states otherwise, each Item, other than Excluded Materials, is made available under the Apache License, and where an Item is made available under an Open-Source License, your rights to use, copy, modify and distribute that Item are governed by that Open-Source License. Nothing in these Terms limits any right expressly granted to you under an applicable Open-Source License and, in the event of any conflict between these Terms and an Open-Source License regarding those rights, the Open-Source License prevails. All other provisions of these Terms, including those relating to disclaimers, assumption of risk, limitation of liability, Your Data, and the use of any Item with the Revizto platform or the MCP Server, continue to apply to the extent permitted by the applicable Open-Source License. The disclaimer of warranty and limitation of liability in Sections 7 and 8 of the Apache License apply where an Item is licensed under the Apache License, in addition to Sections 13 to 15 of these Terms.
+Open-Source Licenses. Unless the Documentation of an Item states otherwise, each Item, other than Excluded Materials, is made available under the Apache License, and where an Item is made available under an Open-Source License, your rights to use, copy, modify and distribute that Item are governed by that Open-Source License. Nothing in these Terms limits any right expressly granted to you under an applicable Open-Source License and, in the event of any conflict between these Terms and an Open-Source License regarding those rights, the Open-Source License prevails. All other provisions of these Terms, including those relating to disclaimers, assumption of risk, limitation of liability, Your Data, and the use of any Item with the Revizto platform or the MCP Server, continue to apply to the extent permitted by the applicable Open-Source License. The disclaimer of warranty and limitation of liability in Sections 7 and 8 of the Apache License apply where an Item is licensed under the Apache License, in addition to Sections 13 to 15 of these Terms.
 
 Excluded Materials and Other Repository Content. Excluded Materials, and any Item whose Documentation expressly states that it is not made available under an Open-Source License, are not licensed under the Apache License or any other Open-Source License, even where they are included in an Item or in a folder of the Repository to which an Open-Source License otherwise applies. Subject to your acceptance of and compliance with these Terms and, where applicable, your underlying Revizto subscription, Revizto grants you a limited, non-exclusive, non-transferable, non-assignable, non-sublicensable, revocable license to access and use them, solely for your own internal evaluation, experimentation and development, and solely as a head start to explore what you might build. You may retain Excluded Materials, unmodified, in copies or forks of the Repository made in accordance with the Apache License, but you may not otherwise copy, modify, distribute or use them separately from the Item with which they are provided. This license may be revoked or terminated by Revizto at any time, for any or no reason, without notice.
 
 All rights not expressly granted to you are reserved by Revizto and its licensors. Except as expressly permitted under an applicable Open-Source License, the Repository Content is made available to you, not sold or licensed for any production, commercial, mission-critical or third-party-facing use.
 
-**Access to the Revizto platform and the MCP Server.** Nothing in these Terms or in any Open-Source License grants you any right to access or use the Revizto platform, the MCP Server or any other Revizto product or service. Any Item that connects to them may only be used in accordance with your Revizto subscription and, where applicable, the Revizto MCP Server Terms and Conditions.
+Access to the Revizto platform and the MCP Server. Nothing in these Terms or in any Open-Source License grants you any right to access or use the Revizto platform, the MCP Server or any other Revizto product or service. Any Item that connects to them may only be used in accordance with your Revizto subscription and, where applicable, the Revizto MCP Server Terms and Conditions.
 
 ## 6. Your Responsibilities and Acceptable Use
 

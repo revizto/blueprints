@@ -1,5 +1,5 @@
 {
- "_comment": "Pinned by tests/run.mjs section 9. `escaped`: the escaped form of every site fixed in build 2026-11-24.1 (CodeQL PR #5 and its audit) — each must stay in dashboard.html. `reviewed`: every splice of a value into a string that is not one whole escaping call, with its count, as reviewed in build 2026-11-24.1 (two independent audits). Regenerate `reviewed` with `node tests/encoding.mjs --write` only after reviewing what changed.",
+ "_comment": "Pinned by tests/run.mjs section 9. `escaped`: the escaped form of every site fixed in build 2026-11-24.2 (CodeQL PR #5 and its audit) — each must stay in dashboard.html. `reviewed`: every splice of a value into a string that is not one whole escaping call, with its count, as reviewed in build 2026-11-24.1 (two independent audits). Regenerate `reviewed` with `node tests/encoding.mjs --write` only after reviewing what changed.",
  "escaped": [
   "function _safeCol(c){return (typeof c===\"string\"&&/^#[0-9a-f]{3,8}$/i.test(c))?c:null;}\nfunction stampHex(sc){if(sc==null)return null;if(typeof sc===\"string\"&&sc[0]===\"#\")return _safeCol(sc);",
   "return _safeCol(ty&&ty.iconColor)||AUTH_PAL[idx%AUTH_PAL.length];",

@@ -152,9 +152,6 @@ repository content is also subject to the
 lists the copyright holder and the third-party components. Each plugin folder carries identical copies of
 `LICENSE`, `NOTICE` and `TERMS.md`, because Claude installs a plugin from its own folder.
 
-The Terms give the "Revizto Project Intelligence Dashboard Showcase" as an example of an item. Its published
-name is the Revizto Project Intelligence Blueprint.
-
 **History.** Until this change the repository was published under the Revizto Custom Licence
 (`LICENSE.md`), and before that under the MIT License.
 

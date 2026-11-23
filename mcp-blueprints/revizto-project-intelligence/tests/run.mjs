@@ -480,7 +480,7 @@ section('9  OUTPUT ENCODING  (no value from Revizto, the user, storage or Claude
 {
   // CodeQL js/xss-through-dom on PR #5 (Compare picker) and the two audits behind it: project titles, issue fields,
   // member names and e-mails, status/type/workflow names, server error text, stored jobs and milestones and Claude's
-  // plans were spliced into innerHTML unescaped; every such place is escaped since build 2026-11-24.1.
+  // plans were spliced into innerHTML unescaped; every such place is escaped since build 2026-11-24.2.
   // tests/output-encoding.json pins (a) the escaped form of every fixed site and (b) every remaining splice that is
   // not one whole escaping call, each reviewed. A revert, or a new splice that is not reviewed, fails here.
   const pins = JSON.parse(fs.readFileSync(path.join(ROOT, 'tests/output-encoding.json'), 'utf8'));

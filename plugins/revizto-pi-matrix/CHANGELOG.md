@@ -6,6 +6,8 @@
   subject to the **Revizto Open-Source Repository Terms and Conditions, Version 2.0 — 13 November 2026**
   (`TERMS.md`). These replace the Revizto Custom Licence (`LICENSE.md`). Revizto's brand assets and the
   third-party components listed in `NOTICE` are not licensed under the Apache License.
+- **Terms as approved by legal.** The Terms name the Revizto Project Intelligence Blueprint, by its published name,
+  as their example of an Item, and carry no bold text (TERMS.md and the in-app Terms alike).
 - **In-app Terms.** The Terms gate shows the Repository Terms in full, word for word, followed by notes on
   what the Matrix reads and keeps (the notes describe the Matrix; they are not terms). The agreement names
   the Revizto MCP Server Terms as well, for the Matrix's live reads. The Terms version moves

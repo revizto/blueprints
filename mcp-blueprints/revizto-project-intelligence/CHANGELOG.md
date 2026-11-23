@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.5 — 2026-11-24 (the Revizto Open-Source Repository Terms 2.0 and the Apache License 2.0; installs with Claude's Artifact tool; security; build `2026-11-24.1`)
+## 1.0.5 — 2026-11-24 (the Revizto Open-Source Repository Terms 2.0 and the Apache License 2.0; installs with Claude's Artifact tool; security; build `2026-11-24.2`)
 
 The Blueprint now carries the repository's new licensing model, and installs with Claude's Artifact tool.
 The Cowork build (`dashboard.html`) behaves as 1.0.4; the claude.ai build differs only where its host does.
@@ -33,6 +33,8 @@ The Cowork build (`dashboard.html`) behaves as 1.0.4; the claude.ai build differ
   `create_artifact` path for organisations that still have live artifacts. It is derived from
   `dashboard.html` by `tools/claudeai/port.mjs` and checked byte for byte by `tests/run.mjs` and
   `tools/build.mjs --check`.
+- **Terms as approved by legal.** The Terms gate names the Revizto Project Intelligence Blueprint, by its published
+  name, as the Terms' example of an Item, and the Terms carry no bold text (TERMS.md and the gate alike).
 - **Licence.** The Blueprint is licensed under the Apache License, Version 2.0 (`LICENSE`), with `NOTICE`,
   and is subject to the **Revizto Open-Source Repository Terms and Conditions, Version 2.0 — 13 November
   2026** (`TERMS.md`). These replace the Revizto Custom Licence (`LICENSE.md`) and the Blueprint's own
