@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { shimScript } from './port.mjs';
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const ID = ['1a2b3c4d', '5e6f', '7890', 'abcd', 'ef1234567890'].join('-');      // the documented placeholder id
 const OTHER = ['99999999', '1111', '2222', '3333', '444455556666'].join('-');
@@ -10,7 +11,7 @@ const results = [];
 const ok = (n, c, d='') => { results.push([n, !!c]); console.log((c ? '  PASS  ' : '  FAIL  ') + n + (c ? '' : '  — ' + d)); };
 async function run(product, file, table, tableDecl) {
   const src = fs.readFileSync(file, 'utf8');
-  const shim = /<script>([\s\S]*?)<\/script>/.exec(src)[1];
+  const shim = shimScript(src);
   const calls = [];
   const mcp = { callTool: async (server, tool, args) => { calls.push([server, tool, args]);
     if (tool === 'list_projects') { const e = new Error('nope'); e.code = 'not_granted'; throw e; }
@@ -48,7 +49,7 @@ const a = await wb.RVZ_BRIDGE.askClaude('SYS', [{ request: 'q' }]);
 ok('blueprint: askClaude answers through sample', typeof a === 'string' && /^ANSWER:\d+$/.test(a), JSON.stringify(a));
 // a viewer whose mcp capability resolves null: the Blueprint withdraws the bridge and shows its no-bridge state
 {
-  const src = fs.readFileSync(Bp, 'utf8'); const shim = /<script>([\s\S]*?)<\/script>/.exec(src)[1];
+  const src = fs.readFileSync(Bp, 'utf8'); const shim = shimScript(src);
   let nb = 0; const win = { claude: { use: async () => null }, localStorage: { setItem(){}, removeItem(){}, getItem(){ return null; } } };
   const w = new Function('window', 'document', 'noBridgeState', 'var CONFIG={connectors:[]};\n' + shim + '\n;return window;')(win, { body: { classList: { add(){} } } }, () => { nb++; });
   await new Promise(r => setTimeout(r, 30));

@@ -75,6 +75,25 @@ export const ASSETS = {
 
 export class PortError extends Error {}
 
+// The page without its port shim: the shim is ours and may name native dialogs in comments. Found by its marker,
+// not by a pattern over markup, so no tag spelling (case, attributes, `</script >`) can widen or narrow the cut.
+export function withoutShim(text) {
+  const k = text.indexOf('PORT SHIM');
+  if (k < 0) return text;
+  const a = text.lastIndexOf('<script', k), b = text.indexOf('</script', k);
+  if (a < 0 || b < 0) return text;
+  const e = text.indexOf('>', b);
+  return text.slice(0, a) + text.slice(e < 0 ? text.length : e + 1);
+}
+
+// The port shim's own script body, by the same marker (for the runtime harness).
+export function shimScript(text) {
+  const k = text.indexOf('PORT SHIM');
+  if (k < 0) return '';
+  const a = text.indexOf('>', text.lastIndexOf('<script', k)) + 1, b = text.indexOf('</script', k);
+  return a > 0 && b > a ? text.slice(a, b) : '';
+}
+
 // A native dialog call, bare or through window/globalThis/self, with or without a space before the bracket.
 export const NATIVE_DIALOG = /(?:^|[^\w.$])(?:(?:window|globalThis|self)\s*\.\s*)?(confirm|alert|prompt)\s*\(/;
 
@@ -248,11 +267,11 @@ export function port(product, src) {
   if (!out.includes('use("mcp")') || out.split('window.RVZ_BRIDGE = {').length !== 2) throw new PortError('the shim is missing or duplicated');
   if (/@@RVZ_/.test(out)) throw new PortError('a shim placeholder survives');
   if (out.split('<style id="rvz-controls">').length !== 2 || !out.includes(CONTROLS())) throw new PortError('the host-proof controls are missing or duplicated');
-  if (NATIVE_DIALOG.test(out.replace(/<script>[\s\S]*?PORT SHIM[\s\S]*?<\/script>/, ''))) {
+  if (NATIVE_DIALOG.test(withoutShim(out))) {
     throw new PortError('a native dialog survives (the claude.ai viewer blocks confirm, alert and prompt)');
   }
   if (/mcp__[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(out)) throw new PortError('a connector id is baked in');
-  if (/^<!doctype|<html[\s>]|<\/?body>|<\/?head>/im.test(out.replace(/<script>[\s\S]*?<\/script>/g, ''))) {
+  if (/^<!doctype|<html[\s>]|<\/?body>|<\/?head>/im.test(out.replace(/<script\b[^>]*>[\s\S]*?<\/script[^>]*>/gi, ''))) {
     throw new PortError('a document skeleton tag survives (the Artifact tool supplies it)');
   }
   return out;

@@ -13,7 +13,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { port as claudeaiPort, NATIVE_DIALOG } from '../../../tools/claudeai/port.mjs';
+import { port as claudeaiPort, NATIVE_DIALOG, withoutShim } from '../../../tools/claudeai/port.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CONTROLS = fs.readFileSync(path.resolve(ROOT, '..', '..', 'tools/claudeai/controls.css'), 'utf8');
@@ -129,8 +129,16 @@ function gates(f, out = () => {}) {
      /Revizto Open-Source Repository/.test(text) && /Apache License/.test(text) && !/Custom Licen[cs]e/.test(text));
   // The gate's Terms block, word for word against this folder's TERMS.md (which is the root copy, pinned to
   // legal's text), and the re-gate version equal to the version TERMS.md states.
-  const words = t => t.replace(/<\/?(b|strong|em|i|a)\b[^>]*>/g, '').replace(/<[^>]+>/g, ' ')
-    .replace(/&mdash;/g, '—').replace(/&amp;/g, '&').replace(/[*_#]/g, '').split(/\s+/).filter(Boolean);
+  const stripTags = t => {   // until stable, so a tag rebuilt by the removal of another is removed too; then no stray `<` is left
+    let s = String(t), prev;
+    do { prev = s; s = s.replace(/<\/?(?:b|strong|em|i|a)\b[^<>]*>/gi, ''); } while (s !== prev);
+    do { prev = s; s = s.replace(/<[^<>]*>/g, ' '); } while (s !== prev);
+    return s.replace(/</g, ' ');
+  };
+  const ENT = { '&mdash;': '—', '&amp;': '&', '&quot;': '"', '&#39;': "'" };
+  // one pass over the entities, so `&amp;quot;` decodes once to `&quot;` and never on to `"`
+  const words = t => stripTags(t).replace(/&(?:mdash|amp|quot|#39);/g, e => ENT[e])
+    .replace(/[*_#]/g, '').split(/\s+/).filter(Boolean);
   const ti = text.indexOf('<div class="tcs-terms" id="tcsTerms">'), tj = ti < 0 ? -1 : text.indexOf('<h4 class="tcs-notes">', ti);
   const gateW = ti < 0 || tj < 0 ? [] : words(text.slice(ti, tj));
   const termsTxt = f.terms.toString('utf8');
@@ -169,7 +177,7 @@ function gates(f, out = () => {}) {
   ok('ca-host', 'it reaches connectors through the mcp capability, never the Cowork bridge',
      /use\("mcp"\)/.test(caText) && !/\b\w+\.cowork\.\w+/.test(caText));
   ok('ca-dialog', 'no native dialog (the claude.ai viewer blocks confirm, alert and prompt)',
-     ca.length > 0 && !NATIVE_DIALOG.test(caText.replace(/<script>[\s\S]*?PORT SHIM[\s\S]*?<\/script>/, '')));
+     ca.length > 0 && !NATIVE_DIALOG.test(withoutShim(caText)));
   ok('ca-controls', 'host-proof controls: white checkboxes, radios and fields in any host theme (rvz-controls)',
      caText.split('<style id="rvz-controls">').length === 2 && caText.includes(CONTROLS));
   const caTools = (/var TOOLS = \{([^}]*)\};/.exec(caText) || [])[1];

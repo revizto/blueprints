@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.5 — 2026-11-23 (the Revizto Open-Source Repository Terms 2.0 and the Apache License 2.0; build `2026-11-23.1`)
+## 1.0.5 — 2026-11-24 (the Revizto Open-Source Repository Terms 2.0 and the Apache License 2.0; installs with Claude's Artifact tool; security; build `2026-11-24.1`)
 
 The Blueprint now carries the repository's new licensing model, and installs with Claude's Artifact tool.
 The Cowork build (`dashboard.html`) behaves as 1.0.4; the claude.ai build differs only where its host does.
@@ -8,6 +8,15 @@ The Cowork build (`dashboard.html`) behaves as 1.0.4; the claude.ai build differ
 > **Action required.** Re-run the `project-intelligence-dashboard` skill. Every connection asks you to accept
 > the Terms again, because they have changed.
 
+- **Security: every value from Revizto, from you or from Claude is escaped before it is shown.** A project
+  title, issue field, member name or e-mail, status, type or workflow name, error message, stored job or milestone,
+  or a plan Claude proposed, could previously be inserted into the page as HTML in some views (the Compare and
+  project pickers, the portfolio list, the work table, signals, recommendations, the approval and undo text, the
+  timeline). Anyone able to name a project could have placed markup in another user's Blueprint. Every one of these places
+  now escapes its values (apostrophes included), issue links encode each part of the URL, and colours from Revizto
+  are accepted only as hex values. `tests/run.mjs` section 9 pins the escaped form of every fixed site and fails on
+  any new splice into the page that is neither escaped nor reviewed (`tests/output-encoding.json`,
+  `tests/encoding.mjs`).
 - **Installs with Claude's Artifact tool.** Cowork live artifacts (`create_artifact`) were retired for new
   artifacts on 19 August 2026, so a 1.0.4 install could no longer complete. The plugin now also ships
   `dashboard-claudeai.html`, the same build for Claude's Artifact tool: it reaches your Revizto connectors by

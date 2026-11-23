@@ -18,7 +18,8 @@ import { fileURLToPath } from 'url';
 import { execFileSync } from 'child_process';
 import os from 'os';
 import crypto from 'crypto';
-import { port, selftest as portSelftest, NATIVE_DIALOG } from '../../../tools/claudeai/port.mjs';
+import { port, selftest as portSelftest, NATIVE_DIALOG, withoutShim } from '../../../tools/claudeai/port.mjs';
+import { unreviewed as unreviewedSplices } from './encoding.mjs';
 
 const ROOT  = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ASSET = path.join(ROOT, 'skills/project-intelligence-dashboard/assets/dashboard.html');
@@ -34,7 +35,7 @@ const section = t => console.log('\n' + t);
 /* --------------------------------------------------------------------- helpers */
 function inlineScript() {
   const blocks = [];
-  for (const m of SRC.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)) {
+  for (const m of SRC.matchAll(/<script([^>]*)>([\s\S]*?)<\/script[^>]*>/gi)) {
     const attrs = m[1];
     if (/src=/i.test(attrs)) continue;
     const t = /type\s*=\s*["']([^"']+)/i.exec(attrs);
@@ -391,8 +392,15 @@ section('7  TERMS  (the gate carries the Repository Terms word for word; one ver
   // The in-app gate shows legal's Revizto Open-Source Repository Terms in full. They are compared WORD FOR
   // WORD with this folder's TERMS.md (itself a byte copy of the root file, derived from legal's docx and
   // pinned by sha256 in the release pre-flight), so a hand-edit to either can never ship unnoticed.
-  const words = t => t.replace(/<\/?(b|strong|em|i|a)\b[^>]*>/g, '').replace(/<[^>]+>/g, ' ')
-    .replace(/&mdash;/g, '—').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+  const stripTags = t => {   // until stable, so a tag rebuilt by the removal of another is removed too; then no stray `<` is left
+    let s = String(t), prev;
+    do { prev = s; s = s.replace(/<\/?(?:b|strong|em|i|a)\b[^<>]*>/gi, ''); } while (s !== prev);
+    do { prev = s; s = s.replace(/<[^<>]*>/g, ' '); } while (s !== prev);
+    return s.replace(/</g, ' ');
+  };
+  const ENT = { '&mdash;': '—', '&amp;': '&', '&quot;': '"', '&#39;': "'" };
+  // one pass over the entities, so `&amp;quot;` decodes once to `&quot;` and never on to `"`
+  const words = t => stripTags(t).replace(/&(?:mdash|amp|quot|#39);/g, e => ENT[e])
     .replace(/[*_#]/g, '').split(/\s+/).filter(Boolean);
   const i = SRC.indexOf('<div class="tcs-terms" id="tcsTerms">'), j = i < 0 ? -1 : SRC.indexOf('</div>', i);
   const gate = i < 0 || j < 0 ? [] : words(SRC.slice(i, j));
@@ -437,7 +445,7 @@ section('8  CLAUDE.AI BUILD  (the file the Artifact tool publishes is the port o
         /use\("mcp"\)/.test(caText) && !/\b\w+\.cowork\.\w+/.test(caText)],
       ['sample', 'askClaude is backed by the sample capability', /use\("sample"\)/.test(caText) && /askClaude: function\(system, data\)/.test(caText)],
       ['dialog', 'no native dialog (the claude.ai viewer blocks confirm, alert and prompt)',
-        !NATIVE_DIALOG.test(caText.replace(/<script>[\s\S]*?PORT SHIM[\s\S]*?<\/script>/, ''))],
+        !NATIVE_DIALOG.test(withoutShim(caText))],
       ['controls', 'host-proof controls: white checkboxes, radios and fields in any host theme (rvz-controls)',
         caText.split('<style id="rvz-controls">').length === 2 && caText.includes(CONTROLS)],
       ['tools', "the shim's tool list is exactly the contract's reads and writes",
@@ -466,6 +474,36 @@ section('8  CLAUDE.AI BUILD  (the file the Artifact tool publishes is the port o
   ];
   const blind = cases.filter(([id, ca, man]) => !fails(ca, man).includes(id)).map(c => c[0]);
   ok('every claude.ai check above goes red on its own injected defect (' + cases.length + ')', blind.length === 0, 'blind: ' + blind.join(', '));
+}
+
+section('9  OUTPUT ENCODING  (no value from Revizto, the user, storage or Claude reaches the page as markup)');
+{
+  // CodeQL js/xss-through-dom on PR #5 (Compare picker) and the two audits behind it: project titles, issue fields,
+  // member names and e-mails, status/type/workflow names, server error text, stored jobs and milestones and Claude's
+  // plans were spliced into innerHTML unescaped; every such place is escaped since build 2026-11-24.1.
+  // tests/output-encoding.json pins (a) the escaped form of every fixed site and (b) every remaining splice that is
+  // not one whole escaping call, each reviewed. A revert, or a new splice that is not reviewed, fails here.
+  const pins = JSON.parse(fs.readFileSync(path.join(ROOT, 'tests/output-encoding.json'), 'utf8'));
+  const missing = src => (pins.escaped || []).filter(x => !src.includes(x));
+  const left = src => unreviewedSplices(src, pins.reviewed || {});
+  ok('every fixed site keeps its escaped form (' + (pins.escaped || []).length + ')', (pins.escaped || []).length > 40 && missing(SRC).length === 0,
+     missing(SRC).slice(0, 3).join(' | '));
+  ok('every splice into a string is one escaping call or reviewed (' + Object.keys(pins.reviewed || {}).length + ' reviewed)',
+     Object.keys(pins.reviewed || {}).length > 100 && left(SRC).length === 0, left(SRC).slice(0, 5).join(' | '));
+  // the gate can fail: each injected regression must be caught by one of the two checks
+  const red = s => missing(s).length > 0 || left(s).length > 0;
+  const probes = [
+    ['Compare picker title revert', SRC.replace('<span>${_esc(p.title)}</span>', '<span>${p.title}</span>')],
+    ['assignee options revert', SRC.replace('`<option value="${_esc(e)}">${_esc(e)}</option>`', '`<option value="${e}">${e}</option>`')],
+    ['moves list revert', SRC.replace('<div class="mi">${_esc(mv[2])}</div>', '<div class="mi">${mv[2]}</div>')],
+    ['no-project banner revert (concatenation)', SRC.replace('"</b><br>"+_esc((_kk&&_kk.d)||', '"</b><br>"+((_kk&&_kk.d)||')],
+    ['colour validation removed', SRC.replace('return _safeCol(sc);', 'return sc;')],
+    ['escape call with raw data after it', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _x=`<b>${_esc("")+w.title}</b>`;')],
+    ['new raw concatenation', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _y=\'<b>\'+w.reporter+\'</b>\';')],
+    ['new raw interpolation of an unlisted name', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _z=`<i>${w.reporter}</i>`;')],
+  ];
+  const blind = probes.filter(([, s]) => !red(s)).map(p => p[0]);
+  ok('the gate goes red on every injected regression (' + probes.length + ')', blind.length === 0, 'blind: ' + blind.join(', '));
 }
 
 /* ---------------------------------------------------------------- verdict */

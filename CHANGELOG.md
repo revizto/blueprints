@@ -24,6 +24,12 @@ folder — [Blueprint](mcp-blueprints/revizto-project-intelligence/CHANGELOG.md)
   claude.ai build from its Cowork build; both plugins' gates re-derive it on every push and fail on any
   byte of difference. Both claude.ai builds draw their own checkboxes, radios and text fields
   (`tools/claudeai/controls.css`), so none renders black in a dark host theme.
+- **Security (Blueprint build 2026-11-24.1).** CodeQL found a project title and the Compare search text spliced into
+  the page as HTML; the audit behind it found the same in other views (titles, issue fields, member names,
+  status and workflow names, server errors, stored jobs and milestones, Claude's plans). Every such value is now
+  escaped, issue links are URL-encoded and colours validated, and `tests/run.mjs` section 9 fails on any new
+  unescaped splice. The repository's own scripts no longer use the tag-matching and sanitising patterns CodeQL
+  flagged.
 
 ## Revizto Blueprints layout, and the Project Intelligence Matrix 1.0.0
 

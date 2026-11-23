@@ -1448,7 +1448,7 @@ const CONFIG={connectors:[
     MCP server is its own connection: the Blueprint reads from exactly ONE at a time and you choose
     which in the MCP Server panel. Leaving this empty is valid - the Blueprint shows a connect CTA and
     a connection can be added at runtime from that panel. */
-],readOnly:false,tcsVersion:"2.0",buildStamp:"2026-11-23.1"};
+],readOnly:false,tcsVersion:"2.0",buildStamp:"2026-11-24.1"};
 /* (WS21 licence-first commentary removed 2026-07-29 — it asserted the opposite of the WS28 model above:
    "users pick a LICENCE, never a connector", every connection probed, serving connection auto-resolved.
    WS28 dedicates one connection explicitly. missing:[] still means recon-verified tool gaps. Consent is
@@ -1578,7 +1578,7 @@ function isWriteAct(a){return WRITE_ACTS.has(a);}
    A number in the working is the headline's own input, restated — it cannot drift.
    ============================================================================ */
 let _proofSeq=0;
-const _esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const _esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 /* one "label  value" line; opts.term=[term,def] adds an ⓘ on the LABEL (not the value) */
 function proofRow(label,value,opts){opts=opts||{};
   const term=opts.term?proofTerm(opts.term[0],opts.term[1]):"";
@@ -2462,7 +2462,7 @@ async function _refreshOnce(){
     /* start (or continue) background licence verification — serial, one MCP slot, abandons on reqSeq */
     if(LICQ.length&&!LICQ_RUN){LICQ_SEQ=my;licVerifyLoop(my);}
     const prj=PRJ;
-    if(!PROJECTS.length||!prj){blankData();setNoProj(true);var _kk=_fk||DISC_ERR;const _nb=document.getElementById("noproj");if(_nb){_nb.innerHTML=(_forbidden||_kk)?("<b>"+((_kk&&_kk.t)||"This licence isn’t accessible via the MCP Server.")+"</b><br>"+((_kk&&_kk.d)||"The Revizto MCP could not read this licence from any of your connections. Nothing can be shown live; switch licence above.")):"<b>No projects in this licence.</b><br>Nothing to display — all project insights are cleared. Switch licence above to view a project.";}var _noconn=!!(_kk&&_kk.k==="noconn");setSrc(_noconn?"Revizto MCP not connected":((_forbidden||_kk)?"Licence not accessible via MCP":"No projects in this licence"),_noconn?"#0097A7":((_forbidden||_kk)?"#B42318":"#0097A7"));renderHeader();renderPicker();renderTab(current);return;}
+    if(!PROJECTS.length||!prj){blankData();setNoProj(true);var _kk=_fk||DISC_ERR;const _nb=document.getElementById("noproj");if(_nb){_nb.innerHTML=(_forbidden||_kk)?("<b>"+((_kk&&_kk.t)||"This licence isn’t accessible via the MCP Server.")+"</b><br>"+_esc((_kk&&_kk.d)||"The Revizto MCP could not read this licence from any of your connections. Nothing can be shown live; switch licence above.")):"<b>No projects in this licence.</b><br>Nothing to display — all project insights are cleared. Switch licence above to view a project.";}var _noconn=!!(_kk&&_kk.k==="noconn");setSrc(_noconn?"Revizto MCP not connected":((_forbidden||_kk)?"Licence not accessible via MCP":"No projects in this licence"),_noconn?"#0097A7":((_forbidden||_kk)?"#B42318":"#0097A7"));renderHeader();renderPicker();renderTab(current);return;}
     setNoProj(false);
     /* WS33 (QA): the `||arr[0]` fallback is GONE. When PRJ was a stale uuid from another licence (which
        happens when an all-archived licence leaves pickDefaultProject with nothing to return), this
@@ -2985,7 +2985,7 @@ if(LICENSES.length>1){w.hidden=false;
        Blocked rows are `disabled` so the picker cannot hand the app a licence already proven unreadable. */
     const grp=(label,items)=>items.length?`<optgroup label="${tcsEsc(label)}">`+items.map(o=>o).join("")+`</optgroup>`:"";
     const opt=l=>{const s=licStateLabel(l);
-      return `<option value="${l.uuid}" ${l.uuid===LIC?"selected":""} ${s.sel?"":"disabled"}>`+
+      return `<option value="${tcsEsc(l.uuid)}" ${l.uuid===LIC?"selected":""} ${s.sel?"":"disabled"}>`+
         tcsEsc(l.name||l.uuid)+(s.note?tcsEsc(" — "+s.note):"")+`</option>`;};
     const ready=[],checking=[],blocked=[];
     LICENSES.forEach(l=>{const st=(LICSTATE[l.uuid]||{}).state;
@@ -3392,7 +3392,7 @@ async function loadProjectMembers(p,seq){try{const m=await call(RB+"list_project
 const STAT_LEGACY={open:"Open",in_progress:"In progress",solved:"Solved",closed:"Closed"};
 function writesOff(){return READONLY||!(window.RVZ_BRIDGE&&window.RVZ_BRIDGE.callMcpTool);}
 function assigneeOptions(){const set=new Set();PMEMBERS.map(m=>m.email).forEach(e=>e&&set.add(e));(DATA.assignees||[]).forEach(a=>{if(a[0]&&a[0]!=="(unassigned)")set.add(a[0]);});return [...set];}
-function actInit(){const fa=document.getElementById("fAssignee");if(fa){const cur=fa.value;fa.innerHTML='<option value="">Any assignee</option>'+assigneeOptions().map(e=>`<option value="${e}">${e}</option>`).join("");fa.value=cur;}
+function actInit(){const fa=document.getElementById("fAssignee");if(fa){const cur=fa.value;fa.innerHTML='<option value="">Any assignee</option>'+assigneeOptions().map(e=>`<option value="${_esc(e)}">${_esc(e)}</option>`).join("");fa.value=cur;}
   const lb=document.getElementById("loadWorkBtn");if(lb)lb.onclick=loadWork;renderRecs();renderWork();}
 /* ---- rebalance readiness: ONE source of truth for open-backlog concentration (WS13) ----
    Basis = sum of EXACT per-assignee open counts (issueCount statuses:["open"] per contributor),
@@ -3494,7 +3494,7 @@ function actionRecs(){const out=[];const crit=((DATA.priority||{}).critical||0)+
   }
   if(!out.length)out.push({key:"loadcrit",title:"Open the worklist",desc:"Load issues to review and action — nothing flagged automatically right now.",write:false});
   return out;}
-function recCard(c){const card=`<button class="rec ${c.write?'rec-write':''}" data-rec="${c.key}" aria-label="${c.title}"><span class="rec-arrow" aria-hidden="true">${REC_ARROW_IC}</span><span class="rec-body"><b>${c.title}</b><span class="rec-desc">${c.desc}</span><span class="rec-badge ${c.write?'w':''}">${c.write?WARN_IC+' Approval-gated write to Revizto':'↳ Loads the worklist'}</span></span></button>`;
+function recCard(c){const card=`<button class="rec ${c.write?'rec-write':''}" data-rec="${_esc(c.key)}" aria-label="${_esc(c.title)}"><span class="rec-arrow" aria-hidden="true">${REC_ARROW_IC}</span><span class="rec-body"><b>${_esc(c.title)}</b><span class="rec-desc">${_esc(c.desc)}</span><span class="rec-badge ${c.write?'w':''}">${c.write?WARN_IC+' Approval-gated write to Revizto':'↳ Loads the worklist'}</span></span></button>`;
   /* proof expander is a SIBLING of the card button (a button can't legally nest a button); the toggle's own delegated handler stopPropagations so opening the working never fires the card action */
   return c.proof?`<div class="rec-cell">${card}${c.proof}</div>`:card;}
 function renderBriefRecs(){hideTip();const el=document.getElementById("briefRecs");if(!el)return;
@@ -3503,7 +3503,7 @@ function renderBriefRecs(){hideTip();const el=document.getElementById("briefRecs
   el.querySelectorAll("[data-rec]").forEach(b=>b.onclick=()=>{if(b.dataset.rec==="rebalance")actSeed(rebalanceSeed(),rebalanceNote());else runRec(b.dataset.rec,true);});}
 function renderRecs(){hideTip();const el=document.getElementById("aiRecs");if(!el)return;
   if(writesOff()){el.innerHTML=`<div class="ro-note">${READONLY?"Read-only mode — issue actions are disabled. Toggle it off to make changes.":"Connect the Revizto MCP to enable issue actions."}</div>`;return;}
-  el.innerHTML=`<div class="rec-h">Recommended actions — click to review; you approve before anything writes to Revizto</div><div class="rec-row">`+actionRecs().map(recCard).join("")+`</div>`+(LAST?`<button class="btn undo" id="undoBtn">↩ Undo last change — ${LAST.summary}</button>`:"");
+  el.innerHTML=`<div class="rec-h">Recommended actions — click to review; you approve before anything writes to Revizto</div><div class="rec-row">`+actionRecs().map(recCard).join("")+`</div>`+(LAST?`<button class="btn undo" id="undoBtn">↩ Undo last change — ${_esc(LAST.summary)}</button>`:"");
   el.querySelectorAll("[data-rec]").forEach(b=>b.onclick=()=>{if(b.dataset.rec==="rebalance")actSeed(rebalanceSeed(),rebalanceNote());else runRec(b.dataset.rec,false);});
   const ub=document.getElementById("undoBtn");if(ub)ub.onclick=doUndo;}
 async function loadWork(){if(!(window.RVZ_BRIDGE&&window.RVZ_BRIDGE.callMcpTool)){document.getElementById("workStatus").textContent="Connect the MCP to load issues.";return;}
@@ -3515,7 +3515,7 @@ async function loadWork(){if(!(window.RVZ_BRIDGE&&window.RVZ_BRIDGE.callMcpTool)
     WORK=d.map(i=>({uuid:i.uuid,id:(i.id&&i.id.value)||i.id,title:val(i,"title"),status:val(i,"status"),priority:val(i,"priority"),assignee:val(i,"assignee")}));
     workSel=new Set();renderWork();document.getElementById("workStatus").textContent=`${WORK.length} loaded${(typeof r.count==="number")?` of ${fmt(r.count)} matching`:""}.`;
   }catch(e){document.getElementById("workStatus").textContent="Couldn't load issues.";}}
-function rowHtml(w){const on=workSel.has(w.uuid);const _iu=curIssueUrl(w.id);const _idCell=_iu?`<a href="${_iu}" target="_blank" rel="noopener" class="sg-issuelink" title="Open issue #${w.id} in Revizto">${w.id}</a>`:String(w.id);return `<tr data-w="${w.uuid}" class="${on?"sel":""}" tabindex="0" role="button" aria-pressed="${on}"><td><span class="selbox ${on?"on":""}">${on?"✓":""}</span></td><td class="em">${_idCell}</td><td>${(w.title||"").replace(/</g,"&lt;")}</td><td class="em">${STAT_LEGACY[w.status]||w.status||""}</td><td class="em">${w.priority||""}</td><td class="em">${w.assignee||"—"}</td></tr>`;}
+function rowHtml(w){const on=workSel.has(w.uuid);const _iu=curIssueUrl(w.id);const _idCell=_iu?`<a href="${_esc(_iu)}" target="_blank" rel="noopener" class="sg-issuelink" title="Open issue #${_esc(w.id)} in Revizto">${_esc(w.id)}</a>`:_esc(w.id);return `<tr data-w="${_esc(w.uuid)}" class="${on?"sel":""}" tabindex="0" role="button" aria-pressed="${on}"><td><span class="selbox ${on?"on":""}">${on?"✓":""}</span></td><td class="em">${_idCell}</td><td>${_esc(w.title||"")}</td><td class="em">${_esc(STAT_LEGACY[w.status]||w.status||"")}</td><td class="em">${_esc(w.priority||"")}</td><td class="em">${_esc(w.assignee||"—")}</td></tr>`;}
 function renderWork(){const t=document.getElementById("workTable");if(!t)return;
   if(!WORK.length){t.innerHTML='<div class="empty">No issues loaded. Filter above or pick an AI recommendation, then Load issues.</div>';const st=document.getElementById("selToolbar");if(st)st.style.display="none";renderBulkBar();return;}
   t.innerHTML=`<table class="wtbl"><thead><tr><th style="width:34px"></th><th>#</th><th>Title</th><th>Status</th><th>Priority</th><th>Assignee</th></tr></thead><tbody id="workBody">`+WORK.map(rowHtml).join("")+`</tbody></table>`;
@@ -3524,7 +3524,7 @@ function renderWork(){const t=document.getElementById("workTable");if(!t)return;
   body.addEventListener("keydown",e=>{if(e.target.closest("a"))return;if(e.key===" "||e.key==="Enter"){const tr=e.target.closest("tr[data-w]");if(tr){e.preventDefault();toggleSel(tr.dataset.w);}}});
   updateSelToolbar();renderBulkBar();}
 function toggleSel(u){if(workSel.has(u))workSel.delete(u);else workSel.add(u);
-  const tr=document.querySelector(`tr[data-w="${u}"]`);if(tr){const on=workSel.has(u);tr.classList.toggle("sel",on);tr.setAttribute("aria-pressed",on);const c=tr.querySelector(".selbox");if(c){c.classList.toggle("on",on);c.textContent=on?"✓":"";}}
+  const tr=[...document.querySelectorAll("tr[data-w]")].find(t=>t.getAttribute("data-w")===u);if(tr){const on=workSel.has(u);tr.classList.toggle("sel",on);tr.setAttribute("aria-pressed",on);const c=tr.querySelector(".selbox");if(c){c.classList.toggle("on",on);c.textContent=on?"✓":"";}}
   updateSelToolbar();renderBulkBar();}
 function updateSelToolbar(){const el=document.getElementById("selToolbar");if(!el)return;if(!WORK.length){el.style.display="none";return;}
   el.style.display="flex";const n=workSel.size,all=n===WORK.length;
@@ -3582,11 +3582,11 @@ function showConfirm(plan){if(writesOff())return;if(jobActive()){showModalMsg("A
     : `<div class="confirm-note"><b>Before you continue.</b> ${promptLine} When the small Claude window appears, choose <b>Allow</b> to keep going or <b>Cancel</b> to stop — nothing changes in Revizto until you approve, and every issue gets a dated note recording who changed it and why.</div>`;
   const proceedLbl=big?`Start — ${vb.inf} ${fmt(total)} issue(s)`:`Proceed — ${vb.inf} ${fmt(total)} issue(s)`;
   card.innerHTML=`<div class="confirm-h">${WARN_IC} Confirm — this writes to Revizto</div>
-    <div class="confirm-sum">${plan.summary}</div>
+    <div class="confirm-sum">${_esc(plan.summary)}</div>
     ${plan.proof||""}
-    <ul class="confirm-list">${plan.groups.map(g=>`<li>${g.label} — ${fmt(g.issueUuids.length)} issue(s)</li>`).join("")}</ul>
-    <label class="reason">Reason — written into each issue <span class="tcs-req">· required</span> <input type="text" id="cReason" value="${(plan.reason||"").replace(/"/g,"&quot;")}"></label>
-    <label class="reason">Your name / initials — for the audit trail <span class="tcs-req">· required</span> <input type="text" id="cActor" value="${(ME.name||"").replace(/"/g,"&quot;")}" placeholder="e.g. JH"></label>
+    <ul class="confirm-list">${plan.groups.map(g=>`<li>${_esc(g.label)} — ${fmt(g.issueUuids.length)} issue(s)</li>`).join("")}</ul>
+    <label class="reason">Reason — written into each issue <span class="tcs-req">· required</span> <input type="text" id="cReason" value="${_esc(plan.reason||"")}"></label>
+    <label class="reason">Your name / initials — for the audit trail <span class="tcs-req">· required</span> <input type="text" id="cActor" value="${_esc(ME.name||"")}" placeholder="e.g. JH"></label>
     ${noteHtml}
     <div class="confirm-actions"><button class="btn primary" id="cProceed">${proceedLbl}</button><button class="btn" id="cCancel">Cancel</button><span class="em" id="cMsg"></span></div>`;
   openModalA11y();m.hidden=false;const ri=document.getElementById("cReason");if(ri)setTimeout(()=>ri.focus(),10);
@@ -3711,10 +3711,10 @@ function dismissJob(){JOB=null;persistJob();const d=document.getElementById("job
   try{if(typeof actReset==="function")actReset();if(typeof actRenderEgs==="function")actRenderEgs();}catch(e){}}
 function renderDock(){const d=document.getElementById("jobDock");if(!d||!JOB)return;
   const t=jobTotals();const pct=JOB.totalN?Math.round(100*t.done/JOB.totalN):0;
-  const title=(JOB.summary||"Bulk update").replace(/</g,"&lt;");
+  const title=_esc(JOB.summary||"Bulk update");
   const head=`<div class="jd-head"><span class="jd-ttl">${title}</span><button class="jd-min" id="jdMin" aria-label="Minimise job panel" title="Minimise">–</button></div>`;
   const _vp=JOB.verbPast||"updated";
-  const statRun=`<div class="jd-stat" role="status" aria-live="polite"><b>${fmt(t.conf)}</b> ${_vp}${t.alr?` · ${fmt(t.alr)} already correct`:""} of ${fmt(JOB.totalN)}</div>`;
+  const statRun=`<div class="jd-stat" role="status" aria-live="polite"><b>${fmt(t.conf)}</b> ${_esc(_vp)}${t.alr?` · ${fmt(t.alr)} already correct`:""} of ${fmt(JOB.totalN)}</div>`;
   let body;
   if(JOB.status==="running"||JOB.status==="stopping"){
     const sub=JOB.status==="stopping"?"Finishing the current batch…":`${fmt(t.rem)} to go · ${etaBand(t.rem,JOB.rate)} left`;
@@ -3735,7 +3735,7 @@ function renderDock(){const d=document.getElementById("jobDock");if(!d||!JOB)ret
   }else{
     const allOk=!t.fail;
     body=`<div class="jd-track"><i style="width:100%"></i></div>
-      <div class="jd-stat" role="status" aria-live="polite"><b class="${allOk?"jd-ok":"jd-warn"}">${fmt(t.conf)} ${_vp}</b>${t.alr?` · ${fmt(t.alr)} already correct`:""}${t.fail?` · <span class="jd-warn"><span aria-hidden="true">✕</span> ${fmt(t.fail)} not confirmed</span>`:""}.</div>
+      <div class="jd-stat" role="status" aria-live="polite"><b class="${allOk?"jd-ok":"jd-warn"}">${fmt(t.conf)} ${_esc(_vp)}</b>${t.alr?` · ${fmt(t.alr)} already correct`:""}${t.fail?` · <span class="jd-warn"><span aria-hidden="true">✕</span> ${fmt(t.fail)} not confirmed</span>`:""}.</div>
       <div class="jd-hint">Counts are verified against Revizto’s own response — only confirmed changes are reported, and every changed issue carries a dated audit note.${t.fail?" Resume to retry the unconfirmed issues.":""} Use Reload (top-right) for a full re-sync.</div>
       <div class="jd-actions">${t.fail?`<button class="jd-btn go" id="jdResume">Retry ${fmt(t.fail)}</button>`:""}<button class="jd-btn" id="jdDismiss">Done</button></div>`;
   }
@@ -3751,9 +3751,9 @@ function offerResume(){let j=null;try{let raw=localStorage.getItem(jobKey());if(
   PENDING_RESUME=j;const b=document.getElementById("resumeBanner");if(!b)return;
   const ageD=Math.floor((Date.now()-(j.startedAt||Date.now()))/86400000);
   const stale=ageD>=7?` <span class="jd-warn">Started ${ageD} days ago — assignments may be out of date.</span>`:"";
-  const where=(j.prjName&&j.prj!==PRJ)?` in ${(""+j.prjName).replace(/</g,"&lt;")}`:"";
+  const where=(j.prjName&&j.prj!==PRJ)?` in ${_esc(j.prjName)}`:"";
   const jv=(j.verbPast||"updated");const jvCap=jv.charAt(0).toUpperCase()+jv.slice(1);
-  b.innerHTML=`<div class="rb-txt"><b>Bulk job paused${where} — ${jvCap} ${fmt(j.totalN)} issue(s).</b> ${fmt(done)} of ${fmt(j.totalN)} confirmed, ${fmt(rem)} remaining.${stale}</div>
+  b.innerHTML=`<div class="rb-txt"><b>Bulk job paused${where} — ${_esc(jvCap)} ${fmt(j.totalN)} issue(s).</b> ${fmt(done)} of ${fmt(j.totalN)} confirmed, ${fmt(rem)} remaining.${stale}</div>
     <div class="jd-actions" style="margin:0"><button class="jd-btn go" id="rbContinue">Continue</button><button class="jd-btn" id="rbDiscard">Discard</button></div>`;
   b.hidden=false;
   const cont=document.getElementById("rbContinue");if(cont)cont.onclick=()=>{if(JOB_LOOP)return;JOB=PENDING_RESUME;PENDING_RESUME=null;JOB.status="paused";b.hidden=true;b.innerHTML="";showDock();runJob();};
@@ -3768,7 +3768,7 @@ function renderPicker(){const btn=document.getElementById("prjBtn");if(!btn)retu
   const cur=PROJECTS.find(p=>p.uuid===PRJ)||{title:_emptyLbl};lbl.textContent=cur.title;btn.disabled=!PROJECTS.length&&!_arch;
   function paint(q){q=(q||"").toLowerCase();const items=PROJECTS.filter(p=>!q||(p.title||"").toLowerCase().includes(q));
     const rows=items.length?items.map(p=>{const t=prjTag(p);
-      return `<div class="combo-opt ${p.uuid===PRJ?"sel":""}" role="option" data-u="${p.uuid}" tabindex="0">${p.title}`+
+      return `<div class="combo-opt ${p.uuid===PRJ?"sel":""}" role="option" data-u="${_esc(p.uuid)}" tabindex="0">${_esc(p.title)}`+
         (t?` <span class="em" style="font-size:11px">· ${t}</span>`:"")+
         (p.uuid===PRJ?'<span class="combo-tick">✓</span>':"")+`</div>`;}).join(""):'<div class="em" style="padding:8px 10px">No projects match.</div>';
     /* archived affordance sits INSIDE the picker, next to the list it changes (affordance proximity) */
@@ -3833,10 +3833,10 @@ function cmpChipState(u){
 function refreshCmpControls(){cmpInit();const q=((document.getElementById("cmpSearch")||{}).value||"").toLowerCase();
   const list=PROJECTS.filter(p=>!q||(p.title||"").toLowerCase().includes(q));
   const L=document.getElementById("cmpList");
-  if(L){L.innerHTML=list.length?list.map(p=>`<label class="cmp-row"><input type="checkbox" data-u="${p.uuid}" ${window._cmpSel.has(p.uuid)?"checked":""}><span>${p.title}</span><span class="em">${(p.lastActive||"").slice(0,10)||"—"}</span></label>`).join(""):`<div class="em" style="padding:10px">No projects match “${q}”.</div>`;
+  if(L){L.innerHTML=list.length?list.map(p=>`<label class="cmp-row"><input type="checkbox" data-u="${_esc(p.uuid)}" ${window._cmpSel.has(p.uuid)?"checked":""}><span>${_esc(p.title)}</span><span class="em">${_esc((p.lastActive||"").slice(0,10)||"—")}</span></label>`).join(""):`<div class="em" style="padding:10px">No projects match “${_esc(q)}”.</div>`;
     L.querySelectorAll("input[data-u]").forEach(cb=>cb.onchange=()=>{cb.checked?window._cmpSel.add(cb.dataset.u):window._cmpSel.delete(cb.dataset.u);refreshCmpControls();});}
   const C=document.getElementById("cmpChips");
-  if(C){C.innerHTML=[...window._cmpSel].map(u=>{const p=PROJECTS.find(x=>x.uuid===u)||{title:u};return `<span class="chip">${cmpChipState(u)}${p.title}<button data-rm="${u}" aria-label="Remove ${p.title}">×</button></span>`;}).join("");
+  if(C){C.innerHTML=[...window._cmpSel].map(u=>{const p=PROJECTS.find(x=>x.uuid===u)||{title:u};return `<span class="chip">${cmpChipState(u)}${_esc(p.title)}<button data-rm="${_esc(u)}" aria-label="Remove ${_esc(p.title)}">×</button></span>`;}).join("");
     C.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{if(cmpLoading)return;window._cmpSel.delete(b.dataset.rm);refreshCmpControls();});}
   const run=document.getElementById("cmpRun");if(run){const n=window._cmpSel.size;
     if(cmpLoad){run.innerHTML=`<span class="cmp-spin"></span>Comparing ${Math.min(cmpLoad.i+1,cmpLoad.order.length)} of ${cmpLoad.order.length}…`;run.disabled=true;}
@@ -3941,7 +3941,7 @@ function cmpIndivSeries(){
 async function cmpMemMap(uuid){try{const r=await call(RB+"list_project_members",{projectUuid:uuid});const ents=(r&&(r.entities||r))||[];const mp={};ents.forEach(e=>{const nm=(e.fullname||[e.firstname,e.lastname].filter(Boolean).join(" ")||"").trim();mp[e.email]={dep:e.department||"",co:e.company||"",role:(e.accessRole&&e.accessRole.name)||"",nm:nm||e.email};});return mp;}catch(e){return {};}}
 function cmpMemName(au){if(!au||au==="(unassigned)")return "Unassigned";for(const m of COMPARE){const info=(m._memMap||{})[au];if(info&&info.nm)return info.nm;}return au;}
 async function cmpStampMap(uuid){try{const r=await call(RB+"list_stamp_templates",{projectUuid:uuid});const ents=(r&&(r.entities||r))||[];const mp={};ents.forEach(t=>{try{const f=typeof t.fields==="string"?JSON.parse(t.fields):(t.fields||{});if(f&&f.stampColor!=null&&mp[f.stampColor]==null)mp[f.stampColor]=t.title;}catch(e){}});return mp;}catch(e){return {};}}
-function cmpPanelPending(key,viewing){return `<div class="cmp-mp"><p class="cmp-mp-ttl">${key}${viewing?' <span class="sg-cur-pill">Current</span>':''}</p><div class="em" style="padding:16px 0;font-size:var(--fs-2)">Building trend…</div></div>`;}
+function cmpPanelPending(key,viewing){return `<div class="cmp-mp"><p class="cmp-mp-ttl">${_esc(key)}${viewing?' <span class="sg-cur-pill">Current</span>':''}</p><div class="em" style="padding:16px 0;font-size:var(--fs-2)">Building trend…</div></div>`;}
 /* WS33 (QA round 4) SAMPLE-RATIO DENOMINATOR. Round 3 correctly re-based cmpTrend's coverage on the
    project's TRUE grand total (grossTotal) rather than the four-bucket sum, because the bucket sum
    understates a project using custom statuses and made "Coverage exact" appear at 33% coverage. But every
@@ -3965,8 +3965,8 @@ function cmpMultiPanel(key,weeks,exact,sampleN,tot,viewing,gross){
   const axis=`<line x1="${gx}" y1="${pT}" x2="${gx}" y2="${pB}" stroke="var(--muted)" stroke-width="1.25"/><line x1="${gx}" y1="${pB}" x2="${pR}" y2="${pB}" stroke="var(--muted)" stroke-width="1.25"/>`;
   const ticks=`<text x="${gx-5}" y="${pB+3}" text-anchor="end" font-size="10" fill="var(--muted)">0</text><text x="${gx-5}" y="${pT+7}" text-anchor="end" font-size="10" fill="var(--muted)">${fmt(mx)}</text>`;
   const cov=exact?`<span style="color:var(--teal-deep)">exact</span>`:`<span style="color:#B26B00">sampled ${fmt(sampleN||0)}/${fmt(((gross!=null&&gross>0)?gross:tot)||0)}</span>`;
-  return `<div class="cmp-mp"><p class="cmp-mp-ttl">${key}${viewing?' <span class="sg-cur-pill">Current</span>':''}</p>`+
-    `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="${key} active backlog trend, axis 0 to ${fmt(mx)}, latest ${last}">${area}${axis}${ticks}<polyline points="${actPts}" fill="none" stroke="${dir}" stroke-width="2" stroke-linejoin="round"/><polyline points="${projPts}" fill="none" stroke="${dir}" stroke-width="1.5" stroke-dasharray="3 3" opacity=".55"/><circle cx="${lx}" cy="${ly}" r="3" fill="${dir}"/><text x="${pR+3}" y="${ly+3}" font-size="11" fill="var(--concrete)" font-weight="600">${last}</text></svg>`+
+  return `<div class="cmp-mp"><p class="cmp-mp-ttl">${_esc(key)}${viewing?' <span class="sg-cur-pill">Current</span>':''}</p>`+
+    `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="${_esc(key)} active backlog trend, axis 0 to ${fmt(mx)}, latest ${last}">${area}${axis}${ticks}<polyline points="${actPts}" fill="none" stroke="${dir}" stroke-width="2" stroke-linejoin="round"/><polyline points="${projPts}" fill="none" stroke="${dir}" stroke-width="1.5" stroke-dasharray="3 3" opacity=".55"/><circle cx="${lx}" cy="${ly}" r="3" fill="${dir}"/><text x="${pR+3}" y="${ly+3}" font-size="11" fill="var(--concrete)" font-weight="600">${last}</text></svg>`+
     `<p class="cmp-mp-cov" data-proof-i tabindex="0" aria-label="Coverage" data-proof-def="${_esc("Vertical axis is fixed at 0 so every card shares the same floor; the top tick is the panel's own peak. Exact = rebuilt from all issues. Sampled = from a representative sample of the project's history (large projects); the trend shape is representative, the latest value approximate.")}">${cov}</p></div>`;
 }
 function renderMulti(){const el=document.getElementById("cmpMulti");if(!el)return;
@@ -3991,7 +3991,7 @@ function renderScan(){const el=document.getElementById("cmpScan");if(!el)return;
     const col=net==null?"var(--muted)":(net>0?"var(--red)":(net<0?"var(--teal-deep)":"var(--muted)"));
     const word=net==null?"loading…":(net>0?"growing":(net<0?"shrinking":"holding"));
     const cov=s.exact?`<span style="color:var(--teal-deep)">${fmt(s.tot)} / issues · exact</span>`:(has?`<span style="color:#B26B00">${fmt(s.sampleN!=null?s.sampleN:s.tot)} ${cmpPivot!=="projects"?"issues · sample":"/ of "+fmt((s.gross!=null&&s.gross>0)?s.gross:s.tot)+" · sample"}</span>`:`<span class="em">loading…</span>`);
-    return `<div class="cmp-ct"><p class="cmp-ct-ttl">${s.key}${s.viewing?' <span class="sg-cur-pill">Current</span>':''}</p><div class="cmp-ct-fig" data-proof-i tabindex="0" aria-label="Net backlog, last 90 days" data-proof-def="${_esc("Net backlog = issues opened minus resolved over the last 90 days. Red = growing, teal = shrinking, grey = holding.")}"><span class="cmp-ct-num" style="color:${col}">${has?sgn+Math.abs(net):'—'}</span><span class="cmp-ct-word">${word}</span></div><p class="cmp-ct-rate">Resolution rate <b>${s.rate}%</b></p><p class="cmp-ct-cov" data-proof-i tabindex="0" aria-label="Coverage" data-proof-def="${_esc("Green = exact live count. Amber = a representative sample for large projects; totals and resolution rate stay exact.")}">${cov}</p></div>`;};
+    return `<div class="cmp-ct"><p class="cmp-ct-ttl">${_esc(s.key)}${s.viewing?' <span class="sg-cur-pill">Current</span>':''}</p><div class="cmp-ct-fig" data-proof-i tabindex="0" aria-label="Net backlog, last 90 days" data-proof-def="${_esc("Net backlog = issues opened minus resolved over the last 90 days. Red = growing, teal = shrinking, grey = holding.")}"><span class="cmp-ct-num" style="color:${col}">${has?sgn+Math.abs(net):'—'}</span><span class="cmp-ct-word">${word}</span></div><p class="cmp-ct-rate">Resolution rate <b>${s.rate}%</b></p><p class="cmp-ct-cov" data-proof-i tabindex="0" aria-label="Coverage" data-proof-def="${_esc("Green = exact live count. Amber = a representative sample for large projects; totals and resolution rate stay exact.")}">${cov}</p></div>`;};
   const eye=cmpPivot==="teams"?"Teams":(cmpPivot==="indiv"?"Individuals":"Portfolio");const ttl=cmpPivot==="teams"?"Team scan":(cmpPivot==="indiv"?"Individual scan":"Portfolio scan");
   const head=`<div class="sec" style="margin-top:0"><div class="sec-eye">${eye}</div><div class="sec-ttl">${ttl}<button type="button" class="proof-i" data-proof-i aria-label="${ttl} — how it's computed" data-proof-def="Net backlog = issues opened minus resolved over the last 90 days, per ${cmpPivot==="teams"?"team":(cmpPivot==="indiv"?"person":"project")}. Green = exact live count; amber = a representative sample for large projects. Resolution rate is exact."><span aria-hidden="true">&#9432;</span></button></div><div class="sec-sub">Net backlog movement over the last 90 days${ser.note?" · "+ser.note:""}</div></div>`;
   const body=ser.series.length?`<div class="cmp-scan">${ser.series.map(card).join("")}</div>`:`<div class="card"><div class="em" style="padding:8px 0">No team data for this grouping across the selected projects.</div></div>`;
@@ -4004,7 +4004,7 @@ function renderCompare(){cmpInit();cmpPivotShell();cmpPickerShell();refreshCmpCo
   renderResults();}
 /* Deep-link an issue back to the Revizto web workspace (format from live app "Copy link").
    Host from CONFIG.wsHost — each connection declares its own workspace host; fallback = ws.revizto.com. */
-function cmpIssueUrl(m,issueId){if(!m||!m.id||!m.lic||issueId==null)return null;return `https://${CONFIG.wsHost||"ws.revizto.com"}/redirect-app?url=revizto5://viewer/${m.id}/issue_tracker/${issueId}/0&licenseId=${m.lic}`;}
+function cmpIssueUrl(m,issueId){if(!m||!m.id||!m.lic||issueId==null)return null;return `https://${CONFIG.wsHost||"ws.revizto.com"}/redirect-app?url=revizto5://viewer/${encodeURIComponent(m.id)}/issue_tracker/${encodeURIComponent(issueId)}/0&licenseId=${encodeURIComponent(m.lic)}`;}
 /* Deep-link an issue in the CURRENTLY selected project back to Revizto (same builder + host as cross-project). Returns null (→ plain text) when the project/licence numeric ids are unavailable, e.g. demo mode. */
 function curIssueUrl(issueId){const p=(PROJECTS||[]).find(x=>x.uuid===PRJ)||{};const pid=p.id||DATA._projectId||0;const lic=p.license_id||(LICENSES.find(l=>l.uuid===LIC)||{}).id;return cmpIssueUrl({id:pid,lic:lic},issueId);}
 function cmpSignals(m){
@@ -4064,13 +4064,13 @@ function renderSignals(){const el=document.getElementById("cmpSignals");if(!el)r
       const tiles=[["Net backlog 90d",(m.net90!=null?(m.net90>0?"+":(m.net90<0?"−":"±"))+Math.abs(m.net90):"—"),(m.net90>0?"var(--red)":(m.net90<0?"var(--teal-deep)":"var(--ink)"))],["Resolution rate",m.rate+"%",(m.rate<40?"var(--red)":"var(--ink)")],["Issues"+(m.sampleComplete?" · exact":""),fmt(m.tot),"var(--ink)"],["Clash tests",fmt(m.clash),"var(--ink)"],["Sheets",(m.sheets==null?"—":fmt(m.sheets)),"var(--ink)"]];
       const tileH=tiles.map(t=>`<div class="sg-tile"><div class="v" style="color:${t[2]}">${t[1]}</div><div class="l">${t[0]}</div></div>`).join("");
       const drivers=[];const worstSig=s.sig.filter(g=>g.status==="risk").concat(s.sig.filter(g=>g.status==="watch"))[0];
-      if(worstSig)drivers.push(`<div><b style="font-weight:500;color:var(--ink)">What's driving attention:</b> ${worstSig.why}</div>`);
-      if(s.conc&&s.conc.share>=30)drivers.push(`<div style="margin-top:4px">Concentration — <b style="font-weight:500">${s.conc.owner}</b> holds ${s.conc.share}% of the active backlog (${s.conc.n} of ${s.conc.total}).</div>`);
-      if(s.oldest&&s.oldest.length)drivers.push(`<div style="margin-top:4px">Oldest open: ${s.oldest.map(o=>{const u=cmpIssueUrl(m,o.id);return (u?`<a href="${u}" target="_blank" rel="noopener" class="sg-issuelink" title="Open issue #${o.id} in Revizto">#${o.id}</a>`:`#${o.id}`)+` (${o.age}d)`;}).join(", ")}.</div>`);
+      if(worstSig)drivers.push(`<div><b style="font-weight:500;color:var(--ink)">What's driving attention:</b> ${_esc(worstSig.why)}</div>`);
+      if(s.conc&&s.conc.share>=30)drivers.push(`<div style="margin-top:4px">Concentration — <b style="font-weight:500">${_esc(s.conc.owner)}</b> holds ${s.conc.share}% of the active backlog (${s.conc.n} of ${s.conc.total}).</div>`);
+      if(s.oldest&&s.oldest.length)drivers.push(`<div style="margin-top:4px">Oldest open: ${s.oldest.map(o=>{const u=cmpIssueUrl(m,o.id);return (u?`<a href="${_esc(u)}" target="_blank" rel="noopener" class="sg-issuelink" title="Open issue #${_esc(o.id)} in Revizto">#${_esc(o.id)}</a>`:`#${_esc(o.id)}`)+` (${o.age}d)`;}).join(", ")}.</div>`);
       const cov=m.sampleComplete?"":`<div style="margin-top:6px" class="em">Concentration, criticals, overdue and oldest-open are from a ${fmt(m.sampleN||0)} of ${fmt((m.grossTotal!=null&&m.grossTotal>0)?m.grossTotal:m.tot)} representative sample.</div>`;
       drawer=`<div class="sg-drawer"><div class="sg-dhead">Breakdown<button type="button" class="proof-i" data-proof-i aria-label="Breakdown — how it's computed" data-proof-def="${_esc("The tiles are this project's key metrics. What's driving attention names the highest-severity signal and its cause; concentration and oldest-open are derived from the open issues. On large projects these are from a representative sample, noted below.")}"><span aria-hidden="true">&#9432;</span></button></div><div class="sg-tiles">${tileH}</div><div class="sg-drivers">${drivers.join("")}${cov}</div></div>`;
     }
-    return `<div class="sg-row${exp?" sg-open":""}${cur?" sg-cur":""}"><button type="button" class="sg-head" data-exp="${m.uuid}" aria-expanded="${exp}"><span class="sg-top"><span class="sg-dot" style="background:${dotCol[s.dot]}"></span><span class="sg-name">${m.title}</span>${cur?`<span class="sg-cur-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>Current</span>`:""}<span class="sg-exp">${exp?"Hide details":"Details"}<svg class="sg-cv" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></span></button><div class="sg-chips">${s.sig.map(chip).join("")}</div>${drawer}</div>`;};
+    return `<div class="sg-row${exp?" sg-open":""}${cur?" sg-cur":""}"><button type="button" class="sg-head" data-exp="${_esc(m.uuid)}" aria-expanded="${exp}"><span class="sg-top"><span class="sg-dot" style="background:${dotCol[s.dot]}"></span><span class="sg-name">${_esc(m.title)}</span>${cur?`<span class="sg-cur-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>Current</span>`:""}<span class="sg-exp">${exp?"Hide details":"Details"}<svg class="sg-cv" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></span></button><div class="sg-chips">${s.sig.map(chip).join("")}</div>${drawer}</div>`;};
   el.innerHTML=`<div class="sg-tools"><span class="sg-tlab">Sort</span>${sortSel}<span class="sg-tlab">Signal</span>${filtSel}<button type="button" class="sg-keybtn" id="cmpKeyBtn" aria-expanded="${cmpKeyOpen}">How signals are scored<svg class="sg-cv" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></div>${cmpKeyOpen?cmpKeyHtml():""}<div class="sg-tbl">${(renderSignals._errHtml||"")}${list.length?list.map(rowHtml).join(""):`<div class="sg-row"><div class="em" style="padding:14px">No projects match this signal filter.</div></div>`}</div>`;
   el.querySelectorAll("[data-exp]").forEach(b=>b.onclick=()=>{const u=b.dataset.exp;if(window._cmpExp.has(u))window._cmpExp.delete(u);else window._cmpExp.add(u);renderSignals();});
   const ss=document.getElementById("cmpSortSel");if(ss)ss.onchange=()=>{cmpSort=ss.value;renderSignals();};
@@ -4137,10 +4137,10 @@ function renderGroupSignals(){const el=document.getElementById("cmpSignals");if(
       const tiles=[["Net backlog 90d",(g.net90!=null?(g.net90>0?"+":(g.net90<0?"−":"±"))+Math.abs(g.net90):"—"),(g.net90>0?"var(--red)":(g.net90<0?"var(--teal-deep)":"var(--ink)"))],["Resolution rate",g.rate+"%",(g.rate<40?"var(--red)":"var(--ink)")],["Issues"+(g.exact?" · exact":""),fmt(g.tot),"var(--ink)"],["Open criticals",fmt(s.crit),(s.crit>0?"var(--red)":"var(--ink)")],["Overdue",fmt(s.overdue),(s.overdue>0?"var(--red)":"var(--ink)")]];
       const tileH=tiles.map(t=>`<div class="sg-tile"><div class="v" style="color:${t[2]}">${t[1]}</div><div class="l">${t[0]}</div></div>`).join("");
       const drivers=[];const worstSig=s.sig.filter(gg=>gg.status==="risk").concat(s.sig.filter(gg=>gg.status==="watch"))[0];
-      if(worstSig)drivers.push(`<div><b style="font-weight:500;color:var(--ink)">What's driving attention:</b> ${worstSig.why}</div>`);
+      if(worstSig)drivers.push(`<div><b style="font-weight:500;color:var(--ink)">What's driving attention:</b> ${_esc(worstSig.why)}</div>`);
       if(cmpPivot!=="indiv"&&s.topMembers&&s.topMembers.length)drivers.push(`<div style="margin-top:4px">Top members: ${s.topMembers.map(t=>`${_esc(cmpMemName(t.au))} <span class="em">(${t.n}·${t.share}%)</span>`).join(", ")}.</div>`);
       if(s.topPrj&&s.topPrj.length)drivers.push(`<div style="margin-top:4px">Top projects: ${s.topPrj.map(t=>`${_esc(t.pt)} <span class="em">(${t.n}·${t.share}%)</span>`).join(", ")}.</div>`);
-      if(s.oldest&&s.oldest.length)drivers.push(`<div style="margin-top:4px">Oldest open: ${s.oldest.map(o=>{const u=cmpIssueUrl({id:o.pid,lic:o.lic},o.id);return (u?`<a href="${u}" target="_blank" rel="noopener" class="sg-issuelink" title="Open issue #${o.id} in Revizto">#${o.id}</a>`:`#${o.id}`)+` (${o.age}d${o.pt?" · "+_esc(o.pt):""})`;}).join(", ")}.</div>`);
+      if(s.oldest&&s.oldest.length)drivers.push(`<div style="margin-top:4px">Oldest open: ${s.oldest.map(o=>{const u=cmpIssueUrl({id:o.pid,lic:o.lic},o.id);return (u?`<a href="${_esc(u)}" target="_blank" rel="noopener" class="sg-issuelink" title="Open issue #${_esc(o.id)} in Revizto">#${_esc(o.id)}</a>`:`#${_esc(o.id)}`)+` (${o.age}d${o.pt?" · "+_esc(o.pt):""})`;}).join(", ")}.</div>`);
       const cov=g.exact?"":`<div style="margin-top:6px" class="em">Concentration, criticals, overdue and oldest-open include at least one large project read from a representative sample.</div>`;
       drawer=`<div class="sg-drawer"><div class="sg-dhead">Breakdown<button type="button" class="proof-i" data-proof-i aria-label="Breakdown — how it's computed" data-proof-def="${_esc("The tiles are this "+unit+"'s key metrics across the selected projects. What's driving attention names the highest-severity signal; top members and top projects rank who and where the open backlog sits; oldest-open links to each issue in its own project. Where coverage is sample, large projects are read from a representative sample.")}"><span aria-hidden="true">&#9432;</span></button></div><div class="sg-tiles">${tileH}</div><div class="sg-drivers">${drivers.join("")}${cov}</div></div>`;
     }
@@ -4163,7 +4163,7 @@ function renderResults(){
 function renderTeamTable(){const ser=cmpSeries();const rows=ser.series||[];const t=document.getElementById("cmpTable");
   if(!rows.length){t.innerHTML=`<tbody><tr><td class="em" style="padding:14px">No team data for this grouping across the selected projects.</td></tr></tbody>`;return;}
   t.innerHTML=`<thead><tr><th>Team</th><th>Issues</th><th>Net backlog 90d</th><th>Resolution rate</th><th>Coverage</th></tr></thead><tbody>`+
-    rows.map(s=>`<tr><td class="cw">${s.key}</td><td>${fmt(s.tot)}</td><td>${s.net90>0?"+":(s.net90<0?"−":"±")}${Math.abs(s.net90)}</td><td>${s.rate}%</td><td class="em">sample</td></tr>`).join("")+`</tbody>`;}
+    rows.map(s=>`<tr><td class="cw">${_esc(s.key)}</td><td>${fmt(s.tot)}</td><td>${s.net90>0?"+":(s.net90<0?"−":"±")}${Math.abs(s.net90)}</td><td>${s.rate}%</td><td class="em">sample</td></tr>`).join("")+`</tbody>`;}
 let coffeeKey="coord";
 function dch(n){n=Math.round(n||0);if(!n)return '<span class="dch flat">±0</span>';const up=n>0;return `<span class="dch ${up?'good':'bad'}">${up?'▲':'▼'} ${up?'+':''}${n}</span>`;}
 function cpill(n){return '<span class="dch flat">'+fmt(n||0)+'</span>';}
@@ -4266,7 +4266,7 @@ function renderHealth(){const m=DATA.meta;const C=DATA.counts;const tot=C?C.tota
   const rowHtml=c=>{const exp=window._healthExp.has(c.id);
     let drawer="";
     if(exp){
-      const tileH=(c.tiles||[]).map(t=>`<div class="sg-tile"><div class="v"${t[2]?` style="color:${t[2]}"`:""}>${t[1]}</div><div class="l">${_esc(t[0])}</div></div>`).join("");
+      const tileH=(c.tiles||[]).map(t=>`<div class="sg-tile"><div class="v"${t[2]?` style="color:${t[2]}"`:""}>${_esc(t[1])}</div><div class="l">${_esc(t[0])}</div></div>`).join("");
       const link=c.link?`<div style="margin-top:12px"><button type="button" class="hc-link" data-tab="${c.link.tab}">${c.link.label} &rarr;</button></div>`:"";
       drawer=`<div class="sg-drawer"><div class="sg-tiles">${tileH}</div><div class="sg-drivers"><div class="sg-dhead">What's driving this</div>${_esc(c.driving)}<div class="sg-dhead" style="margin-top:12px">How this is scored</div>${_esc(c.scored)}${link}</div></div>`;
     }
@@ -4303,7 +4303,7 @@ function renderPortfolio(){const el=document.getElementById("portfolio");if(!el)
   top3.forEach(p=>{const cur=p.uuid===PRJ;let txt,col,stat;
     if(cur){const C=DATA.counts,tot=C?C.total:Object.values(DATA.status).reduce((a,b)=>a+b,0),active=C?(C.open+C.in_progress):(DATA.status.Open+DATA.status["In progress"]),resolved=C?(C.solved+C.closed):(DATA.status.Solved+DATA.status.Closed),rate=tot?Math.round(100*resolved/tot):0,v=riskVerdict(rate);txt=tot?v[0]:"No issues";col=tot?v[1]:"var(--muted)";stat=`${fmt(active)} active · ${rate}% resolved · ${fmt(tot)} total`;}
     else{const mm=PORTM[p.uuid];if(mm){const v=riskVerdict(mm.rate);txt=mm.tot?v[0]:"No issues";col=mm.tot?v[1]:"var(--muted)";stat=`${fmt(mm.active)} active · ${mm.rate}% resolved · ${fmt(mm.tot)} total`;}else{txt="Loading…";col="var(--muted)";stat="Fetching live data…";}}
-    html+=`<div class="pf-tile pf-live ${cur?"pf-current":""}" data-go="${p.uuid}" role="button" tabindex="0" aria-pressed="${cur}"><div class="pfn">${p.title}${cur?' <span class="pf-badge">Viewing</span>':''}</div><div class="pfm">${cur?"Live · this project":"Switch to this project →"}</div><div class="pfk" style="color:${col}">${txt}</div><div class="pfstat">${stat}</div><span class="pf-info">${proofTerm("How the portfolio reads",PF_INFO)}</span></div>`;});
+    html+=`<div class="pf-tile pf-live ${cur?"pf-current":""}" data-go="${_esc(p.uuid)}" role="button" tabindex="0" aria-pressed="${cur}"><div class="pfn">${_esc(p.title)}${cur?' <span class="pf-badge">Viewing</span>':''}</div><div class="pfm">${cur?"Live · this project":"Switch to this project →"}</div><div class="pfk" style="color:${col}">${txt}</div><div class="pfstat">${stat}</div><span class="pf-info">${proofTerm("How the portfolio reads",PF_INFO)}</span></div>`;});
   for(let i=top3.length;i<3;i++)html+=`<div class="pf-tile pf-ghost"><div class="pfn">Spare project card</div><div class="pfm">No further projects in this licence</div></div>`;
   el.innerHTML=html;
   el.querySelectorAll("[data-go]").forEach(c=>{c.onclick=()=>switchProject(c.dataset.go);c.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();switchProject(c.dataset.go);}};});
@@ -4330,7 +4330,7 @@ function renderCoffee(){const m=DATA.meta;
     ["Active members"+proofTerm("Active members","Licence members active on THIS project, over total licence members. 'dormant' = invited but not active on the project — an adoption signal, not a licence count."),(DATA.teamNote?"—":am),(DATA.teamNote?"":`<small>/ ${DATA.team.length}</small>`),(DATA.teamNote||`${dormant} dormant`),(DATA.teamNote?0:(DATA.team.length?Math.round(100*am/DATA.team.length):0))]];
   document.getElementById("kpis").innerHTML=kpis.map(k=>`<div class="card metric"><div class="lbl">${k[0]}</div><div class="val">${k[1]}${k[2]}</div><div class="note">${k[3]}</div><div class="spark"><i style="width:${k[4]}%"></i></div></div>`).join("");
   const quiet=(dl.d7.opened+dl.d7.resolved)===0;
-  document.getElementById("changed").innerHTML=(reconNote?`<div class="em" style="margin-bottom:8px">${reconNote} status counts don't yet sum to the project total — showing exact per-status figures while they re-sync.</div>`:``)+`<div class="ch-grid">`+changedCol("Since yesterday · 24h",dl.d1)+changedCol("Since last week · 7d",dl.d7)+`</div>`+(quiet?`<div class="em" style="margin-top:8px">Quiet — no issue movement in the last 7 days (last activity ${(DATA.meta.lastActive||'').slice(0,10)}).</div>`:``);
+  document.getElementById("changed").innerHTML=(reconNote?`<div class="em" style="margin-bottom:8px">${reconNote} status counts don't yet sum to the project total — showing exact per-status figures while they re-sync.</div>`:``)+`<div class="ch-grid">`+changedCol("Since yesterday · 24h",dl.d1)+changedCol("Since last week · 7d",dl.d7)+`</div>`+(quiet?`<div class="em" style="margin-top:8px">Quiet — no issue movement in the last 7 days (last activity ${_esc((DATA.meta.lastActive||'').slice(0,10))}).</div>`:``);
   const pp=document.getElementById("coffeePersona");
   pp.innerHTML=``+PERSONAS.map(p=>`<button class="fbtn" data-ck="${p.key}" aria-pressed="${p.key===coffeeKey}" title="${p.name}">${p.short||p.name}</button>`).join("");
   pp.querySelectorAll(".fbtn").forEach(b=>b.onclick=()=>{coffeeKey=b.dataset.ck;renderCoffee();});
@@ -4371,7 +4371,7 @@ function renderCoffee(){const m=DATA.meta;
     ["04","The Finish Line§Done and verified",`${dormant} licence member(s) invited but dormant; last project activity ${idle} days ago. Adoption is the quiet risk.`,[["Draft a nudge",`Draft a short, friendly nudge to the dormant project members to log back in and pick up their issues.`]],"Closure and adoption signals — dormant members and time since last activity — the quiet risks to getting everything verified and closed by your milestone."]];
   const actOf=a=>({'Rebalance load':'rebalance','Triage criticals':'loadcrit'})[a[0]]||'';
   document.getElementById("moves").innerHTML=moves.map(mv=>{const acts=mv[3].filter(a=>!(writesOff()&&isWriteAct(actOf(a))));/* hide write-back actions in read-only — Trust */
-    return `<div class="move"><div class="mn">${mv[0]}</div><div style="flex:1"><div class="mt">${mv[1].split("§")[0]}${mv[1].split("§")[1]?` <span class="msub">${mv[1].split("§")[1]}</span>`:""}${mv[4]?proofTerm(mv[1].split("§")[0],mv[4]):""}</div><div class="mi">${mv[2]}</div>${acts.length?`<div class="ma">`+acts.map((a,ai)=>`<button class="btn ${ai===0?'primary':''}" data-mv="${encodeURIComponent(a[1])}" data-act="${actOf(a)}" ${canAsk()?'':'disabled'}>${a[0]}</button>`).join("")+`</div>`:''}</div></div>`;}).join("");
+    return `<div class="move"><div class="mn">${mv[0]}</div><div style="flex:1"><div class="mt">${mv[1].split("§")[0]}${mv[1].split("§")[1]?` <span class="msub">${mv[1].split("§")[1]}</span>`:""}${mv[4]?proofTerm(mv[1].split("§")[0],mv[4]):""}</div><div class="mi">${_esc(mv[2])}</div>${acts.length?`<div class="ma">`+acts.map((a,ai)=>`<button class="btn ${ai===0?'primary':''}" data-mv="${encodeURIComponent(a[1])}" data-act="${actOf(a)}" ${canAsk()?'':'disabled'}>${a[0]}</button>`).join("")+`</div>`:''}</div></div>`;}).join("");
   document.querySelectorAll("#moves [data-mv]").forEach(b=>b.onclick=()=>{if(b.dataset.act==="rebalance"){actSeed(rebalanceSeed(),rebalanceNote());}else brew(P,decodeURIComponent(b.dataset.mv),b,b.dataset.act||"");});
   renderBriefRecs();
   const briefAction=RS.ready?"rebalance":(crit>0?"loadcrit":"");const bb=document.getElementById("brewBtn");if(bb)bb.onclick=()=>brew(P,`Give me my full Revizto Coffee brief as a ${lensName}: the project in four moves — Read the room, Spot the risk, Make the calls, Close the loop — all actionable in under 30 minutes. Concise and specific, use the numbers.`,bb,briefAction);
@@ -4655,10 +4655,10 @@ function actRenderEgs(){const eg=document.getElementById("actEg");if(!eg)return;
   const usedNow=actUsedPrompts();const chips=actRankChips(usedNow,lib,Date.now());
   const egl=usedNow.length?"Your usual moves:":"Try one of these:";
   const tag=(k,c)=>{
-    if(k==="most")return `<span class="ce-tag t-most"><span class="ce-ic" aria-hidden="true">${ACT_ICON.most}</span>×${c}</span>`;
+    if(k==="most")return `<span class="ce-tag t-most"><span class="ce-ic" aria-hidden="true">${ACT_ICON.most}</span>×${fmt(+c||0)}</span>`;
     if(k==="recent")return `<span class="ce-tag t-recent"><span class="ce-ic" aria-hidden="true">${ACT_ICON.recent}</span></span>`;
     if(k==="discover")return `<span class="ce-tag t-new">new</span>`;
-    if(k==="used"&&c>=2)return `<span class="ce-tag t-used">×${c}</span>`;
+    if(k==="used"&&c>=2)return `<span class="ce-tag t-used">×${fmt(+c||0)}</span>`;
     return "";};
   const aria=(k,c,t)=>{const b=String(t).replace(/"/g,"");
     if(k==="most")return b+" — your most used, "+c+" times";
@@ -4992,7 +4992,7 @@ function actDiffHtml(norm,target){const labels=(norm.changeLabel||"").split("; "
 function actShowPreview(target,norm){const stage=document.getElementById("actStage");if(!stage)return;
   const vb=planVerb(actToPlan(target,norm));const scope=actScopeLine(target);
   const n=target.count;
-  const sampleRows=(target.sample||[]).map(it=>{const _iu=it.id!=null?curIssueUrl(it.id):null;const _sid=_iu?`<a href="${_iu}" target="_blank" rel="noopener" class="sg-issuelink" title="Open issue #${it.id} in Revizto">${_esc(String(it.id))}</a>`:_esc(String(it.id||"—"));return `<li><span class="sid">${_sid}</span><span class="stt">${_esc(it.title||"(untitled)")}</span><span class="sas">${_esc(it.assignee||"—")}</span></li>`;}).join("");
+  const sampleRows=(target.sample||[]).map(it=>{const _iu=it.id!=null?curIssueUrl(it.id):null;const _sid=_iu?`<a href="${_esc(_iu)}" target="_blank" rel="noopener" class="sg-issuelink" title="Open issue #${_esc(it.id)} in Revizto">${_esc(String(it.id))}</a>`:_esc(String(it.id||"—"));return `<li><span class="sid">${_sid}</span><span class="stt">${_esc(it.title||"(untitled)")}</span><span class="sas">${_esc(it.assignee||"—")}</span></li>`;}).join("");
   stage.innerHTML=`<div class="act-prev">
     <div class="ap-count" tabindex="-1">${fmt(n)} <span class="un">issue${n===1?"":"s"} will ${vb.inf==="comment on"?"be commented on":"change"}</span></div>
     ${actDiffHtml(norm,target)}
@@ -5060,7 +5060,8 @@ const STATUS_NAME={open:"Open",in_progress:"In progress",solved:"Solved",closed:
 const STATUS_CAT={open:"To do",in_progress:"Tracking",solved:"Tracking",closed:"Completed"};
 const STATUS_CAT_COL={"To do":"#CC2929","Tracking":"#FFAA00","Completed":"#B8B8B8"};
 const dayMid=ms=>{const d=new Date(ms);d.setHours(0,0,0,0);return +d;};
-function stampHex(sc){if(sc==null)return null;if(typeof sc==="string"&&sc[0]==="#")return sc;const n=parseInt(sc,10);return STAMP_PAL[n]||null;}
+function _safeCol(c){return (typeof c==="string"&&/^#[0-9a-f]{3,8}$/i.test(c))?c:null;}
+function stampHex(sc){if(sc==null)return null;if(typeof sc==="string"&&sc[0]==="#")return _safeCol(sc);const n=parseInt(sc,10);return STAMP_PAL[n]||null;}
 function tlMilesKey(){return "rvz_miles_"+(PRJ||"x");}
 function milesGet(){try{return JSON.parse(localStorage.getItem(tlMilesKey())||"[]");}catch(e){return [];}}
 function milesSet(a){try{localStorage.setItem(tlMilesKey(),JSON.stringify(a.slice(0,10)));}catch(e){}}
@@ -5104,7 +5105,7 @@ function tlBuild(){
   const predOpened=new Array(lastIdx+1);for(let i=0;i<=todayIdx;i++)predOpened[i]=openedCum[i];
   for(let i=todayIdx+1;i<=lastIdx;i++)predOpened[i]=predOpened[i-1]+gOpenRate;
   const ds=[],legend=[],keys=Object.keys(groups).sort((a,b)=>a==="Other"?1:b==="Other"?-1:groups[b].length-groups[a].length);const measure=TL.measure||"count";
-  function colFor(k,idx){if(dim==="priority")return PRIO_COL[k]||"#777";if(dim==="stamp"){if(k==="Unstamped")return GROUP_GREY;const any=groups[k].find(r=>r.sc!=null);const hx=any?stampHex(any.sc):null;return hx||AUTH_PAL[idx%AUTH_PAL.length];}if(k==="Other")return GROUP_GREY;if(dim==="author")return AUTH_PAL[idx%AUTH_PAL.length];if(dim==="status")return STATUS_COL[k]||"#777";if(dim==="type"){const ty=(TYPES||[]).find(t=>t.name===k);return (ty&&ty.iconColor)||AUTH_PAL[idx%AUTH_PAL.length];}if(dim==="statuscat")return STATUS_CAT_COL[k]||"#777";if(dim==="acompany"||dim==="adept")return (k==="(no company)"||k==="(no department)")?GROUP_GREY:AUTH_PAL[idx%AUTH_PAL.length];return "#009999";}
+  function colFor(k,idx){if(dim==="priority")return PRIO_COL[k]||"#777";if(dim==="stamp"){if(k==="Unstamped")return GROUP_GREY;const any=groups[k].find(r=>r.sc!=null);const hx=any?stampHex(any.sc):null;return hx||AUTH_PAL[idx%AUTH_PAL.length];}if(k==="Other")return GROUP_GREY;if(dim==="author")return AUTH_PAL[idx%AUTH_PAL.length];if(dim==="status")return STATUS_COL[k]||"#777";if(dim==="type"){const ty=(TYPES||[]).find(t=>t.name===k);return _safeCol(ty&&ty.iconColor)||AUTH_PAL[idx%AUTH_PAL.length];}if(dim==="statuscat")return STATUS_CAT_COL[k]||"#777";if(dim==="acompany"||dim==="adept")return (k==="(no company)"||k==="(no department)")?GROUP_GREY:AUTH_PAL[idx%AUTH_PAL.length];return "#009999";}
   keys.forEach((k,gi)=>{
     const recs=groups[k];const op=new Array(todayIdx+1).fill(0),cp=new Array(todayIdx+1).fill(0);
     for(const r of recs){const oi=Math.round((dayMid(r.o)-D0)/DAYMS);if(oi>=0&&oi<=todayIdx)op[oi]++;if(r.rs&&r.c){const ci=Math.round((dayMid(r.c)-D0)/DAYMS);if(ci>=0&&ci<=todayIdx)cp[ci]++;}}
@@ -5170,7 +5171,7 @@ function renderTimeline(){hideTip();
   const lg=document.getElementById("tlLegend");
   if(lg){const ci=built.capInfo;let lh="";
     if(ci&&ci.level>0)lh+=`<button type="button" class="tl-chip tl-chip--back" id="tlDrillBack">&#8592; Back &middot; top ${6*ci.level} shown one level up</button>`;
-    lh+=legend.map((l,i)=>`<button type="button" class="tl-chip${l.dash?" tl-chip--info":""}${ci&&l.key==="Other"?" tl-chip--other":""}" data-tli="${i}" title="${_esc(l.full||l.label)}"><i class="ln ${l.dash?"dash":""}" style="border-top-color:${l.col}"></i>${_esc(l.label)}</button>`).join("");
+    lh+=legend.map((l,i)=>`<button type="button" class="tl-chip${l.dash?" tl-chip--info":""}${ci&&l.key==="Other"?" tl-chip--other":""}" data-tli="${i}" title="${_esc(l.full||l.label)}"><i class="ln ${l.dash?"dash":""}" style="border-top-color:${_esc(l.col)}"></i>${_esc(l.label)}</button>`).join("");
     lg.innerHTML=lh;
     const bk=document.getElementById("tlDrillBack");if(bk)bk.onclick=()=>{TL.drill=Math.max(0,(TL.drill||0)-1);renderTimeline();};
     lg.querySelectorAll(".tl-chip[data-tli]").forEach(b=>{const i=+b.dataset.tli;const l=legend[i];
@@ -5228,7 +5229,7 @@ async function loadFullHistory(){
 
 function renderMileChips(built){const row=document.getElementById("tlMileChips");if(!row)return;const miles=milesGet();
   row.innerHTML=miles.length?miles.map((m,i)=>{let ot="";if(built){const pd=parse(m.date+" 00:00:00");if(pd){const mi=Math.round((dayMid(+pd)-built.D0)/DAYMS);const rem=Math.round(built.predActive[Math.max(0,Math.min(mi,built.lastIdx))]);const on=rem<=0;const grp=TL.dim!=="none"?" (all groups)":"";ot=`<span class="ot ${on?"ok":"no"}">${on?"on target":rem+" still open"}${grp}</span>`;}}
-    return `<span class="tl-mile-chip"><span class="sw"></span>${(m.label||"Milestone")} · ${new Date(m.date).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"2-digit"})}${ot}<button data-mi="${i}" aria-label="Remove milestone">✕</button></span>`;}).join(""):`<span class="em">No milestones yet — add IFC dates, coordination gates or handover to see whether the backlog is projected to clear in time.</span>`;
+    return `<span class="tl-mile-chip"><span class="sw"></span>${_esc(m.label||"Milestone")} · ${new Date(m.date).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"2-digit"})}${ot}<button data-mi="${i}" aria-label="Remove milestone">✕</button></span>`;}).join(""):`<span class="em">No milestones yet — add IFC dates, coordination gates or handover to see whether the backlog is projected to clear in time.</span>`;
   row.querySelectorAll("[data-mi]").forEach(b=>b.onclick=()=>{const a=milesGet();a.splice(+b.dataset.mi,1);milesSet(a);renderTimeline();});}
 
 function tlBindNav(){if(TL.init)return;TL.init=true;
