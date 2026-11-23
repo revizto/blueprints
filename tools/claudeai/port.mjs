@@ -25,6 +25,10 @@
 //   R5  copy that tells the user to look in Cowork, open Cowork or re-create through Cowork, and the
 //       "add the new id via the Add box" remedy (an id added there has no name, so it cannot be reached),
 //       now points at the install skill or the artifact's Permissions menu.
+//   R6  host-proof form controls (controls.css, injected as <style id="rvz-controls">, as the Matrix's first
+//       claude.ai port did): the host can paint native checkboxes, radios and text fields dark on a light page.
+//       Checkboxes and radios are drawn white (teal when ticked); fields are white with ink text. Every Revizto
+//       artifact carries this — a black box or field on a light page is a defect.
 // Not carried over, with reasons: the Matrix port's private-name scan (the release build is scanned for
 // names before packaging; the shims are fixed files checked here), and its connector cut (a release
 // bakes no connector). Its runtime harness is tools/claudeai/shim.test.mjs.
@@ -44,6 +48,14 @@ const REPO = path.resolve(HERE, '..', '..');
 const SHIM = () => fs.readFileSync(path.join(HERE, 'shim.html'), 'utf8');             // the Matrix's claude.ai shim
 const SHIM_BP = () => fs.readFileSync(path.join(HERE, 'shim-blueprint.html'), 'utf8'); // the Blueprint's (its published claude.ai profile)
 const DLBLOB = () => fs.readFileSync(path.join(HERE, 'dlblob.js'), 'utf8');
+const CONTROLS = () => fs.readFileSync(path.join(HERE, 'controls.css'), 'utf8');
+// The Blueprint's Read-only pill turns red when on: its ticked box is white with a red tick, as the pill's own
+// accent-color intended, not the teal fill the generic rule gives a ticked box.
+const BP_CONTROLS = `.tcs-agree input{--rvz-tick:var(--red,#E40001)}.ap-sure input,.act-block .ab-allow input{--rvz-tick:var(--warn)}\n` +
+  `.ro-toggle.on input[type=checkbox]:checked{background-color:var(--white,#fff);border-color:var(--white,#fff);` +
+  `background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.2l2.6 2.6L12 5.4' ` +
+  `fill='none' stroke='%23E40001' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}\n`;
+const controlsFor = product => '<style id="rvz-controls">\n' + CONTROLS() + (product === 'blueprint' ? BP_CONTROLS : '') + '</style>\n';
 
 export const ASSETS = {
   matrix: {
@@ -117,8 +129,8 @@ function portMatrix(src) {
   const tail = '</body>\n</html>';
   if (!src.trimEnd().endsWith(tail)) throw new PortError('the Matrix build does not end with </body></html>');
   src = src.trimEnd().slice(0, -tail.length) + '\n';
-  // 2. the shim, before the app script
-  src = rep(src, '<script>', shimFor('matrix', tools) + '<script>');
+  // 2. the host-proof controls (R6) and the shim, before the app script
+  src = rep(src, '<script>', controlsFor('matrix') + shimFor('matrix', tools) + '<script>');
   // 3. the bridge name
   src = src.replace(/\b(HOST_W|window|w)\.cowork\b/g, '$1.RVZ_BRIDGE');
   // 4. copy that names Cowork as the host (R6)
@@ -173,8 +185,8 @@ function portBlueprint(src) {
   const tail = '</body>\n</html>';
   if (!src.trimEnd().endsWith(tail)) throw new PortError('the Blueprint build does not end with </body></html>');
   src = src.trimEnd().slice(0, -tail.length) + '\n';
-  // 2. the shim, before the app script
-  src = rep(src, '<script>\nconst CONFIG={connectors:[', shimFor('blueprint', tools) + '<script>\nconst CONFIG={connectors:[');
+  // 2. the host-proof controls (R6) and the shim, before the app script
+  src = rep(src, '<script>\nconst CONFIG={connectors:[', controlsFor('blueprint') + shimFor('blueprint', tools) + '<script>\nconst CONFIG={connectors:[');
   // 3. the bridge name
   src = src.replace(/\bwindow\.cowork\b/g, 'window.RVZ_BRIDGE');
   // 4. connector display names from the install (R5)
@@ -222,6 +234,7 @@ export function port(product, src) {
   }
   if (!out.includes('use("mcp")') || out.split('window.RVZ_BRIDGE = {').length !== 2) throw new PortError('the shim is missing or duplicated');
   if (/@@RVZ_/.test(out)) throw new PortError('a shim placeholder survives');
+  if (out.split('<style id="rvz-controls">').length !== 2 || !out.includes(CONTROLS())) throw new PortError('the host-proof controls are missing or duplicated');
   if (NATIVE_DIALOG.test(out.replace(/<script>[\s\S]*?PORT SHIM[\s\S]*?<\/script>/, ''))) {
     throw new PortError('a native dialog survives (the claude.ai viewer blocks confirm, alert and prompt)');
   }

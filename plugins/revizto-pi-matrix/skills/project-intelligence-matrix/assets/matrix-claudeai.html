@@ -1846,6 +1846,28 @@ conn*/about class. ===== */
   </div>
   <div class="wrap" id="wizBody" style="max-width:1100px"></div>
 </div>
+<style id="rvz-controls">
+/* Host-proof form controls (rvz-controls). The claude.ai host can switch native controls to its dark
+   appearance on a light page: black checkboxes and radios, black text fields. Every Revizto artifact draws
+   its own controls so they are identical in any host or theme: a white box with a muted border, the deep
+   teal fill and a white tick when checked, a teal radio dot, white fields with ink text. The checkbox and
+   radio rule is the Matrix's own (brand-drawn controls, 29 Oct 2026); sizes and field rules sit in :where()
+   so every product rule that sets a size, a colour or a background still wins. A product that tints a ticked
+   box (it used accent-color) sets --rvz-tick on that box; padding and min-height are cleared because a field
+   rule such as `.form input{min-height:44px}` must not stretch a drawn box. */
+:where(input[type=checkbox],input[type=radio]){width:16px;height:16px;margin:0;vertical-align:-3px}
+input[type=checkbox],input[type=radio]{-webkit-appearance:none;appearance:none;color-scheme:light;flex-shrink:0;box-sizing:border-box;padding:0;min-height:0;background:var(--white,#fff) center/100% 100% no-repeat;border:1.5px solid var(--muted,#5E6E6E);border-radius:var(--r-xs,4px);cursor:pointer;transition:background-color .12s,border-color .12s}
+input[type=radio]{border-radius:50%}
+input[type=checkbox]:hover:not(:disabled),input[type=radio]:hover:not(:disabled){border-color:var(--teal-deep,#009999)}
+input[type=checkbox]:checked{background-color:var(--rvz-tick,var(--teal-deep,#009999));border-color:var(--rvz-tick,var(--teal-deep,#009999));background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.2l2.6 2.6L12 5.4' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+input[type=radio]:checked{border-color:var(--teal-deep,#009999);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='3.5' fill='%23009999'/%3E%3C/svg%3E")}
+input[type=checkbox]:focus-visible,input[type=radio]:focus-visible{outline:2px solid var(--focus,var(--teal-deep,#009999));outline-offset:2px}
+input[type=checkbox]:disabled,input[type=radio]:disabled{cursor:not-allowed;opacity:.45}
+:where(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]):not([type=button]):not([type=submit]):not([type=reset]),select,textarea){color-scheme:light;background-color:var(--white,#fff);color:var(--ink,#1E2E2E)}
+:where(input,select,textarea)::placeholder{color:var(--muted,#5E6E6E);opacity:1}
+:where(button){color:inherit}
+@media (forced-colors:active){input[type=checkbox],input[type=radio]{-webkit-appearance:auto;appearance:auto}}
+</style>
 <script>
 /* =============================================================================
    PORT SHIM — claude.ai Artifacts runtime (release; derived by tools/claudeai/port.mjs).

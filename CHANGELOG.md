@@ -22,7 +22,8 @@ folder — [Blueprint](mcp-blueprints/revizto-project-intelligence/CHANGELOG.md)
   access by connector name. The install skills use it whenever the session has the Artifact tool, and keep the
   Cowork build for organisations that still have live artifacts. `tools/claudeai/port.mjs` derives each
   claude.ai build from its Cowork build; both plugins' gates re-derive it on every push and fail on any
-  byte of difference.
+  byte of difference. Both claude.ai builds draw their own checkboxes, radios and text fields
+  (`tools/claudeai/controls.css`), so none renders black in a dark host theme.
 
 ## Revizto Blueprints layout, and the Project Intelligence Matrix 1.0.0
 

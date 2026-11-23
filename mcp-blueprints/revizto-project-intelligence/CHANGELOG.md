@@ -16,8 +16,10 @@ The Cowork build (`dashboard.html`) behaves as 1.0.4; the claude.ai build differ
   and asks you to allow the Revizto tools before its first live read, so the install makes no Revizto calls.
   Where the host differs, so does the claude.ai build: Discard (for a paused bulk update) asks in the page,
   because the claude.ai viewer blocks native dialogs; a connector you have not connected gets its own
-  message; and help that pointed at Cowork, or at adding a connector id, points at the install skill or the
-  artifact's Permissions menu.
+  message; help that pointed at Cowork, or at adding a connector id, points at the install skill or the
+  artifact's Permissions menu; and checkboxes, radios and text fields are drawn white in any host theme (the
+  claude.ai host painted them black on the Blueprint's light page), keeping the red tick on the Terms box, the
+  amber tick on write approvals, and a white box with a red tick on the Read-only pill when it is on.
   The install skill uses it whenever the session has the Artifact tool, and keeps `dashboard.html` and the
   `create_artifact` path for organisations that still have live artifacts. It is derived from
   `dashboard.html` by `tools/claudeai/port.mjs` and checked byte for byte by `tests/run.mjs` and

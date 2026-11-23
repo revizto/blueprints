@@ -24,7 +24,9 @@ maps the Cowork bridge onto the `mcp` capability, by the connector name the inst
 connector prefix (`shim.html` for the Matrix, `shim-blueprint.html` for the Blueprint — each the shim of that
 product's claude.ai build already running live); the Matrix's saves through the `downloads` capability
 (`dlblob.js`, zipped); the Blueprint's assistant through the `sample` capability and its Discard confirmation
-in the page (the claude.ai viewer blocks native dialogs); and the copy that told the user to look in Cowork.
+in the page (the claude.ai viewer blocks native dialogs); host-proof form controls (`controls.css`, injected as
+`<style id="rvz-controls">`: white checkboxes, radios and fields in any host theme — a black box or field on a
+light page is a defect); and the copy that told the user to look in Cowork.
 Every edit must match its anchor exactly the expected number of times, or the port refuses.
 
 ## Release order

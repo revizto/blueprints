@@ -16,6 +16,7 @@ import { fileURLToPath } from 'node:url';
 import { port as claudeaiPort, NATIVE_DIALOG } from '../../../tools/claudeai/port.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const CONTROLS = fs.readFileSync(path.resolve(ROOT, '..', '..', 'tools/claudeai/controls.css'), 'utf8');
 const REPO = path.resolve(ROOT, '..', '..');
 const SKILL = 'skills/project-intelligence-matrix';
 
@@ -169,6 +170,8 @@ function gates(f, out = () => {}) {
      /use\("mcp"\)/.test(caText) && !/\b\w+\.cowork\.\w+/.test(caText));
   ok('ca-dialog', 'no native dialog (the claude.ai viewer blocks confirm, alert and prompt)',
      ca.length > 0 && !NATIVE_DIALOG.test(caText.replace(/<script>[\s\S]*?PORT SHIM[\s\S]*?<\/script>/, '')));
+  ok('ca-controls', 'host-proof controls: white checkboxes, radios and fields in any host theme (rvz-controls)',
+     caText.split('<style id="rvz-controls">').length === 2 && caText.includes(CONTROLS));
   const caTools = (/var TOOLS = \{([^}]*)\};/.exec(caText) || [])[1];
   ok('ca-tools', "the shim's tool list is exactly the manifest's read tools",
      !!caTools && JSON.stringify(caTools.split(',').map(x => x.split(':')[0]).sort()) === JSON.stringify([...tools].sort()), caTools);
@@ -219,6 +222,8 @@ function selftest() {
     ['ca-email',          mod('claudeai', b => Buffer.concat([b, Buffer.from('someone@contoso.com')]))],
     ['ca-host',           mod('claudeai', b => Buffer.concat([b, Buffer.from('window.cowork.callMcpTool')]))],
     ['ca-dialog',         mod('claudeai', b => Buffer.concat([b, Buffer.from('<script>window.alert ("x")</script>')]))],
+    ['ca-controls',       mod('claudeai', b => str(b.toString().replace('<style id="rvz-controls">', '<style id="rvz-ctl">')))],
+    ['ca-controls',       mod('claudeai', b => str(b.toString().replace(CONTROLS, CONTROLS.replace('appearance:none;color-scheme:light', 'appearance:auto;color-scheme:light'))))],
     ['ca-tools',          mod('claudeai', b => str(b.toString().replace('var TOOLS = {list_accounts:1,', 'var TOOLS = {list_accounts:1,update_issues:1,')))],
   ];
   const clean = gates(base);

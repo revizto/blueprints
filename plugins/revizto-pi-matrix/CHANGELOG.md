@@ -26,7 +26,8 @@
   their names through the artifact's own connector access, asks you to allow the Revizto tools before its
   first live read (so the install makes no Revizto calls), and saves exported clash tests as a `.zip`.
   Help that pointed at Cowork, or at adding a connector id, points at the install skill or the artifact's
-  Permissions menu. The
+  Permissions menu. Checkboxes, radios and text fields are drawn white in any host theme: the claude.ai host
+  could otherwise paint them black on the Matrix's light page. The
   install skill uses it whenever the session has the Artifact tool, and keeps `matrix.html` and the
   `create_artifact` path for organisations that still have live artifacts. The claude.ai build is derived
   from `matrix.html` by `tools/claudeai/port.mjs` and checked byte for byte on every push.

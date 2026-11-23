@@ -420,6 +420,7 @@ section('8  CLAUDE.AI BUILD  (the file the Artifact tool publishes is the port o
   const CA = path.join(ROOT, 'skills/project-intelligence-dashboard/assets/dashboard-claudeai.html');
   const MAN = path.join(ROOT, 'skills/project-intelligence-dashboard/assets/manifest.json');
   const sha = b => crypto.createHash('sha256').update(b).digest('hex');
+  const CONTROLS = fs.readFileSync(path.join(ROOT, '..', '..', 'tools/claudeai/controls.css'), 'utf8');
   let derived = null, why = '';
   try { derived = port('blueprint', SRC); } catch (e) { why = e.message; }
   // Each check returns its own verdict so the same function can be run against injected defects (Forbidden #14).
@@ -437,6 +438,8 @@ section('8  CLAUDE.AI BUILD  (the file the Artifact tool publishes is the port o
       ['sample', 'askClaude is backed by the sample capability', /use\("sample"\)/.test(caText) && /askClaude: function\(system, data\)/.test(caText)],
       ['dialog', 'no native dialog (the claude.ai viewer blocks confirm, alert and prompt)',
         !NATIVE_DIALOG.test(caText.replace(/<script>[\s\S]*?PORT SHIM[\s\S]*?<\/script>/, ''))],
+      ['controls', 'host-proof controls: white checkboxes, radios and fields in any host theme (rvz-controls)',
+        caText.split('<style id="rvz-controls">').length === 2 && caText.includes(CONTROLS)],
       ['tools', "the shim's tool list is exactly the contract's reads and writes",
         JSON.stringify(caTools) === JSON.stringify([...(man.tools ? man.tools.read.concat(man.tools.write) : [])].sort()), caTools.join(',')],
       ['empty', 'it ships no connector', !/mcp__[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(caText) &&
@@ -457,6 +460,7 @@ section('8  CLAUDE.AI BUILD  (the file the Artifact tool publishes is the port o
     ['host', t + 'window.cowork.callMcpTool'],
     ['sample', t.replace('askClaude: function(system, data)', 'askClaude: function(sys, data)')],
     ['dialog', t.replace('function closeConfirm()', 'function x(){window.confirm ("y")}\nfunction closeConfirm()')],
+    ['controls', t.replace('-webkit-appearance:none;appearance:none;color-scheme:light;flex-shrink:0', 'flex-shrink:0')],
     ['tools', t.replace('var TOOLS = {', 'var TOOLS = {delete_issues:1,')],
     ['empty', t.replace('const CONFIG={connectors:[\n', 'const CONFIG={connectors:[\n{prefix:"mcp__' + ['1a2b3c4d', '1111', '2222', '3333', '444455556666'].join('-') + '__"},\n')],
   ];

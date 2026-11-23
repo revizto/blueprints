@@ -29,9 +29,9 @@
   },
   "claudeai": {
     "file": "dashboard-claudeai.html",
-    "size": 1015054,
-    "md5": "1c292bd0ca193a0dc8bc793bbef6a24a",
-    "sha256": "fca774fff44fe035dbd955a50c1fd47151b2acf89f077265d86e79abb31e4a60",
+    "size": 1018337,
+    "md5": "72a4f8417c1e9b035dfd0bb3468c9e3e",
+    "sha256": "cc0f2210bb15dbbab65ed5869cb506c5fae3fd5ac4fc9eb54ce502bb80085663",
     "portOf": {
       "file": "dashboard.html",
       "sha256": "fdbf0555efacec1a88311fbd850ba714b0b78c66898aca04304e708013eb78d2"
