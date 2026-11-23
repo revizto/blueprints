@@ -25,8 +25,8 @@ troubleshooting: [Blueprint](mcp-blueprints/revizto-project-intelligence/README.
 
 ### Prerequisites
 
-- **Claude desktop app with Cowork.** Both plugins run as Cowork artifacts — not in a plain chat and not
-  on claude.ai.
+- **Claude with artifacts switched on.** Both plugins install as artifacts. Artifacts need **Settings →
+  Capabilities → "Create and edit files"** (on Team and Enterprise an owner sets it).
 - **For live Revizto data** (always for the Blueprint; optional for the Matrix): a Revizto licence the
   MCP Server accepts. Three things must all be true: the **Revizto MCP Server** app is activated on the
   organisation account, your licence role is **Administrator or Owner**, and that account is authorised
@@ -34,15 +34,19 @@ troubleshooting: [Blueprint](mcp-blueprints/revizto-project-intelligence/README.
 - **(Team/Enterprise only)** your Claude admin allows the Revizto MCP connector domain(s) — and, for the
   Blueprint, `cdn.jsdelivr.net` — under **Admin settings → Capabilities**.
 
-### Step 1 — Run the task on your computer, not the cloud 🔴
+### Step 1 — Check how your Claude creates artifacts
 
-Reading live data needs two gates open: the connector must be signed in (Step 2), *and* the artifact's own
-tool allowlist must authorise the tools. Only the install skill fills that second gate, and only when it
-runs **locally** — in a cloud session the artifact opens but cannot read Revizto.
+Most Claude accounts now create artifacts with Claude's built-in **Artifact** tool, and the install skills
+use it. The task can then run anywhere, and the first time a plugin reads live data the artifact asks you
+to **allow its Revizto tools**. Nothing to do in this step.
 
-Use the run-location control at the top-right of the Claude window → **"On your computer"** (the header
-then shows a laptop icon). To make it the default: **Settings → Cowork → turn off "Run new tasks in the
-cloud."**
+**Only if your organisation still uses Cowork live artifacts** (organisations on customer-managed encryption
+keys, zero data retention or a HIPAA-ready setup): reading live data then needs the artifact's own tool
+allowlist, which only the install skill fills, and only when it runs **locally** — in a cloud session the
+artifact opens but cannot read Revizto. Use the run-location control at the top-right of the Claude
+window → **"On your computer"** (the header then shows a laptop icon). To make it the default:
+**Settings → Cowork → turn off "Run new tasks in the cloud."** The skill tells you which way it is
+installing.
 
 ### Step 2 — Connect the Revizto MCP connector
 
@@ -100,13 +104,15 @@ Confirm with *"list your available skills"* before continuing.
 
 ### Step 5 — Open them
 
-In a Cowork session running on your computer, say:
+In a Claude task, say:
 
 - *Open the Revizto Project Intelligence Blueprint — follow the `project-intelligence-dashboard` skill.*
 - *Open the Revizto Project Intelligence Matrix — follow the `project-intelligence-matrix` skill.*
 
-Each skill copies its bundled file, checks it against its manifest, calls your Revizto read tools once
-(when a connector is connected) and registers the artifact with them authorised. If Claude starts *designing* a dashboard or matrix instead,
+Each skill copies its bundled file, checks it against its manifest and publishes it as an artifact. With
+the Artifact tool it makes no Revizto calls: the artifact asks you to allow its Revizto tools the first time
+it reads live data. On the Cowork live-artifact path it calls your Revizto read tools once (when a connector
+is connected) and registers the artifact with them authorised. If Claude starts *designing* a dashboard or matrix instead,
 the skill is not enabled — go back to Step 4.
 
 Then verify each one against its own README:

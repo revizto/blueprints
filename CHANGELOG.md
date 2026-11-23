@@ -16,6 +16,13 @@ folder — [Blueprint](mcp-blueprints/revizto-project-intelligence/CHANGELOG.md)
 - **Blueprint 1.0.5** and **Matrix 1.0.1** show the new Terms in their acceptance gates, word for word, and
   ask every connection to accept them once (Terms version 2.0). Matrix 1.0.1 also makes drag and drop the
   only way to bring a file in. Re-run each plugin's install skill to update an artifact already created.
+- **Both plugins install with Claude's Artifact tool.** Cowork live artifacts (`create_artifact`) were retired
+  for new artifacts on 19 August 2026, so a new install could no longer complete. Each plugin now ships a
+  second build of the same release, `*-claudeai.html`, which reaches Revizto through the artifact's connector
+  access by connector name. The install skills use it whenever the session has the Artifact tool, and keep the
+  Cowork build for organisations that still have live artifacts. `tools/claudeai/port.mjs` derives each
+  claude.ai build from its Cowork build; both plugins' gates re-derive it on every push and fail on any
+  byte of difference.
 
 ## Revizto Blueprints layout, and the Project Intelligence Matrix 1.0.0
 

@@ -13,6 +13,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { port as claudeaiPort, NATIVE_DIALOG } from '../../../tools/claudeai/port.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const REPO = path.resolve(ROOT, '..', '..');
@@ -22,6 +23,10 @@ function load() {
   const r = (p, enc = 'utf8') => fs.readFileSync(p, enc);
   return {
     html: r(path.join(ROOT, SKILL, 'assets/matrix.html'), null),
+    // The claude.ai build: the port of matrix.html, published with the Artifact tool. Optional at load so its
+    // absence is a gate, not a crash.
+    claudeai: fs.existsSync(path.join(ROOT, SKILL, 'assets/matrix-claudeai.html'))
+      ? r(path.join(ROOT, SKILL, 'assets/matrix-claudeai.html'), null) : Buffer.alloc(0),
     manifest: r(path.join(ROOT, SKILL, 'assets/manifest.json')),
     plugin: r(path.join(ROOT, '.claude-plugin/plugin.json')),
     marketplace: r(path.join(REPO, '.claude-plugin/marketplace.json')),
@@ -140,6 +145,33 @@ function gates(f, out = () => {}) {
   const embedsGeist = /Geist/.test(text) && /SIL Open Font License/.test(text);
   ok('ofl', 'OFL.txt ships with the plugin and carries the Geist copyright and the OFL 1.1 text',
      !embedsGeist || (/Copyright 2024 The Geist Project Authors/.test(f.ofl) && /SIL OPEN FONT LICENSE Version 1\.1/.test(f.ofl)));
+
+  out('6  CLAUDE.AI BUILD  (the file the Artifact tool publishes is the port of the file above, nothing else)');
+  const ca = f.claudeai, caText = ca.toString('utf8'), cam = man.claudeai || {};
+  const caHash = alg => crypto.createHash(alg).update(ca).digest('hex');
+  ok('ca-manifest', 'manifest describes matrix-claudeai.html as the port of this matrix.html',
+     cam.file === 'matrix-claudeai.html' && !!cam.portOf && cam.portOf.file === 'matrix.html' && cam.portOf.sha256 === hash('sha256'));
+  ok('ca-size', 'size, md5 and sha256 match the manifest',
+     ca.length > 0 && ca.length === cam.size && caHash('md5') === cam.md5 && caHash('sha256') === cam.sha256, ca.length + ' vs ' + cam.size);
+  let derived = null, why = '';
+  try { derived = claudeaiPort('matrix', text); } catch (e) { why = e.message; }
+  ok('ca-port', 'it is byte for byte what tools/claudeai/port.mjs derives from matrix.html',
+     derived !== null && Buffer.compare(ca, Buffer.from(derived, 'utf8')) === 0, why || 'committed file differs from the derived port');
+  ok('ca-anchor', 'exactly one install marker, inside CONNECTORS=[ ]',
+     caText.split(anchor).length - 1 === 1 && caText.includes('CONNECTORS=[' + anchor + ']'));
+  ok('ca-uuid', 'no connector id baked in',
+     ca.length > 0 && !/mcp__[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(caText));
+  const caNoB64 = caText.replace(/data:[^,"'\s)]*;base64,[A-Za-z0-9+/=\s]+/g, 'data:;base64,');
+  const caEmails = [...new Set(caNoB64.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g) || [])]
+    .filter(e => !/@example\.com$/i.test(e) && e.toLowerCase() !== 'support@revizto.com');
+  ok('ca-email', 'e-mail addresses are placeholders or Revizto support only', caEmails.length === 0, caEmails.slice(0, 3).join(', '));
+  ok('ca-host', 'it reaches connectors through the mcp capability, never the Cowork bridge',
+     /use\("mcp"\)/.test(caText) && !/\b\w+\.cowork\.\w+/.test(caText));
+  ok('ca-dialog', 'no native dialog (the claude.ai viewer blocks confirm, alert and prompt)',
+     ca.length > 0 && !NATIVE_DIALOG.test(caText.replace(/<script>[\s\S]*?PORT SHIM[\s\S]*?<\/script>/, '')));
+  const caTools = (/var TOOLS = \{([^}]*)\};/.exec(caText) || [])[1];
+  ok('ca-tools', "the shim's tool list is exactly the manifest's read tools",
+     !!caTools && JSON.stringify(caTools.split(',').map(x => x.split(':')[0]).sort()) === JSON.stringify([...tools].sort()), caTools);
   return fails;
 }
 
@@ -176,6 +208,18 @@ function selftest() {
     ['gate-words',        mod('html', b => str(b.toString().replace('(b) CHF 1 (one Swiss franc)', '(b) CHF 10 (ten Swiss francs)')))],
     ['gate-version',      mod('html', b => str(b.toString().replace('tcsVersion:"2.0"', 'tcsVersion:"1.1"')))],
     ['ofl',               mod('ofl', () => '')],
+    ['ca-manifest',       mod('manifest', s => json(s, o => { delete o.claudeai; }))],
+    ['ca-manifest',       mod('html', b => Buffer.concat([b, Buffer.from(' ')]))],
+    ['ca-size',           mod('claudeai', b => Buffer.concat([b, Buffer.from(' ')]))],
+    ['ca-size',           mod('claudeai', () => Buffer.alloc(0))],
+    ['ca-port',           mod('claudeai', b => str(b.toString().replace('Run the install skill again', 'Run the installer again')))],
+    ['ca-port',           mod('html', b => str(b.toString().replace('This page is not running inside Cowork, so no connector', 'This page is not in Cowork, so no connector')))],
+    ['ca-anchor',         mod('claudeai', b => str(b.toString().replace('/*@@INSTALL_CONNECTORS@@*/', '')))],
+    ['ca-uuid',           mod('claudeai', b => str(b.toString().replace('/*@@INSTALL_CONNECTORS@@*/', '/*@@INSTALL_CONNECTORS@@*/"mcp__' + ['1a2b3c4d', '1111', '2222', '3333', '444455556666'].join('-') + '__"')))],
+    ['ca-email',          mod('claudeai', b => Buffer.concat([b, Buffer.from('someone@contoso.com')]))],
+    ['ca-host',           mod('claudeai', b => Buffer.concat([b, Buffer.from('window.cowork.callMcpTool')]))],
+    ['ca-dialog',         mod('claudeai', b => Buffer.concat([b, Buffer.from('<script>window.alert ("x")</script>')]))],
+    ['ca-tools',          mod('claudeai', b => str(b.toString().replace('var TOOLS = {list_accounts:1,', 'var TOOLS = {list_accounts:1,update_issues:1,')))],
   ];
   const clean = gates(base);
   let blind = clean.length ? ['clean tree is not green: ' + clean.join(', ')] : [];

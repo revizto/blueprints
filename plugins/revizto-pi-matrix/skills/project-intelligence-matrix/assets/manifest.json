@@ -28,5 +28,15 @@
     ],
     "write": []
   },
-  "packagedBy": "package_release.py"
+  "packagedBy": "package_release.py",
+  "claudeai": {
+    "file": "matrix-claudeai.html",
+    "size": 1177486,
+    "md5": "ba1ed3759abf6044c2bf33b8277dd199",
+    "sha256": "eeb1b24aff9362542e79dc39216138c491d920ea636fc1f4c06ac71f1fdcbac2",
+    "portOf": {
+      "file": "matrix.html",
+      "sha256": "d7783d2f51b2c7943df26aaa3af52c29168d79f62f5aaba6b9ccf59a447434c0"
+    }
+  }
 }

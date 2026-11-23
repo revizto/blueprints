@@ -17,6 +17,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { execFileSync } from 'child_process';
 import os from 'os';
+import crypto from 'crypto';
+import { port, selftest as portSelftest, NATIVE_DIALOG } from '../../../tools/claudeai/port.mjs';
 
 const ROOT  = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ASSET = path.join(ROOT, 'skills/project-intelligence-dashboard/assets/dashboard.html');
@@ -408,6 +410,58 @@ section('7  TERMS  (the gate carries the Repository Terms word for word; one ver
   ok('no retired Custom Licence wording, and LICENSE + NOTICE ship beside the plugin',
      !/Custom Licen[cs]e/.test(SRC) && fs.existsSync(path.join(ROOT, 'LICENSE')) && fs.existsSync(path.join(ROOT, 'NOTICE')) &&
      !fs.existsSync(path.join(ROOT, 'LICENSE.md')));
+}
+
+section('8  CLAUDE.AI BUILD  (the file the Artifact tool publishes is the port of dashboard.html, nothing else)');
+{
+  // Cowork's create_artifact is gone for new artifacts (19 Aug 2026); a session normally has the Artifact tool,
+  // whose pages reach connectors by display name through the `mcp` capability. dashboard-claudeai.html is
+  // derived from dashboard.html by tools/claudeai/port.mjs at the repository root and must never be edited by hand.
+  const CA = path.join(ROOT, 'skills/project-intelligence-dashboard/assets/dashboard-claudeai.html');
+  const MAN = path.join(ROOT, 'skills/project-intelligence-dashboard/assets/manifest.json');
+  const sha = b => crypto.createHash('sha256').update(b).digest('hex');
+  let derived = null, why = '';
+  try { derived = port('blueprint', SRC); } catch (e) { why = e.message; }
+  // Each check returns its own verdict so the same function can be run against injected defects (Forbidden #14).
+  const checks = (ca, man, src) => {
+    const caText = ca.toString('utf8'), cam = man.claudeai || {};
+    const caTools = ((/var TOOLS = \{([^}]*)\};/.exec(caText) || [])[1] || '').split(',').map(x => x.split(':')[0]).sort();
+    return [
+      ['ships', 'the claude.ai build ships beside dashboard.html', ca.length > 0],
+      ['manifest', 'manifest describes it as the port of this dashboard.html',
+        cam.file === 'dashboard-claudeai.html' && cam.size === ca.length && cam.sha256 === sha(ca) &&
+        !!cam.portOf && cam.portOf.sha256 === sha(Buffer.from(src, 'utf8'))],
+      ['port', 'it is byte for byte what tools/claudeai/port.mjs derives', derived !== null && Buffer.compare(ca, Buffer.from(derived, 'utf8')) === 0, why],
+      ['host', 'it reaches connectors through the mcp capability, never the Cowork bridge',
+        /use\("mcp"\)/.test(caText) && !/\b\w+\.cowork\.\w+/.test(caText)],
+      ['sample', 'askClaude is backed by the sample capability', /use\("sample"\)/.test(caText) && /askClaude: function\(system, data\)/.test(caText)],
+      ['dialog', 'no native dialog (the claude.ai viewer blocks confirm, alert and prompt)',
+        !NATIVE_DIALOG.test(caText.replace(/<script>[\s\S]*?PORT SHIM[\s\S]*?<\/script>/, ''))],
+      ['tools', "the shim's tool list is exactly the contract's reads and writes",
+        JSON.stringify(caTools) === JSON.stringify([...(man.tools ? man.tools.read.concat(man.tools.write) : [])].sort()), caTools.join(',')],
+      ['empty', 'it ships no connector', !/mcp__[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(caText) &&
+        /const CONFIG=\{connectors:\[\n \/\*[\s\S]*?\*\/\n\],readOnly:/.test(caText)],
+    ];
+  };
+  const ca0 = fs.existsSync(CA) ? fs.readFileSync(CA) : Buffer.alloc(0);
+  const man0 = fs.existsSync(MAN) ? JSON.parse(fs.readFileSync(MAN, 'utf8')) : {};
+  for (const [, name, cond, detail] of checks(ca0, man0, SRC)) ok(name, cond, detail);
+  ok('the port refuses every input it cannot fully apply (its selftest)', portSelftest().length === 0);
+  // Every check above must be able to fail: inject the defect each exists to catch.
+  const t = ca0.toString('utf8');
+  const fails = (ca, man = man0) => checks(Buffer.from(ca), man, SRC).filter(c => !c[2]).map(c => c[0]);
+  const cases = [
+    ['ships', ''],
+    ['manifest', t, { ...man0, claudeai: { ...man0.claudeai, portOf: { file: 'dashboard.html', sha256: '0' } } }],
+    ['port', t.replace('Allow the Revizto tools from this artifact', 'Allow the tools from this artifact')],
+    ['host', t + 'window.cowork.callMcpTool'],
+    ['sample', t.replace('askClaude: function(system, data)', 'askClaude: function(sys, data)')],
+    ['dialog', t.replace('function closeConfirm()', 'function x(){window.confirm ("y")}\nfunction closeConfirm()')],
+    ['tools', t.replace('var TOOLS = {', 'var TOOLS = {delete_issues:1,')],
+    ['empty', t.replace('const CONFIG={connectors:[\n', 'const CONFIG={connectors:[\n{prefix:"mcp__' + ['1a2b3c4d', '1111', '2222', '3333', '444455556666'].join('-') + '__"},\n')],
+  ];
+  const blind = cases.filter(([id, ca, man]) => !fails(ca, man).includes(id)).map(c => c[0]);
+  ok('every claude.ai check above goes red on its own injected defect (' + cases.length + ')', blind.length === 0, 'blind: ' + blind.join(', '));
 }
 
 /* ---------------------------------------------------------------- verdict */

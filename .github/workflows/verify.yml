@@ -26,7 +26,7 @@ jobs:
         with: { node-version: '22' }
       - name: manifest describes the asset beside it
         run: node tools/build.mjs --check
-      - name: regression gates (syntax, contract, taxonomy, hygiene, manifest)
+      - name: regression gates (syntax, contract, taxonomy, hygiene, manifest, claude.ai build)
         run: node tests/run.mjs
   matrix:
     runs-on: ubuntu-26.04
@@ -40,5 +40,7 @@ jobs:
         with: { node-version: '22' }
       - name: the gates can fail (each injected defect must go red)
         run: node tools/verify.mjs --selftest
+      - name: the claude.ai port refuses what it cannot fully apply, and both claude.ai builds are its output
+        run: node ../../tools/claudeai/port.mjs --selftest && node ../../tools/claudeai/port.mjs --check && node ../../tools/claudeai/shim.test.mjs
       - name: asset, public-safe, read-only, version and licence gates
         run: node tools/verify.mjs

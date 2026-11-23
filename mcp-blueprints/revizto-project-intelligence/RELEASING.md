@@ -42,8 +42,10 @@ npm run verify
 If `dashboard.html` changed at all — even one character — the manifest is stale until you rebuild it.
 
 ```bash
-node tools/build.mjs      # regenerate assets/manifest.json from the asset
-npm run verify            # manifest --check + all six gates
+node ../../tools/claudeai/port.mjs blueprint skills/project-intelligence-dashboard/assets/dashboard.html \
+  skills/project-intelligence-dashboard/assets/dashboard-claudeai.html   # the claude.ai build, never hand-edited
+node tools/build.mjs      # regenerate assets/manifest.json from both assets
+npm run verify            # manifest --check + all the gates, including the claude.ai build
 ```
 
 Expect `48 passed, 0 failed`. Anything red stops the release. The gates are:
@@ -129,8 +131,10 @@ Do not take the release on trust. On a machine that is not yours:
 
 1. Install from the marketplace (or the uploaded package). The install detail must list **3 skills**
    at version **1.0.4**.
-2. Run the skill in a **local** session, not a cloud one — the `mcp_tools` allowlist only binds
-   locally (see SKILL.md's prerequisite).
+2. Run the skill twice. Once where the session has Claude's Artifact tool (Path A): allow the Revizto
+   tools when the artifact asks. Once on the Cowork live-artifact path if you can reach an organisation that
+   still has it (Path B), in a **local** session, not a cloud one — the `mcp_tools` allowlist only binds
+   locally (see SKILL.md step 0).
 3. The Blueprint must reach the Terms gate → licence picker, **not** "tools aren't authorised".
 4. Confirm the artifact reports `state=ready` with a non-zero licence count in the console, and that
    no `[WS37]` contract warning and no red banner appears.
@@ -172,7 +176,7 @@ loading — `source ~/.nvm/nvm.sh` for the current shell, then fix your `~/.zshr
 The short loop:
 
 ```bash
-node tools/build.mjs && npm run verify && node tools/package.mjs
+node ../../tools/claudeai/port.mjs blueprint skills/project-intelligence-dashboard/assets/dashboard.html skills/project-intelligence-dashboard/assets/dashboard-claudeai.html && node tools/build.mjs && npm run verify && node tools/package.mjs
 ```
 
 Then bump the version everywhere gate 6 checks, add a CHANGELOG entry quoting the new `buildStamp`,

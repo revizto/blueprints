@@ -1,0 +1,86 @@
+<script>
+/* =============================================================================
+   PORT SHIM — claude.ai Artifacts runtime (release; derived by tools/claudeai/port.mjs).
+   The Cowork build reaches connectors through a host bridge. Here the page asks for the `mcp`
+   capability and calls connectors by DISPLAY NAME; the shim keeps the bridge's call/response shape
+   so the app is unchanged. askClaude maps to the `sample` capability (memoryless: the system text
+   and the data travel together). Everything else is the app's own code, untouched.
+   ============================================================================= */
+(function(){
+  /* storage can throw in a private window, a preview or a thumbnail capture: fall back to memory so the
+     app's unguarded reads and writes never abort the script (the page then simply forgets on reload) */
+  try{ var _k="__rvz_ls_probe"; window.localStorage.setItem(_k,"1"); window.localStorage.removeItem(_k); }
+  catch(e){ var mem={}; var store={ getItem:function(k){ return Object.prototype.hasOwnProperty.call(mem,k)?mem[k]:null; },
+      setItem:function(k,v){ mem[k]=String(v); }, removeItem:function(k){ delete mem[k]; }, clear:function(){ mem={}; },
+      key:function(i){ return Object.keys(mem)[i]||null; }, get length(){ return Object.keys(mem).length; } };
+    try{ Object.defineProperty(window,"localStorage",{configurable:true,value:store}); }catch(_){} }
+  /* RELEASE: no connector is baked in. The install skill writes each connector's display name beside
+     its prefix in CONFIG.connectors; NAMES_OF reads that table at call time. */
+  function NAMES_OF(){
+    var out = {};
+    try{
+      (CONFIG.connectors || []).forEach(function(c){
+        var m = c && /^mcp__([0-9a-f-]{36})__$/i.exec(String(c.prefix || ""));
+        if(m && c.name) out[m[1].toLowerCase()] = String(c.name);
+      });
+    }catch(e){}
+    return out;
+  }
+  var TOOLS = /*@@RVZ_TOOLS@@*/;
+  function use(name){
+    try{ if(window.claude && typeof window.claude.use==="function") return Promise.resolve(window.claude.use(name)).catch(function(){return null;}); }catch(e){}
+    return Promise.resolve(null);
+  }
+  /* The bridge exists ONLY where the claude.ai runtime does, so the app's own "no bridge" checks still fire
+     elsewhere. If a capability later resolves null, its method is withdrawn and the app is told. */
+  var HAS = !!(window.claude && typeof window.claude.use === "function");
+  if (!HAS) return;
+  var mcpP = use("mcp"), smpP = use("sample");
+  mcpP.then(function(m){ if (m) return; try{ delete window.RVZ_BRIDGE.callMcpTool; }catch(e){}
+    setTimeout(function(){ try{ if (typeof noBridgeState === "function") noBridgeState(); }catch(e){} }, 0); });
+  smpP.then(function(s){ if (!s) { try{ delete window.RVZ_BRIDGE.askClaude; }catch(e){} } });
+  function errResult(text){ return { isError:true, content:[{ type:"text", text:String(text) }] }; }
+  function toResult(r){
+    if(r && r.isError) return { isError:true, content: Array.isArray(r.content)?r.content:[{type:"text",text:String(r.payload||"tool error")}] };
+    var out = {};
+    if(r && r.structuredContent != null) out.structuredContent = r.structuredContent;
+    else if(r && r.payload != null && typeof r.payload === "object") out.structuredContent = r.payload;
+    if(r && Array.isArray(r.content)) out.content = r.content;
+    else if(r && typeof r.payload === "string") out.content = [{ type:"text", text:r.payload }];
+    if(out.structuredContent == null && !out.content) out.content = [{ type:"text", text: JSON.stringify(r == null ? null : r) }];
+    return out;
+  }
+  function fromError(e){
+    var code = (e && e.code) || "", msg = (e && e.message) || String(e || "error");
+    if(code === "rate_limited") return errResult("rate limit (429): " + msg);
+    if(code === "timeout") return errResult("timed out waiting for server: " + msg);
+    if(code === "server_not_connected" || code === "server_not_found")
+      return errResult("Revizto connector not connected for this viewer: " + msg);
+    if(code === "not_granted" || code === "unavailable" || code === "denied")
+      throw new Error("No MCP bridge: connector access was not granted (" + code + ")");
+    if(code === "tool_not_found" || code === "unknown_tool" || code === "tool_not_declared") return errResult("Unknown tool: " + msg);
+    return errResult(msg);
+  }
+  window.RVZ_BRIDGE = {
+    callMcpTool: function(fullName, args){
+      var m = /^mcp__([0-9a-f-]{36})__(.+)$/i.exec(String(fullName||""));
+      if(!m) return Promise.resolve(errResult("Unknown tool: " + fullName));
+      var server = NAMES_OF()[m[1].toLowerCase()], tool = m[2];
+      if(!server) return Promise.resolve(errResult("Failed to parse SSE message (connector " + m[1] + " has no connector name in this install; run the install skill again)"));
+      if(!TOOLS[tool]) return Promise.resolve(errResult("Unknown tool: " + tool + " is not declared by this page"));
+      return mcpP.then(function(mcp){
+        if(!mcp) throw new Error("No MCP bridge in this host");
+        return mcp.callTool(server, tool, args || {}).then(toResult, fromError);
+      });
+    },
+    askClaude: function(system, data){
+      return smpP.then(function(sample){
+        if(!sample) throw new Error("The assistant is not available in this view");
+        var payload = (typeof data === "string") ? data : JSON.stringify(data == null ? null : data);
+        return sample([{ role:"user", content: String(system || "") + "\n\nDATA (JSON):\n" + payload }], { cache:false })
+          .then(function(r){ return (r && r.text) || ""; });
+      });
+    }
+  };
+})();
+</script>

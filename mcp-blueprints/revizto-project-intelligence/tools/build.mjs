@@ -19,10 +19,12 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
+import { describe, check } from '../../../tools/claudeai/port.mjs';
 
 const ROOT     = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ASSET    = path.join(ROOT, 'skills/project-intelligence-dashboard/assets/dashboard.html');
 const MANIFEST = path.join(ROOT, 'skills/project-intelligence-dashboard/assets/manifest.json');
+const CLAUDEAI = path.join(ROOT, 'skills/project-intelligence-dashboard/assets/dashboard-claudeai.html');
 const CHECK    = process.argv.includes('--check');
 
 const buf = fs.readFileSync(ASSET);
@@ -61,8 +63,16 @@ const manifest = {
     sha256: crypto.createHash('sha256').update(buf).digest('hex')
   },
   tools: { read, write },
+  // The claude.ai build (published with the Artifact tool, where Cowork's create_artifact is gone). It is
+  // derived from dashboard.html by tools/claudeai/port.mjs at the repository root, never edited by hand.
+  claudeai: fs.existsSync(CLAUDEAI) ? describe('blueprint') : null,
   generatedAt: new Date().toISOString().slice(0, 10)
 };
+if (!manifest.claudeai) { console.error('build: ' + path.relative(ROOT, CLAUDEAI) + ' is missing. Run: node ../../tools/claudeai/port.mjs blueprint <dashboard.html> <dashboard-claudeai.html>'); process.exit(1); }
+{
+  const bad = check(() => {});
+  if (bad.includes('blueprint')) { console.error('build: dashboard-claudeai.html is not the port of dashboard.html. Re-run the port (tools/claudeai/port.mjs), never hand-edit it.'); process.exit(1); }
+}
 
 if (CHECK) {
   if (!fs.existsSync(MANIFEST)) { console.error('build --check: manifest.json is missing. Run `node tools/build.mjs`.'); process.exit(1); }
@@ -84,4 +94,5 @@ console.log('wrote ' + path.relative(ROOT, MANIFEST));
 console.log('  build      ' + buildStamp + '   terms v' + tcsVersion + '   readOnly=' + readOnly);
 console.log('  asset      ' + manifest.asset.bytes + ' bytes, ' + manifest.asset.lines + ' lines');
 console.log('  sha256     ' + manifest.asset.sha256);
+console.log('  claude.ai  ' + manifest.claudeai.size + ' bytes, sha256 ' + manifest.claudeai.sha256);
 console.log('  contract   captured ' + contractCaptured + '  (' + read.length + ' read, ' + write.length + ' write)');

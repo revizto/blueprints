@@ -27,5 +27,15 @@
       "update_issues"
     ]
   },
-  "generatedAt": "2026-11-22"
+  "claudeai": {
+    "file": "dashboard-claudeai.html",
+    "size": 1015054,
+    "md5": "1c292bd0ca193a0dc8bc793bbef6a24a",
+    "sha256": "fca774fff44fe035dbd955a50c1fd47151b2acf89f077265d86e79abb31e4a60",
+    "portOf": {
+      "file": "dashboard.html",
+      "sha256": "fdbf0555efacec1a88311fbd850ba714b0b78c66898aca04304e708013eb78d2"
+    }
+  },
+  "generatedAt": "2026-11-23"
 }

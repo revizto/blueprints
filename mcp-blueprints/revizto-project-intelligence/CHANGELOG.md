@@ -2,11 +2,26 @@
 
 ## 1.0.5 — 2026-11-23 (the Revizto Open-Source Repository Terms 2.0 and the Apache License 2.0; build `2026-11-23.1`)
 
-The Blueprint now carries the repository's new licensing model. No behaviour changes.
+The Blueprint now carries the repository's new licensing model, and installs with Claude's Artifact tool.
+The Cowork build (`dashboard.html`) behaves as 1.0.4; the claude.ai build differs only where its host does.
 
 > **Action required.** Re-run the `project-intelligence-dashboard` skill. Every connection asks you to accept
 > the Terms again, because they have changed.
 
+- **Installs with Claude's Artifact tool.** Cowork live artifacts (`create_artifact`) were retired for new
+  artifacts on 19 August 2026, so a 1.0.4 install could no longer complete. The plugin now also ships
+  `dashboard-claudeai.html`, the same build for Claude's Artifact tool: it reaches your Revizto connectors by
+  their names through the artifact's own connector access (the 06 write, `update_issues`, included and still
+  behind the read-only switch and approvals), backs the brief and Ask with the artifact's access to Claude,
+  and asks you to allow the Revizto tools before its first live read, so the install makes no Revizto calls.
+  Where the host differs, so does the claude.ai build: Discard (for a paused bulk update) asks in the page,
+  because the claude.ai viewer blocks native dialogs; a connector you have not connected gets its own
+  message; and help that pointed at Cowork, or at adding a connector id, points at the install skill or the
+  artifact's Permissions menu.
+  The install skill uses it whenever the session has the Artifact tool, and keeps `dashboard.html` and the
+  `create_artifact` path for organisations that still have live artifacts. It is derived from
+  `dashboard.html` by `tools/claudeai/port.mjs` and checked byte for byte by `tests/run.mjs` and
+  `tools/build.mjs --check`.
 - **Licence.** The Blueprint is licensed under the Apache License, Version 2.0 (`LICENSE`), with `NOTICE`,
   and is subject to the **Revizto Open-Source Repository Terms and Conditions, Version 2.0 — 13 November
   2026** (`TERMS.md`). These replace the Revizto Custom Licence (`LICENSE.md`) and the Blueprint's own
