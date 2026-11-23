@@ -34,6 +34,9 @@
 //       connected keeps its own kind (`noconn`, worded as the Blueprint's) instead of the `gone` signature the
 //       first Matrix port gave it, which skipped the connector and told the viewer to reinstall. Both found by
 //       PR review (Greptile).
+//   R8  the Blueprint shim (PR #5 review): a tool call the viewer declined returns the "not connected for this
+//       viewer" signature (the Blueprint's noconn kind, with the Permissions remedy) instead of throwing into its
+//       generic failure; and a platform timeout carries the "timeout" marker its classifier matches.
 // Not carried over, with reasons: the Matrix port's private-name scan (the release build is scanned for
 // names before packaging; the shims are fixed files checked here), and its connector cut (a release
 // bakes no connector). Its runtime harness is tools/claudeai/shim.test.mjs.

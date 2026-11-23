@@ -16,6 +16,7 @@ async function run(product, file, table, tableDecl) {
   const mcp = { callTool: async (server, tool, args) => { calls.push([server, tool, args]);
     if (tool === 'list_projects') { const e = new Error('nope'); e.code = 'not_granted'; throw e; }
     if (tool === 'list_licenses') { const e = new Error('not connected'); e.code = 'server_not_connected'; throw e; }
+    if (tool === 'list_clash_tests') { const e = new Error('no answer in 30 s'); e.code = 'timeout'; throw e; }
     return { payload: { ok: true, tool } }; } };
   const sample = Object.assign(async (input, opts) => ({ text: 'ANSWER:' + JSON.stringify(input).length }), {});
   const body = { classList: { add(){} } };
@@ -36,8 +37,14 @@ async function run(product, file, table, tableDecl) {
   const r4 = await B.callMcpTool('mcp__' + id + '__list_licenses', {});
   ok(product + ': a connector the viewer has not connected is its own kind, never the removed-connector signature',
      r4.isError && /connector not connected for this viewer/.test(r4.content[0].text) && !/Failed to parse SSE/.test(r4.content[0].text), JSON.stringify(r4));
-  let threw = ''; try { await B.callMcpTool('mcp__' + id + '__list_projects', {}); } catch (e) { threw = e.message; }
-  ok(product + ': declined consent surfaces as no bridge', /not granted/.test(threw), threw);
+  let threw = '', r5 = null; try { r5 = await B.callMcpTool('mcp__' + id + '__list_projects', {}); } catch (e) { threw = e.message; }
+  if (product === 'matrix') ok(product + ': declined consent surfaces as no bridge', /not granted/.test(threw), threw);
+  else ok(product + ': declined consent is the not-connected-for-you kind with the Permissions remedy, not a generic failure',
+    !threw && r5 && r5.isError && /connector not connected for this viewer/.test(r5.content[0].text) && /Permissions menu/.test(r5.content[0].text), threw || JSON.stringify(r5));
+  const r6 = await B.callMcpTool('mcp__' + id + '__list_clash_tests', {});
+  // each product's own classifier: the Blueprint's mcpFailKind matches /timeout/i, the Matrix's /timeout|timed out|abort/i
+  const TIMEOUT = product === 'matrix' ? /timeout|timed out|abort/i : /timeout/i;
+  ok(product + ': a platform timeout is classified as a timeout by its own classifier', r6.isError && TIMEOUT.test(r6.content[0].text), JSON.stringify(r6));
   return w;
 }
 const M = path.join(REPO, 'plugins/revizto-pi-matrix/skills/project-intelligence-matrix/assets/matrix-claudeai.html');

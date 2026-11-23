@@ -177,16 +177,35 @@ Revizto region, add one entry, in install order. Path B:
 const CONNECTORS=[{prefix:"mcp__<connector-id>__",env:"prod",origin:"current"}];
 ```
 
-Path A adds that connector's display name from step 1, exactly as listed (escape a `"` in it as `\"`):
+Path A adds that connector's display name from step 1, exactly as listed:
 
 ```js
 const CONNECTORS=[{prefix:"mcp__<connector-id>__",env:"prod",origin:"current",name:"<connector display name>"}];
 ```
 
 (Two regions: two entries separated by a comma. The first entry is the one the Matrix selects first.)
-Replace the marker comment itself — it must not remain in the file. Use a single targeted find-and-replace
-on that one line and **touch nothing else**: no reformatting, no other edits. Read the real prefix and
-name; never guess them. If no connector is connected, leave the line exactly as shipped.
+Write the line with the helper below, never by hand: it writes every prefix and name as a JSON string (with `<`
+as `\u003c`), so a quote, a backslash or `</script>` in a connector's name can neither change the name nor break
+the page. Put each connector's prefix and name between the `r"""` quotes exactly as you read them (step 1); a name
+containing three double quotes in a row is the one thing it cannot take — stop and tell the user. It replaces the marker comment itself and touches nothing else. Read the real prefix and name;
+never guess them. If no connector is connected, skip the helper and leave the line exactly as shipped.
+
+```bash
+python3 - ./pi-matrix.html <<'PY'
+import json, sys
+CONNS = [   # (prefix, display name), one per connected Revizto region, in install order; Path B: name = ""
+    (r"""mcp__<connector-id>__""", r"""<connector display name>"""),
+]
+js = lambda v: json.dumps(v, ensure_ascii=False).replace("<", "\\u003c")
+assert CONNS and all(p.startswith("mcp__") and p.endswith("__") for p, _ in CONNS), "STOP: a prefix is not mcp__<id>__"
+ent = ",".join("{prefix:%s,env:\"prod\",origin:\"current\"%s}" % (js(p), (",name:" + js(n)) if n else "") for p, n in CONNS)
+f = sys.argv[1]; s = open(f, encoding="utf-8").read()
+old = "const CONNECTORS=[/*@@INSTALL_CONNECTORS@@*/];"
+assert s.count(old) == 1, "STOP: install marker missing or repeated. Redo from step 2."
+open(f, "w", encoding="utf-8").write(s.replace(old, "const CONNECTORS=[" + ent + "];"))
+print("connector line set:", len(CONNS), "connector(s)")
+PY
+```
 
 Then prove the edit was that one line and nothing else:
 

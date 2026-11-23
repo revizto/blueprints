@@ -501,6 +501,9 @@ section('9  OUTPUT ENCODING  (no value from Revizto, the user, storage or Claude
     ['escape call with raw data after it', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _x=`<b>${_esc("")+w.title}</b>`;')],
     ['new raw concatenation', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _y=\'<b>\'+w.reporter+\'</b>\';')],
     ['new raw interpolation of an unlisted name', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _z=`<i>${w.reporter}</i>`;')],
+    // the two blind spots Copilot found in the first version of this gate (PR #5 review)
+    ['raw value nested deep in a reviewed interpolation', SRC.replace('["criticals","Criticals"]', '["criticals",DATA.meta.name]')],
+    ['raw operand mid-chain, away from any markup literal', SRC.replace('"</b> holds "+RS.conc+', '" "+RS._untrusted+" "+"</b> holds "+RS.conc+')],
   ];
   const blind = probes.filter(([, s]) => !red(s)).map(p => p[0]);
   ok('the gate goes red on every injected regression (' + probes.length + ')', blind.length === 0, 'blind: ' + blind.join(', '));

@@ -53,11 +53,15 @@
   function fromError(e){
     var code = (e && e.code) || "", msg = (e && e.message) || String(e || "error");
     if(code === "rate_limited") return errResult("rate limit (429): " + msg);
-    if(code === "timeout") return errResult("timed out waiting for server: " + msg);
+    /* "timeout" is the Blueprint classifier's marker (mcpFailKind matches /timeout/i, not "timed out") */
+    if(code === "timeout") return errResult("timeout — timed out waiting for server: " + msg);
     if(code === "server_not_connected" || code === "server_not_found")
       return errResult("Revizto connector not connected for this viewer: " + msg);
+    /* a tool the viewer declined (or that is not allowed for this page) is a permission matter for THIS connector:
+       routed to the Blueprint's "not connected for you" kind and its remedy, never to a generic Revizto failure */
     if(code === "not_granted" || code === "unavailable" || code === "denied")
-      throw new Error("No MCP bridge: connector access was not granted (" + code + ")");
+      return errResult("Revizto connector not connected for this viewer: access to this tool was not allowed (" + code + "). " +
+        "Allow the Revizto tools from this page's Permissions menu.");
     if(code === "tool_not_found" || code === "unknown_tool" || code === "tool_not_declared") return errResult("Unknown tool: " + msg);
     return errResult(msg);
   }

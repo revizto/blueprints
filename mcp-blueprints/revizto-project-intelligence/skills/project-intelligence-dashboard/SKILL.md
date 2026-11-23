@@ -164,14 +164,36 @@ const CONFIG={connectors:[
 ],readOnly:false,tcsVersion:"…",buildStamp:"…"};   // ← both left exactly as they were
 ```
 
-Path A adds that connector's display name from step 1, exactly as listed (escape a `"` in it as `\"`):
+Path A adds that connector's display name from step 1, exactly as listed:
 
 ```js
   {prefix:"mcp__<connector-id>__",wsHost:"ws.revizto.com",missing:[],name:"<connector display name>"},
 ```
 
-Use a single targeted find-and-replace on that one region. **Do not touch anything else in the file** —
-no reformatting, no other edits. Read the real prefix; never guess it. (If you genuinely cannot obtain
+Write the line with the helper below, never by hand: it writes every prefix and name as a JSON string (with `<`
+as `\u003c`), so a quote, a backslash or `</script>` in a connector's name can neither change the name nor break
+the page. Put each connector's prefix and name between the `r"""` quotes exactly as you read them (step 1); a name
+containing three double quotes in a row is the one thing it cannot take — stop and tell the user.
+
+```bash
+python3 - ./pi-blueprint.html <<'PY'
+import json, re, sys
+CONNS = [   # (prefix, display name), one per connected Revizto region; Path B: name = ""
+    (r"""mcp__<connector-id>__""", r"""<connector display name>"""),
+]
+js = lambda v: json.dumps(v, ensure_ascii=False).replace("<", "\\u003c")
+assert CONNS and all(p.startswith("mcp__") and p.endswith("__") for p, _ in CONNS), "STOP: a prefix is not mcp__<id>__"
+lines = "".join("  {prefix:%s,wsHost:\"ws.revizto.com\",missing:[]%s},\n" % (js(p), (",name:" + js(n)) if n else "") for p, n in CONNS)
+f = sys.argv[1]; s = open(f, encoding="utf-8").read()
+m = re.search(r"const CONFIG=\{connectors:\[\n( /\*[\s\S]*?\*/\n)\],readOnly:", s)
+assert m and s.count("const CONFIG={connectors:[") == 1, "STOP: CONFIG.connectors is not the shipped empty list. Redo from step 2."
+open(f, "w", encoding="utf-8").write(s[:m.end(1)] + lines + s[m.end(1):])
+print("connectors set:", len(CONNS))
+PY
+```
+
+The helper above is that one edit. **Do not touch anything else in the file** — no reformatting, no other
+edits. Read the real prefix and name; never guess them. (If you genuinely cannot obtain
 a prefix, you may leave `connectors:[]` and deploy anyway — the Blueprint will show the connect CTA —
 but it won't load live data, so prefer inserting the prefix.)
 
