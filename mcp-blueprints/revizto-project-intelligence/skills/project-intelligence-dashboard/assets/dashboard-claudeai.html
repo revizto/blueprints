@@ -776,7 +776,7 @@ tr:last-child td{border-bottom:0}
 .rail-card>.card-hd h3,.an-card>.card-hd h3{font-size:var(--fs-2);font-weight:600}
 .rail-card .hint,.an-card .hint{margin-left:auto;font-size:var(--fs-1);color:var(--muted)}
 /* WS91: Analytics opens with the project pulse and what changed, side by side, equal height */
-.an-status{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s4);align-items:stretch;margin-top:var(--s4)}
+.an-status{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s4);align-items:stretch;margin:0 0 var(--s4)}
 .an-status>.card{margin-top:0}
 /* WS91: portfolio size, 3-10 */
 .pf-n{margin-left:auto;display:inline-flex;align-items:center;gap:var(--s2);font-size:var(--fs-1);color:var(--muted)}
@@ -1630,6 +1630,7 @@ tr:last-child td{border-bottom:0}
   <!-- ===== 03 ANALYTICS (ids frozen: panel-issues) ===== -->
   <section class="panel" id="panel-issues" role="tabpanel" aria-labelledby="tab-issues" tabindex="0" hidden>
     <div class="vhead"><div class="eyebrow">03 Coordination analytics</div><h2 class="view-title">Where the work is, and how fast it clears<button type="button" class="proof-i" data-proof-i aria-label="Coordination analytics — definition" data-proof-def="Where the work is and how fast it clears — the active-issue timeline with its trend and projection to your milestones."><span class="ico ico-info" aria-hidden="true"></span></button></h2><p class="view-sub">The active-issue timeline, its trend and projection to your milestones, and the actions to keep it moving.</p></div>
+    <div class="rv-verdict rv-verdict--hero" id="flowNote"></div>
     <!-- WS91: the project pulse and what changed open Analytics -->
     <div class="an-status">
         <section class="card an-card" aria-labelledby="pulseTtl">
@@ -1642,7 +1643,6 @@ tr:last-child td{border-bottom:0}
           <div class="changed" id="changed"></div>
         </section>
     </div>
-    <div class="rv-verdict rv-verdict--hero" id="flowNote"></div>
     <div class="card tl-card">
       <div class="tl-head">
         <div><h3 class="card-h">Issue timeline · trend and projection<button type="button" class="proof-i" data-proof-i aria-label="Issue timeline — definition" data-proof-def="Active issues (open + in-progress) over time, reconstructed from each issue's created date and, for resolved ones, when it reached Solved/Closed. The dashed line projects the trailing open/resolve rate — an estimate, not a commitment."><span class="ico ico-info" aria-hidden="true"></span></button></h3><div class="tl-sub">Active (not-closed) issues over time, reconstructed from the loaded issue sample — not necessarily every issue. The dashed line projects the trailing open/close rate: an estimate, not a commitment. Add milestones to see whether the backlog is on track to clear in time.</div></div>

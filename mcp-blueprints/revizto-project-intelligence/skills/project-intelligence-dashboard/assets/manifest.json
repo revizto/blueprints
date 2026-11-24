@@ -8,7 +8,7 @@
     "file": "dashboard.html",
     "bytes": 924479,
     "lines": 6321,
-    "sha256": "9cd062ee17120de0309143c3a538e8639a5ce486d9e9751fd95b643ce4e8f54b"
+    "sha256": "367c32d11c556bb9dee25da8c888a6d9e43f2a113c472309c041c294a38198f8"
   },
   "tools": {
     "read": [
@@ -30,11 +30,11 @@
   "claudeai": {
     "file": "dashboard-claudeai.html",
     "size": 934591,
-    "md5": "835e70b133ecd4c95cb704ea65874cf0",
-    "sha256": "8c343113d4ec116e637fbe7172863e66144be0e765246b76f0cbc418ba1496a2",
+    "md5": "8499b30e61317f4ccdd0754010d964d5",
+    "sha256": "ad276ccf25237cda6b93f76c243e43044a490183300b1e7cf1b47f5f1d78d8c4",
     "portOf": {
       "file": "dashboard.html",
-      "sha256": "9cd062ee17120de0309143c3a538e8639a5ce486d9e9751fd95b643ce4e8f54b"
+      "sha256": "367c32d11c556bb9dee25da8c888a6d9e43f2a113c472309c041c294a38198f8"
     }
   },
   "generatedAt": "2026-11-24"
