@@ -4,7 +4,7 @@ Repository-level changes: layout, licence, additions and removals. Each item kee
 folder — [Blueprint](mcp-blueprints/revizto-project-intelligence/CHANGELOG.md) ·
 [Matrix](plugins/revizto-pi-matrix/CHANGELOG.md).
 
-## Unreleased — Apache License 2.0 and the Revizto Open-Source Repository Terms 2.0; Blueprint 1.0.5; Matrix 1.0.1
+## Unreleased — Apache License 2.0 and the Revizto Open-Source Repository Terms 2.0; Blueprint 2.0.0; Matrix 1.0.1
 
 - **New licensing model.** The repository is licensed under the Apache License, Version 2.0 (`LICENSE`), and
   its use is subject to the **Revizto Open-Source Repository Terms and Conditions, Version 2.0 — 13 November
@@ -15,7 +15,7 @@ folder — [Blueprint](mcp-blueprints/revizto-project-intelligence/CHANGELOG.md)
   name, as their example of an Item, and carry no bold text.
 - **Copies per plugin.** Each plugin folder carries byte-identical copies of `LICENSE`, `NOTICE` and `TERMS.md`,
   and `OFL.txt` for the embedded Geist fonts. `plugin.json` declares `Apache-2.0`.
-- **Blueprint 1.0.5** and **Matrix 1.0.1** show the new Terms in their acceptance gates, word for word, and
+- **Blueprint 2.0.0** and **Matrix 1.0.1** show the new Terms in their acceptance gates, word for word, and
   ask every connection to accept them once (Terms version 2.0). Matrix 1.0.1 also makes drag and drop the
   only way to bring a file in. Re-run each plugin's install skill to update an artifact already created.
 - **Both plugins install with Claude's Artifact tool.** Cowork live artifacts (`create_artifact`) were retired
@@ -26,12 +26,16 @@ folder — [Blueprint](mcp-blueprints/revizto-project-intelligence/CHANGELOG.md)
   claude.ai build from its Cowork build; both plugins' gates re-derive it on every push and fail on any
   byte of difference. Both claude.ai builds draw their own checkboxes, radios and text fields
   (`tools/claudeai/controls.css`), so none renders black in a dark host theme.
-- **Security (Blueprint build 2026-11-24.2).** CodeQL found a project title and the Compare search text spliced into
+- **Security (Blueprint).** CodeQL found a project title and the Compare search text spliced into
   the page as HTML; the audit behind it found the same in other views (titles, issue fields, member names,
   status and workflow names, server errors, stored jobs and milestones, Claude's plans). Every such value is now
   escaped, issue links are URL-encoded and colours validated, and `tests/run.mjs` section 9 fails on any new
   unescaped splice. The repository's own scripts no longer use the tag-matching and sanitising patterns CodeQL
   flagged.
+- **Blueprint 2.0.0 is also a redesign** on the Revizto design standard: one project bar on every view with a
+  one-line pulse, the portfolio beside the Morning brief's four moves (3 to 10 projects), Analytics opening with
+  the headline figures and what changed, and the briefing in place of the four moves. See the Blueprint's
+  changelog; the work prepared as Blueprint 1.0.5 ships inside 2.0.0.
 
 ## Revizto Blueprints layout, and the Project Intelligence Matrix 1.0.0
 

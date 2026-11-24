@@ -226,6 +226,11 @@ function portMatrix(src) {
   return src;
 }
 
+function repOrNative(src, old, neu, native) {
+  if (src.split(old).length - 1 === 0 && src.includes(native)) return src;   // WS89: already native (Blueprint 2.x)
+  return rep(src, old, neu);
+}
+
 function portBlueprint(src) {
   const head = '<!doctype html><html lang="en">\n<head>\n<meta charset="utf-8">\n' +
     '<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>';
@@ -248,15 +253,15 @@ function portBlueprint(src) {
     'function connHostNames(){\n  if(_connNames)return _connNames;\n  _connNames={};\n' +
     '  (CONFIG.connectors||[]).forEach(function(c){if(c&&c.prefix&&c.name)_connNames[c.prefix]=String(c.name);});\n');
   // 5. the in-page confirm for Discard (R3, the published profile's fix taken verbatim)
-  src = rep(src, 'if(disc)disc.onclick=()=>{if(confirm("Discard tracking for this job? The "+fmt(done)+" changes already made stay in Revizto — this only stops the remaining "+fmt(rem)+" from being picked up here.")){PENDING_RESUME=null;JOB=null;try{localStorage.removeItem(jobKey());}catch(e){}b.hidden=true;b.innerHTML="";}};}',
-    'if(disc)disc.onclick=()=>{confirmLoad("Discard tracking for this job?","The "+fmt(done)+" changes already made stay in Revizto — this only stops the remaining "+fmt(rem)+" from being picked up here.","Discard tracking").then(ok=>{if(!ok)return;PENDING_RESUME=null;JOB=null;try{localStorage.removeItem(jobKey());}catch(e){}b.hidden=true;b.innerHTML="";});};}');
+  src = repOrNative(src, 'if(disc)disc.onclick=()=>{if(confirm("Discard tracking for this job? The "+fmt(done)+" changes already made stay in Revizto — this only stops the remaining "+fmt(rem)+" from being picked up here.")){PENDING_RESUME=null;JOB=null;try{localStorage.removeItem(jobKey());}catch(e){}b.hidden=true;b.innerHTML="";}};}',
+    'if(disc)disc.onclick=()=>{confirmLoad("Discard tracking for this job?","The "+fmt(done)+" changes already made stay in Revizto — this only stops the remaining "+fmt(rem)+" from being picked up here.","Discard tracking").then(ok=>{if(!ok)return;PENDING_RESUME=null;JOB=null;try{localStorage.removeItem(jobKey());}catch(e){}b.hidden=true;b.innerHTML="";});};}', 'confirmLoad("Discard tracking for this job?","The "+fmt(done)+" changes already made stay in Revizto');
   // 6. the `noconn` failure kind (R3, verbatim from the published build's routing)
-  src = rep(src, 'if(/Failed to parse SSE/i.test(m))return{k:"gone",',
+  src = repOrNative(src, 'if(/Failed to parse SSE/i.test(m))return{k:"gone",',
     '/* the claude.ai runtime reports a connector the viewer has not connected. Distinct from `gone`\n' +
     '     (a removed or rebuilt connector) — the remedy is to connect it, not to re-add an id. Never produced in Cowork. */\n' +
     '  if(/connector not connected for this viewer/i.test(m))return{k:"noconn",t:"This Revizto connector isn’t connected for you",' +
     'd:"Connect it in Claude (Settings → Connectors), allow it for this page when asked, then Reload."};\n' +
-    '  if(/Failed to parse SSE/i.test(m))return{k:"gone",');
+    '  if(/Failed to parse SSE/i.test(m))return{k:"gone",', 'if(/connector not connected for this viewer/i.test(m))return{k:"noconn",');
   src = rep(src, 'If the connector was rebuilt, its id changed — add the new id via the Add box in the header, then press Re-check. ' +
     'Connector ids are per-install, so a rebuild always issues new ones.', GONE);
   // 7. copy (R5)
@@ -349,7 +354,9 @@ export function selftest() {
   refuses('matrix: native confirm through window', () => port('matrix', m.replace('</script>', 'window.confirm ("x");</script>')));
   refuses('matrix: nobridge remedy moved', () => port('matrix', m.replace('Open this artifact inside Cowork.', 'Open this artifact in Cowork.')));
   refuses('matrix: gone remedy moved', () => port('matrix', m.replace('add the new id via the Add box, then', 'add the new id via the Add box and then')));
-  refuses('blueprint: noconn anchor moved', () => port('blueprint', b.replace('if(/Failed to parse SSE/i.test(m))return{k:"gone",', 'if(/Failed to parse SSE/.test(m))return{k:"gone",')));
+  // 2.0.0 carries the noconn kind natively: the port refuses only when NEITHER the native kind NOR the anchor to add it is there
+  refuses('blueprint: noconn anchor moved', () => port('blueprint', b.replace('if(/Failed to parse SSE/i.test(m))return{k:"gone",', 'if(/Failed to parse SSE/.test(m))return{k:"gone",')
+    .replace('if(/connector not connected for this viewer/i.test(m))return{k:"noconn",', 'if(/connector not connected/i.test(m))return{k:"noconn",')));
   refuses('matrix: names anchor moved', () => port('matrix', m.replace('function connHostNames() {\n  if (_connNames)', 'function connHostNames() {\n if (_connNames)')));
   refuses('matrix: gone signature moved', () => port('matrix', m.replace('   if (/Failed to parse SSE/i.test(m)) return FAIL_TEXT.gone(m);', '   if (/Failed to parse SSE/.test(m)) return FAIL_TEXT.gone(m);')));
   refuses('matrix: unported bridge use', () => port('matrix', m.replace('</script>', 'top.cowork.callMcpTool;</script>')));
@@ -359,7 +366,8 @@ export function selftest() {
   refuses('blueprint: names anchor moved', () => port('blueprint', b.replace('function connHostNames(){\n  if(_connNames)', 'function connHostNames(){\n if(_connNames)')));
   refuses('blueprint: no-bridge copy moved', () => port('blueprint', b.replace('has no connection to Claude\'s MCP bridge', 'has no link to Claude\'s MCP bridge')));
   refuses('blueprint: native confirm back', () => port('blueprint', b.replace('function closeConfirm()', 'function x(){confirm("y")}\nfunction closeConfirm()')));
-  refuses('blueprint: discard anchor moved', () => port('blueprint', b.replace('if(confirm("Discard tracking for this job? The "', 'if(window.confirm("Discard tracking for this job? The "')));
+  // 2.0.0 carries the in-page Discard confirm natively: neither it nor the 1.0.x native confirm -> refuse
+  refuses('blueprint: discard anchor moved', () => port('blueprint', b.replace('confirmLoad("Discard tracking for this job?","The "', 'confirmLoad("Discard this job?","The "')));
   refuses('blueprint: brief copy moved', () => port('blueprint', b.replace('open in Cowork with the MCP connected', 'open Cowork with the MCP connected')));
   refuses('unknown product', () => port('carbon', m));
   // the skeleton check looks only outside scripts, however a script tag is spelt

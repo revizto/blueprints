@@ -15,7 +15,7 @@ The Blueprint **opens read-only every session**. Read-only is a toggle you contr
 the write surface becomes available, so you can push reassignments, status changes and more into your
 Revizto project. Every write runs count-first targeting, a diff preview, and an explicit approval step.
 
-**Status:** `v1.0.5` (build `2026-11-24.2`). Version history in [CHANGELOG.md](CHANGELOG.md).
+**Status:** `v2.0.0` (build `2026-11-24.3`). Version history in [CHANGELOG.md](CHANGELOG.md).
 
 > ### Upgrading? Re-run the install skill.
 >
@@ -93,11 +93,11 @@ region can you access?"*
 **Sync** → install **revizto-project-intelligence**. The same marketplace also lists the Revizto Project
 Intelligence Matrix; install it too if you want it — each installs on its own.
 
-**Or upload the package.** If you were supplied `revizto-project-intelligence-v1.0.5.plugin` (also
+**Or upload the package.** If you were supplied `revizto-project-intelligence-v2.0.0.plugin` (also
 attached to the GitHub release), use **Directory → Plugins → Personal → Local uploads**. No repository
 access needed.
 
-Either way the install detail should list **3 skills** at version **1.0.5**.
+Either way the install detail should list **3 skills** at version **2.0.0**.
 
 > **Upgrading?** Remove the old entry before installing the new one, or Claude keeps serving the cached
 > version. **Added the marketplace before the rename?**
