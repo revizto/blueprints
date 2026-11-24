@@ -184,22 +184,33 @@ const CONNECTORS=[{prefix:"mcp__<connector-id>__",env:"prod",origin:"current",na
 ```
 
 (Two regions: two entries separated by a comma. The first entry is the one the Matrix selects first.)
-Write the line with the helper below, never by hand: it writes every prefix and name as a JSON string (with `<`
-as `\u003c`), so a quote, a backslash or `</script>` in a connector's name can neither change the name nor break
-the page. Put each connector's prefix and name between the `r"""` quotes exactly as you read them (step 1); a name
-containing three double quotes in a row is the one thing it cannot take — stop and tell the user. It replaces the marker comment itself and touches nothing else. Read the real prefix and name;
-never guess them. If no connector is connected, skip the helper and leave the line exactly as shipped.
+Write the line with the helper below, never by hand. On the lines between the `cat` line and the closing
+`RVZ_CONNECTORS_END` line, replace the two example lines with two lines per connected Revizto region, in install
+order: the connector's prefix (read above, from this session's tool names), then its display name (from step 1),
+each exactly as read, nothing else on the line. Path B, or a name you could not read: leave the name line empty. The
+helper reads those lines as data — they never become code — and writes each prefix and name as a JSON string (with
+`<` as `\u003c`), so no quote, backslash or `</script>` in a name can change it or break the page. If a display name
+spans more than one line, holds a control character or is exactly `RVZ_CONNECTORS_END`, stop and tell the user. The
+helper replaces the marker comment itself and touches nothing else. Read the real prefix and name; never guess them.
+If no connector is connected, skip the helper and leave the line exactly as shipped.
 
 ```bash
-python3 - ./pi-matrix.html <<'PY'
-import json, sys
-CONNS = [   # (prefix, display name), one per connected Revizto region, in install order; Path B: name = ""
-    (r"""mcp__<connector-id>__""", r"""<connector display name>"""),
-]
+cat > ./rvz-connectors.txt <<'RVZ_CONNECTORS_END'
+mcp__<connector-id>__
+<connector display name>
+RVZ_CONNECTORS_END
+python3 - ./pi-matrix.html ./rvz-connectors.txt <<'PY'
+import json, os, re, sys
+f, data = sys.argv[1], sys.argv[2]
+raw = open(data, encoding="utf-8", newline="").read(); os.remove(data)   # newline="": a \r stays visible
+lines = (raw[:-1] if raw.endswith("\n") else raw).split("\n")
+assert len(lines) >= 2 and len(lines) % 2 == 0, "STOP: write two lines per connector (prefix, then name). Redo this step."
+CONNS = list(zip(lines[0::2], lines[1::2]))
+assert all(re.fullmatch(r"mcp__[A-Za-z0-9_-]+__", p) for p, _ in CONNS), "STOP: a prefix is not mcp__<id>__. Redo this step."
+assert not any(re.search(r"[\x00-\x1f\x7f]", n) for _, n in CONNS), "STOP: a connector name holds a control character. Tell the user."
 js = lambda v: json.dumps(v, ensure_ascii=False).replace("<", "\\u003c")
-assert CONNS and all(p.startswith("mcp__") and p.endswith("__") for p, _ in CONNS), "STOP: a prefix is not mcp__<id>__"
 ent = ",".join("{prefix:%s,env:\"prod\",origin:\"current\"%s}" % (js(p), (",name:" + js(n)) if n else "") for p, n in CONNS)
-f = sys.argv[1]; s = open(f, encoding="utf-8").read()
+s = open(f, encoding="utf-8").read()
 old = "const CONNECTORS=[/*@@INSTALL_CONNECTORS@@*/];"
 assert s.count(old) == 1, "STOP: install marker missing or repeated. Redo from step 2."
 open(f, "w", encoding="utf-8").write(s.replace(old, "const CONNECTORS=[" + ent + "];"))

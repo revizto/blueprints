@@ -42,5 +42,7 @@ jobs:
         run: node tools/verify.mjs --selftest
       - name: the claude.ai port refuses what it cannot fully apply, and both claude.ai builds are its output
         run: node ../../tools/claudeai/port.mjs --selftest && node ../../tools/claudeai/port.mjs --check && node ../../tools/claudeai/shim.test.mjs
+      - name: the install skills take any connector name as data, never as code
+        run: python3 ../../tools/claudeai/install-helper.test.py
       - name: asset, public-safe, read-only, version and licence gates
         run: node tools/verify.mjs

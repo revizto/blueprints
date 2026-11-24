@@ -19,7 +19,7 @@ import { execFileSync } from 'child_process';
 import os from 'os';
 import crypto from 'crypto';
 import { port, selftest as portSelftest, NATIVE_DIALOG, withoutShim } from '../../../tools/claudeai/port.mjs';
-import { unreviewed as unreviewedSplices } from './encoding.mjs';
+import { unreviewed as unreviewedSplices, escaperBindings } from './encoding.mjs';
 
 const ROOT  = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ASSET = path.join(ROOT, 'skills/project-intelligence-dashboard/assets/dashboard.html');
@@ -490,8 +490,10 @@ section('9  OUTPUT ENCODING  (no value from Revizto, the user, storage or Claude
      missing(SRC).slice(0, 3).join(' | '));
   ok('every splice into a string is one escaping call or reviewed (' + Object.keys(pins.reviewed || {}).length + ' reviewed)',
      Object.keys(pins.reviewed || {}).length > 100 && left(SRC).length === 0, left(SRC).slice(0, 5).join(' | '));
-  // the gate can fail: each injected regression must be caught by one of the two checks
-  const red = s => missing(s).length > 0 || left(s).length > 0;
+  ok('the escapers are declared once and never rebound, shadowed or passed in as a parameter', escaperBindings(SRC).length === 0,
+     escaperBindings(SRC).slice(0, 3).join(' | '));
+  // the gate can fail: each injected regression must be caught by one of the three checks
+  const red = s => missing(s).length > 0 || left(s).length > 0 || escaperBindings(s).length > 0;
   const probes = [
     ['Compare picker title revert', SRC.replace('<span>${_esc(p.title)}</span>', '<span>${p.title}</span>')],
     ['assignee options revert', SRC.replace('`<option value="${_esc(e)}">${_esc(e)}</option>`', '`<option value="${e}">${e}</option>`')],
@@ -504,6 +506,44 @@ section('9  OUTPUT ENCODING  (no value from Revizto, the user, storage or Claude
     // the two blind spots Copilot found in the first version of this gate (PR #5 review)
     ['raw value nested deep in a reviewed interpolation', SRC.replace('["criticals","Criticals"]', '["criticals",DATA.meta.name]')],
     ['raw operand mid-chain, away from any markup literal', SRC.replace('"</b> holds "+RS.conc+', '" "+RS._untrusted+" "+"</b> holds "+RS.conc+')],
+    // the four blind spots Copilot found in the second version (PR #5 re-review), and the two sinks beside them
+    ['raw value between two escaping calls whose strings hold brackets', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _a=`<b>${_esc("(")+w.reporter+_esc(")")}</b>`;')],
+    ['raw value between template-literal markup', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _b=`<b>`+w.reporter+`</b>`;')],
+    ['raw value between bracketed markup', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _c=("<b>")+w.reporter+("</b>");')],
+    ['a closing brace inside a string in an interpolation', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _d=`<b>${w.x==="}"?"":w.reporter}</b>`;')],
+    ['raw value assigned straight to innerHTML', SRC.replace('function rowHtml(w){', 'function rowHtml(w){document.body.innerHTML=w.reporter;')],
+    ['raw value appended to accumulated markup', SRC.replace('function rowHtml(w){', 'function rowHtml(w){let _e="";_e+=w.reporter;')],
+    // what the independent review of the third version got past it
+    ['raw value returned from a markup builder', SRC.replace('function rowHtml(w){', 'function rowHtml(w){if(w.err)return w.reporter;')],
+    ['raw ternary arm returned from a markup builder', SRC.replace('function rowHtml(w){', 'function rowHtml(w){if(w.x)return w.x?"<tr>"+_esc(w.a):w.reporter;')],
+    ['self-append without +=', SRC.replace('function rowHtml(w){', 'function rowHtml(w){let _h=`<tr>`;_h=_h+w.reporter;')],
+    ['regex after an if head hides the rest of the line', SRC.replace('function rowHtml(w){', "function rowHtml(w){if(w)/'/.test(w.x);document.body.innerHTML=w.reporter;")],
+    ['regex after an object literal', SRC.replace('function rowHtml(w){', 'function rowHtml(w){let _n={}/1;document.body.innerHTML=w.reporter;_n=_n/2;')],
+    ['escaper shadowed', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _esc=s=>s;')],
+    ['escaper reassigned', SRC.replace('function rowHtml(w){', 'function rowHtml(w){fmt=String;')],
+    ['escaper taken as a parameter', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _f=(tcsEsc)=>tcsEsc(w.reporter);')],
+    ['sink by bracket access', SRC.replace('function rowHtml(w){', 'function rowHtml(w){document.body["innerHTML"]=w.reporter;')],
+    ['sink by Object.assign', SRC.replace('function rowHtml(w){', 'function rowHtml(w){Object.assign(document.body,{innerHTML:w.reporter});')],
+    ['srcdoc by setAttribute', SRC.replace('function rowHtml(w){', 'function rowHtml(w){document.body.setAttribute("srcdoc",w.reporter);')],
+    ['insertAdjacentHTML by .call', SRC.replace('function rowHtml(w){', 'function rowHtml(w){Element.prototype.insertAdjacentHTML.call(document.body,"beforeend",w.reporter);')],
+    ['document.write by optional chaining', SRC.replace('function rowHtml(w){', 'function rowHtml(w){window.document?.write(w.reporter);')],
+    ['createContextualFragment', SRC.replace('function rowHtml(w){', 'function rowHtml(w){document.createRange().createContextualFragment(w.reporter);')],
+    ['attribute fragment without a bracket', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _g=\'" onmouseover="\'+w.reporter;')],
+    ['escaped bracket in the literal', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _i="\\x3cimg src=x\\x3e"+w.reporter;')],
+    ['escaped value in an event handler', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _j=`<a onclick="go(\'${_esc(w.reporter)}\')">x</a>`;')],
+    ['escaped value as a URL', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _k=`<a href="${_esc(w.reporter)}">x</a>`;')],
+    ['encodeURIComponent in a single-quoted attribute', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _l=`<a title=\'${encodeURIComponent(w.reporter)}\'>x</a>`;')],
+    // and what the second independent review got past the fourth
+    ['escaped value concatenated into a URL attribute', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _m=\'<a href="\'+_esc(w.reporter)+\'">x</a>\';')],
+    ['escaped value in an attribute-name position', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _n=`<b ${_esc(w.reporter)}>x</b>`;')],
+    ['escaped value in srcdoc', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _o=`<iframe srcdoc="${_esc(w.reporter)}"></iframe>`;')],
+    ['escaper shadowed by a catch parameter', SRC.replace('function rowHtml(w){', 'function rowHtml(w){try{throw 0}catch(_esc){}')],
+    ['escaper replaced on window', SRC.replace('function rowHtml(w){', 'function rowHtml(w){window.tcsEsc=s=>s;')],
+    ['with statement', SRC.replace('function rowHtml(w){', 'function rowHtml(w){with({}){}')],
+    ['regex after a labelled block hides the rest of the line', SRC.replace('function rowHtml(w){', "function rowHtml(w){L:{}/'/;if(w.x)return \"<b>\"+w.reporter;/'/;")],
+    ['block after a call on the next line taken for a function', SRC.replace('function rowHtml(w){', 'function rowHtml(w){String() {if(w.x)return w.reporter}')],
+    ['sink named by a string argument', SRC.replace('function rowHtml(w){', 'function rowHtml(w){Reflect.set(document.body,"innerHTML",w.reporter);')],
+    ['sink called with optional chaining', SRC.replace('function rowHtml(w){', 'function rowHtml(w){document.body.insertAdjacentHTML?.("beforeend",w.reporter);')],
   ];
   const blind = probes.filter(([, s]) => !red(s)).map(p => p[0]);
   ok('the gate goes red on every injected regression (' + probes.length + ')', blind.length === 0, 'blind: ' + blind.join(', '));

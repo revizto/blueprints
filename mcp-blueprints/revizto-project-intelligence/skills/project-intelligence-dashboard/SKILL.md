@@ -170,24 +170,34 @@ Path A adds that connector's display name from step 1, exactly as listed:
   {prefix:"mcp__<connector-id>__",wsHost:"ws.revizto.com",missing:[],name:"<connector display name>"},
 ```
 
-Write the line with the helper below, never by hand: it writes every prefix and name as a JSON string (with `<`
-as `\u003c`), so a quote, a backslash or `</script>` in a connector's name can neither change the name nor break
-the page. Put each connector's prefix and name between the `r"""` quotes exactly as you read them (step 1); a name
-containing three double quotes in a row is the one thing it cannot take — stop and tell the user.
+Write the line with the helper below, never by hand. On the lines between the `cat` line and the closing
+`RVZ_CONNECTORS_END` line, replace the two example lines with two lines per connected Revizto region, in install
+order: the connector's prefix (read above, from this session's tool names), then its display name (from step 1),
+each exactly as read, nothing else on the line. Path B, or a name you could not read: leave the name line empty. The
+helper reads those lines as data — they never become code — and writes each prefix and name as a JSON string (with
+`<` as `\u003c`), so no quote, backslash or `</script>` in a name can change it or break the page. If a display name
+spans more than one line, holds a control character or is exactly `RVZ_CONNECTORS_END`, stop and tell the user.
 
 ```bash
-python3 - ./pi-blueprint.html <<'PY'
-import json, re, sys
-CONNS = [   # (prefix, display name), one per connected Revizto region; Path B: name = ""
-    (r"""mcp__<connector-id>__""", r"""<connector display name>"""),
-]
+cat > ./rvz-connectors.txt <<'RVZ_CONNECTORS_END'
+mcp__<connector-id>__
+<connector display name>
+RVZ_CONNECTORS_END
+python3 - ./pi-blueprint.html ./rvz-connectors.txt <<'PY'
+import json, os, re, sys
+f, data = sys.argv[1], sys.argv[2]
+raw = open(data, encoding="utf-8", newline="").read(); os.remove(data)   # newline="": a \r stays visible
+lines = (raw[:-1] if raw.endswith("\n") else raw).split("\n")
+assert len(lines) >= 2 and len(lines) % 2 == 0, "STOP: write two lines per connector (prefix, then name). Redo this step."
+CONNS = list(zip(lines[0::2], lines[1::2]))
+assert all(re.fullmatch(r"mcp__[A-Za-z0-9_-]+__", p) for p, _ in CONNS), "STOP: a prefix is not mcp__<id>__. Redo this step."
+assert not any(re.search(r"[\x00-\x1f\x7f]", n) for _, n in CONNS), "STOP: a connector name holds a control character. Tell the user."
 js = lambda v: json.dumps(v, ensure_ascii=False).replace("<", "\\u003c")
-assert CONNS and all(p.startswith("mcp__") and p.endswith("__") for p, _ in CONNS), "STOP: a prefix is not mcp__<id>__"
-lines = "".join("  {prefix:%s,wsHost:\"ws.revizto.com\",missing:[]%s},\n" % (js(p), (",name:" + js(n)) if n else "") for p, n in CONNS)
-f = sys.argv[1]; s = open(f, encoding="utf-8").read()
+ins = "".join("  {prefix:%s,wsHost:\"ws.revizto.com\",missing:[]%s},\n" % (js(p), (",name:" + js(n)) if n else "") for p, n in CONNS)
+s = open(f, encoding="utf-8").read()
 m = re.search(r"const CONFIG=\{connectors:\[\n( /\*[\s\S]*?\*/\n)\],readOnly:", s)
 assert m and s.count("const CONFIG={connectors:[") == 1, "STOP: CONFIG.connectors is not the shipped empty list. Redo from step 2."
-open(f, "w", encoding="utf-8").write(s[:m.end(1)] + lines + s[m.end(1):])
+open(f, "w", encoding="utf-8").write(s[:m.end(1)] + ins + s[m.end(1):])
 print("connectors set:", len(CONNS))
 PY
 ```
