@@ -5,7 +5,7 @@
 // built and guarded outside this repository and packaged here with a manifest written from the file.
 // These gates re-check, on every push, that nothing in this folder has drifted from that release:
 // a hand-edit to the HTML, a version stated differently in two places, a tool list that no longer
-// matches the build, or a licence copy that no longer matches the root.
+// matches the build, or a licence, notice or terms copy that no longer matches the root.
 //
 //   node tools/verify.mjs              run every gate (exit 1 on any failure)
 //   node tools/verify.mjs --selftest   inject each defect the gates exist to catch; every one must go red
@@ -13,8 +13,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { port as claudeaiPort, NATIVE_DIALOG, withoutShim } from '../../../tools/claudeai/port.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const CONTROLS = fs.readFileSync(path.resolve(ROOT, '..', '..', 'tools/claudeai/controls.css'), 'utf8');
 const REPO = path.resolve(ROOT, '..', '..');
 const SKILL = 'skills/project-intelligence-matrix';
 
@@ -22,16 +24,27 @@ function load() {
   const r = (p, enc = 'utf8') => fs.readFileSync(p, enc);
   return {
     html: r(path.join(ROOT, SKILL, 'assets/matrix.html'), null),
+    // The claude.ai build: the port of matrix.html, published with the Artifact tool. Optional at load so its
+    // absence is a gate, not a crash.
+    claudeai: fs.existsSync(path.join(ROOT, SKILL, 'assets/matrix-claudeai.html'))
+      ? r(path.join(ROOT, SKILL, 'assets/matrix-claudeai.html'), null) : Buffer.alloc(0),
     manifest: r(path.join(ROOT, SKILL, 'assets/manifest.json')),
     plugin: r(path.join(ROOT, '.claude-plugin/plugin.json')),
     marketplace: r(path.join(REPO, '.claude-plugin/marketplace.json')),
     skill: r(path.join(ROOT, SKILL, 'SKILL.md')),
     changelog: r(path.join(ROOT, 'CHANGELOG.md')),
     readme: r(path.join(ROOT, 'README.md')),
-    licence: r(path.join(ROOT, 'LICENSE.md'), null),
+    // Apache 2.0 LICENSE, NOTICE and the Repository Terms (TERMS.md): each a byte-identical copy of the root file,
+    // because Claude installs a plugin from its own folder. Optional at load so a missing copy is a gate, not a crash.
+    licence: fs.existsSync(path.join(ROOT, 'LICENSE')) ? r(path.join(ROOT, 'LICENSE'), null) : Buffer.alloc(0),
+    notice: fs.existsSync(path.join(ROOT, 'NOTICE')) ? r(path.join(ROOT, 'NOTICE'), null) : Buffer.alloc(0),
+    terms: fs.existsSync(path.join(ROOT, 'TERMS.md')) ? r(path.join(ROOT, 'TERMS.md'), null) : Buffer.alloc(0),
+    oldLicence: fs.existsSync(path.join(ROOT, 'LICENSE.md')),
     // The embedded Geist fonts' licence. Optional at load so its absence is reported as a gate, not a crash.
     ofl: fs.existsSync(path.join(ROOT, 'OFL.txt')) ? r(path.join(ROOT, 'OFL.txt')) : '',
-    rootLicence: r(path.join(REPO, 'LICENSE.md'), null),
+    rootLicence: r(path.join(REPO, 'LICENSE'), null),
+    rootNotice: r(path.join(REPO, 'NOTICE'), null),
+    rootTerms: r(path.join(REPO, 'TERMS.md'), null),
   };
 }
 
@@ -103,11 +116,73 @@ function gates(f, out = () => {}) {
   ok('readme-version', 'README states this version', f.readme.includes('`v' + v + '`') && f.readme.includes('version **' + v + '**'));
 
   out('5  LICENCE');
-  ok('licence', 'LICENSE.md is a byte-identical copy of the root licence', Buffer.compare(f.licence, f.rootLicence) === 0);
+  // The Apache License 2.0 text, verbatim from apache.org (sha256 of LICENSE-2.0.txt). GitHub reads it as Apache-2.0.
+  const APACHE_SHA256 = 'cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30';
+  ok('apache', 'the root LICENSE is the Apache License 2.0, unaltered', crypto.createHash('sha256').update(f.rootLicence).digest('hex') === APACHE_SHA256);
+  ok('licence', 'LICENSE is a byte-identical copy of the root licence', f.licence.length > 0 && Buffer.compare(f.licence, f.rootLicence) === 0);
+  ok('notice', 'NOTICE is a byte-identical copy of the root notice', f.notice.length > 0 && Buffer.compare(f.notice, f.rootNotice) === 0);
+  ok('terms', 'TERMS.md is a byte-identical copy of the root Terms', f.terms.length > 0 && Buffer.compare(f.terms, f.rootTerms) === 0);
+  ok('old-licence', 'no LICENSE.md (the retired Revizto Custom Licence) in this folder', !f.oldLicence);
+  ok('plugin-licence', 'plugin.json declares Apache-2.0', (() => { try { return JSON.parse(f.plugin).license === 'Apache-2.0'; } catch { return false; } })());
+  // The in-app Terms gate names the Repository Terms and Apache 2.0, never the retired licence, at the Terms version.
+  ok('gate-terms', 'the build names the Repository Terms and Apache 2.0, not the Custom Licence',
+     /Revizto Open-Source Repository/.test(text) && /Apache License/.test(text) && !/Custom Licen[cs]e/.test(text));
+  // The gate's Terms block, word for word against this folder's TERMS.md (which is the root copy, pinned to
+  // legal's text), and the re-gate version equal to the version TERMS.md states.
+  const stripTags = t => {   // until stable, so a tag rebuilt by the removal of another is removed too; then no stray `<` is left
+    let s = String(t), prev;
+    do { prev = s; s = s.replace(/<\/?(?:b|strong|em|i|a)\b[^<>]*>/gi, ''); } while (s !== prev);
+    do { prev = s; s = s.replace(/<[^<>]*>/g, ' '); } while (s !== prev);
+    return s.replace(/</g, ' ');
+  };
+  const ENT = { '&mdash;': '—', '&amp;': '&', '&quot;': '"', '&#39;': "'" };
+  // one pass over the entities, so `&amp;quot;` decodes once to `&quot;` and never on to `"`
+  const words = t => stripTags(t).replace(/&(?:mdash|amp|quot|#39);/g, e => ENT[e])
+    .replace(/[*_#]/g, '').split(/\s+/).filter(Boolean);
+  const ti = text.indexOf('<div class="tcs-terms" id="tcsTerms">'), tj = ti < 0 ? -1 : text.indexOf('<h4 class="tcs-notes">', ti);
+  const gateW = ti < 0 || tj < 0 ? [] : words(text.slice(ti, tj));
+  const termsTxt = f.terms.toString('utf8');
+  const refW = words(termsTxt.split(/\n## Terms and Conditions\n/)[1] || '');
+  let k = 0; while (k < refW.length && refW[k] === gateW[k]) k++;
+  ok('gate-words', 'the in-app Terms are TERMS.md word for word (' + refW.length + ' words)',
+     refW.length > 1000 && gateW.length === refW.length && k === refW.length,
+     'first difference at word ' + k + ': "' + refW.slice(k, k + 5).join(' ') + '" vs "' + gateW.slice(k, k + 5).join(' ') + '"');
+  const termsV = (/^_Version (\d+\.\d+) — /m.exec(termsTxt) || [])[1];
+  const tcsV = (/tcsVersion\s*:\s*"([^"]+)"/.exec(text) || [])[1];
+  ok('gate-version', 'the in-app Terms re-gate at the version TERMS.md states', !!termsV && tcsV === termsV, tcsV + ' vs ' + termsV);
   // The build embeds Geist and Geist Mono and its About text says the OFL ships beside it.
   const embedsGeist = /Geist/.test(text) && /SIL Open Font License/.test(text);
   ok('ofl', 'OFL.txt ships with the plugin and carries the Geist copyright and the OFL 1.1 text',
      !embedsGeist || (/Copyright 2024 The Geist Project Authors/.test(f.ofl) && /SIL OPEN FONT LICENSE Version 1\.1/.test(f.ofl)));
+
+  out('6  CLAUDE.AI BUILD  (the file the Artifact tool publishes is the port of the file above, nothing else)');
+  const ca = f.claudeai, caText = ca.toString('utf8'), cam = man.claudeai || {};
+  const caHash = alg => crypto.createHash(alg).update(ca).digest('hex');
+  ok('ca-manifest', 'manifest describes matrix-claudeai.html as the port of this matrix.html',
+     cam.file === 'matrix-claudeai.html' && !!cam.portOf && cam.portOf.file === 'matrix.html' && cam.portOf.sha256 === hash('sha256'));
+  ok('ca-size', 'size, md5 and sha256 match the manifest',
+     ca.length > 0 && ca.length === cam.size && caHash('md5') === cam.md5 && caHash('sha256') === cam.sha256, ca.length + ' vs ' + cam.size);
+  let derived = null, why = '';
+  try { derived = claudeaiPort('matrix', text); } catch (e) { why = e.message; }
+  ok('ca-port', 'it is byte for byte what tools/claudeai/port.mjs derives from matrix.html',
+     derived !== null && Buffer.compare(ca, Buffer.from(derived, 'utf8')) === 0, why || 'committed file differs from the derived port');
+  ok('ca-anchor', 'exactly one install marker, inside CONNECTORS=[ ]',
+     caText.split(anchor).length - 1 === 1 && caText.includes('CONNECTORS=[' + anchor + ']'));
+  ok('ca-uuid', 'no connector id baked in',
+     ca.length > 0 && !/mcp__[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(caText));
+  const caNoB64 = caText.replace(/data:[^,"'\s)]*;base64,[A-Za-z0-9+/=\s]+/g, 'data:;base64,');
+  const caEmails = [...new Set(caNoB64.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g) || [])]
+    .filter(e => !/@example\.com$/i.test(e) && e.toLowerCase() !== 'support@revizto.com');
+  ok('ca-email', 'e-mail addresses are placeholders or Revizto support only', caEmails.length === 0, caEmails.slice(0, 3).join(', '));
+  ok('ca-host', 'it reaches connectors through the mcp capability, never the Cowork bridge',
+     /use\("mcp"\)/.test(caText) && !/\b\w+\.cowork\.\w+/.test(caText));
+  ok('ca-dialog', 'no native dialog (the claude.ai viewer blocks confirm, alert and prompt)',
+     ca.length > 0 && !NATIVE_DIALOG.test(withoutShim(caText)));
+  ok('ca-controls', 'host-proof controls: white checkboxes, radios and fields in any host theme (rvz-controls)',
+     caText.split('<style id="rvz-controls">').length === 2 && caText.includes(CONTROLS));
+  const caTools = (/var TOOLS = \{([^}]*)\};/.exec(caText) || [])[1];
+  ok('ca-tools', "the shim's tool list is exactly the manifest's read tools",
+     !!caTools && JSON.stringify(caTools.split(',').map(x => x.split(':')[0]).sort()) === JSON.stringify([...tools].sort()), caTools);
   return fails;
 }
 
@@ -134,7 +209,30 @@ function selftest() {
     ['html-version',      mod('manifest', s => json(s, o => { o.version = '9.9.9'; }))],
     ['readme-version',    mod('readme', s => s.split('version **').join('version __'))],
     ['licence',           mod('licence', b => Buffer.concat([b, Buffer.from('x')]))],
+    ['licence',           mod('licence', () => Buffer.alloc(0))],
+    ['apache',            mod('rootLicence', b => Buffer.concat([b, Buffer.from(' ')]))],
+    ['notice',            mod('notice', b => Buffer.concat([b, Buffer.from('x')]))],
+    ['terms',             mod('terms', b => Buffer.from(b.toString().replace('CHF 1', 'CHF 10')))],
+    ['old-licence',       mod('oldLicence', () => true)],
+    ['plugin-licence',    mod('plugin', s => json(s, o => { o.license = 'SEE LICENSE IN LICENSE.md'; }))],
+    ['gate-terms',        mod('html', b => str(b.toString().replace('Revizto Open-Source Repository', 'Revizto Custom Licence')))],
+    ['gate-words',        mod('html', b => str(b.toString().replace('(b) CHF 1 (one Swiss franc)', '(b) CHF 10 (ten Swiss francs)')))],
+    ['gate-version',      mod('html', b => str(b.toString().replace('tcsVersion:"2.0"', 'tcsVersion:"1.1"')))],
     ['ofl',               mod('ofl', () => '')],
+    ['ca-manifest',       mod('manifest', s => json(s, o => { delete o.claudeai; }))],
+    ['ca-manifest',       mod('html', b => Buffer.concat([b, Buffer.from(' ')]))],
+    ['ca-size',           mod('claudeai', b => Buffer.concat([b, Buffer.from(' ')]))],
+    ['ca-size',           mod('claudeai', () => Buffer.alloc(0))],
+    ['ca-port',           mod('claudeai', b => str(b.toString().replace('Run the install skill again', 'Run the installer again')))],
+    ['ca-port',           mod('html', b => str(b.toString().replace('This page is not running inside Cowork, so no connector', 'This page is not in Cowork, so no connector')))],
+    ['ca-anchor',         mod('claudeai', b => str(b.toString().replace('/*@@INSTALL_CONNECTORS@@*/', '')))],
+    ['ca-uuid',           mod('claudeai', b => str(b.toString().replace('/*@@INSTALL_CONNECTORS@@*/', '/*@@INSTALL_CONNECTORS@@*/"mcp__' + ['1a2b3c4d', '1111', '2222', '3333', '444455556666'].join('-') + '__"')))],
+    ['ca-email',          mod('claudeai', b => Buffer.concat([b, Buffer.from('someone@contoso.com')]))],
+    ['ca-host',           mod('claudeai', b => Buffer.concat([b, Buffer.from('window.cowork.callMcpTool')]))],
+    ['ca-dialog',         mod('claudeai', b => Buffer.concat([b, Buffer.from('<script>window.alert ("x")</script>')]))],
+    ['ca-controls',       mod('claudeai', b => str(b.toString().replace('<style id="rvz-controls">', '<style id="rvz-ctl">')))],
+    ['ca-controls',       mod('claudeai', b => str(b.toString().replace(CONTROLS, CONTROLS.replace('appearance:none;color-scheme:light', 'appearance:auto;color-scheme:light'))))],
+    ['ca-tools',          mod('claudeai', b => str(b.toString().replace('var TOOLS = {list_accounts:1,', 'var TOOLS = {list_accounts:1,update_issues:1,')))],
   ];
   const clean = gates(base);
   let blind = clean.length ? ['clean tree is not green: ' + clean.join(', ')] : [];

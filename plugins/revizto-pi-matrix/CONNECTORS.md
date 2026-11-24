@@ -12,7 +12,11 @@ Intelligence Blueprint serves the Matrix too.
 |---|---|---|
 | Revizto MCP (project data) | Customize → Connectors → add "Revizto MCP" for your region, sign in | OAuth 2.1 PKCE against the regional Revizto API. One connection per region. |
 
-> **Two separate gates.** Connecting the connector is necessary but **not** sufficient. The Matrix
+> **Installed with Claude's Artifact tool** (the usual case): the artifact declares its Revizto tools by
+> connector name and asks you to allow them before its first live read. If you decline, the Matrix says
+> "This viewer cannot run the Revizto connectors"; allow them from the artifact's Permissions menu.
+>
+> **Two separate gates (Cowork live artifacts only).** Connecting the connector is necessary but **not** sufficient. The Matrix
 > artifact has its own per-artifact `mcp_tools` allowlist, which the connector grant does **not**
 > populate — the install skill's `create_artifact` declares the read tools into it, and only when run
 > locally in Cowork. If the Matrix says "tools aren’t authorised for this artifact yet," that second gate is

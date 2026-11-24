@@ -1,5 +1,40 @@
 # Changelog
 
+## 1.0.1 — the Repository Terms 2.0 and the Apache License 2.0; drag and drop is the only way to bring a file in
+
+- **Licence.** The Matrix is licensed under the Apache License, Version 2.0 (`LICENSE`), with `NOTICE`, and is
+  subject to the **Revizto Open-Source Repository Terms and Conditions, Version 2.0 — 13 November 2026**
+  (`TERMS.md`). These replace the Revizto Custom Licence (`LICENSE.md`). Revizto's brand assets and the
+  third-party components listed in `NOTICE` are not licensed under the Apache License.
+- **Terms as approved by legal.** The Terms name the Revizto Project Intelligence Blueprint, by its published name,
+  as their example of an Item, and carry no bold text (TERMS.md and the in-app Terms alike).
+- **In-app Terms.** The Terms gate shows the Repository Terms in full, word for word, followed by notes on
+  what the Matrix reads and keeps (the notes describe the Matrix; they are not terms). The agreement names
+  the Revizto MCP Server Terms as well, for the Matrix's live reads. The Terms version moves
+  from 1.1 to 2.0, so every connection is asked to accept the Terms once more before its first live read.
+  About names Apache 2.0 and the Repository Terms.
+- **Files are brought in by drag and drop only.** Every drop zone (Import, the import wizard, the Clash Test
+  Editor's setup card, the export template and 04 Health's check) reads a file you drag onto it from Finder or
+  File Explorer. The keyboard routes that 1.0.0 carried but did not show — pasting a copied file onto a
+  focused drop zone, and pressing Enter for a file browser — are removed. Neither could be relied on in
+  Cowork, which closes every file dialog an artifact opens, and a hidden route that may not work is worse
+  than none.
+- Drop zones are no longer stops in the Tab order (a stop that does nothing when reached is a dead end for a
+  keyboard user). A screen reader describes each one as drag and drop only. When a file is refused, focus
+  still returns to the zone and the reason is announced.
+- **Installs with Claude's Artifact tool.** Cowork live artifacts (`create_artifact`) were retired for new
+  artifacts on 19 August 2026, so a 1.0.0 install could no longer complete. The plugin now also ships
+  `matrix-claudeai.html`, the same release for Claude's Artifact tool: it reaches your Revizto connectors by
+  their names through the artifact's own connector access, asks you to allow the Revizto tools before its
+  first live read (so the install makes no Revizto calls), and saves exported clash tests as a `.zip`.
+  Help that pointed at Cowork, or at adding a connector id, points at the install skill or the artifact's
+  Permissions menu. Checkboxes, radios and text fields are drawn white in any host theme: the claude.ai host
+  could otherwise paint them black on the Matrix's light page. The
+  install skill uses it whenever the session has the Artifact tool, and keeps `matrix.html` and the
+  `create_artifact` path for organisations that still have live artifacts. The claude.ai build is derived
+  from `matrix.html` by `tools/claudeai/port.mjs` and checked byte for byte on every push.
+- No other behaviour changes. Saved matrices and the declared read-only tools are as in 1.0.0; re-run the `project-intelligence-matrix` skill to update an artifact you have already created.
+
 ## 1.0.0 — first public release
 
 The Revizto Project Intelligence Matrix joins the Revizto Blueprints marketplace as its own plugin,

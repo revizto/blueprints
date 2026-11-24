@@ -38,7 +38,7 @@ try {
   process.exit(1);
 }
 
-const INCLUDE = ['.claude-plugin', 'skills', 'README.md', 'CHANGELOG.md', 'LICENSE.md', 'TERMS.md', 'CONNECTORS.md', 'SKILLS-MANIFEST.md'];
+const INCLUDE = ['.claude-plugin', 'skills', 'README.md', 'CHANGELOG.md', 'LICENSE', 'NOTICE', 'TERMS.md', 'OFL.txt', 'CONNECTORS.md', 'SKILLS-MANIFEST.md'];
 const present = INCLUDE.filter(p => fs.existsSync(path.join(ROOT, p)));
 
 fs.mkdirSync(OUT_DIR, { recursive: true });

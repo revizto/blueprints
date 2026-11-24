@@ -6,20 +6,28 @@ description: >
   Intelligence Blueprint", or just installed the Revizto Project Intelligence plugin
   and needs the dashboard created. It deploys the pre-built, read-only Project
   Intelligence Blueprint (a fixed, self-contained HTML file bundled with this plugin)
-  as a Cowork artifact, pointed at the installing user's own Revizto licences.
+  as an artifact, pointed at the installing user's own Revizto licences.
 metadata:
-  version: "1.0.4"
+  version: "2.0.0"
 ---
 
 # Project Intelligence Blueprint — install action
 
-Deploy the **pre-built** Revizto Project Intelligence Blueprint as a live Cowork artifact.
+Deploy the **pre-built** Revizto Project Intelligence Blueprint as an artifact.
 
 ## 🚫 CRITICAL — deploy the bundled file verbatim. Do NOT build a dashboard.
 
-The Blueprint is a **finished, approved artifact**: a single self-contained HTML file
-(`assets/dashboard.html`) that ships inside this plugin. Your entire job is to **copy that exact
-file** and **insert the user's connector prefix into one line**, then register it as an artifact.
+The Blueprint is a **finished, approved artifact** that ships inside this plugin as two builds of the
+same release, one per way of creating artifacts (step 0 picks one):
+
+- `assets/dashboard-claudeai.html` — for the **Artifact tool** (claude.ai artifacts). The usual case.
+- `assets/dashboard.html` — for Cowork's **`create_artifact`** (live artifacts), which only some
+  organisations still have.
+
+`dashboard-claudeai.html` is derived from `dashboard.html` by a fixed, checked port; neither is ever edited
+by hand. Your entire job is to **copy one file** and **insert the user's connector(s) into one line**, then
+register it as an artifact. It is Revizto's own published plugin; deploying it to the user's own artifacts
+installs it for them.
 
 Its size, line count, checksum, build stamp and tool list all live in `assets/manifest.json`,
 generated from the file itself. **Never type any of those numbers into this document.** Earlier
@@ -36,23 +44,30 @@ If you find yourself *writing HTML/CSS/JS for a dashboard*, stop — you are doi
 The correct action is a **byte-for-byte file copy** plus one tiny edit. A regenerated dashboard is
 an automatic failure.
 
-## ⚠️ Prerequisite — this install MUST run in a LOCAL (on-your-computer) session, not a cloud session
-
-The read tools are authorised for the dashboard artifact only when `create_artifact` runs **locally on
-the user's computer**. In a **cloud** Cowork session the artifact is registered through the cloud→desktop
-bridge, which **cannot bind the `mcp_tools` allowlist** — so the dashboard opens with an empty allowlist
-and shows "The Blueprint's tools aren't authorised for this artifact yet" / "Licence not accessible via
-MCP" / "No projects", no matter how correctly everything else is done.
-
-Before you start: confirm the session is running **on this computer** (local), not in the cloud. In the
-Claude app the header shows a **cloud icon** for cloud sessions and a **computer/laptop icon** for local
-ones. To switch: use the **run-location control at the top-right of the window** and choose **"On your
-computer"** (or set the default under **Settings → Cowork → turn OFF "Run new tasks in the cloud"**). If
-this is a cloud session, tell the user to switch to on-your-computer and re-run — proceeding in the cloud
-produces a dashboard that cannot read data ("tools aren't authorised for this artifact"). Confirmed: a
-local session binds the allowlist and the Blueprint loads live data.
-
 ## Steps
+
+**0 — Pick the install path from the tools this session has.** Cowork's live artifacts were retired for
+new artifacts on 19 August 2026; sessions now normally have the built-in **Artifact** tool instead of
+`create_artifact`. Organisations on customer-managed keys, zero data retention or a HIPAA-ready setup keep
+live artifacts.
+
+- The **Artifact** tool is available → **Path A** (claude.ai artifact). Use it even if `create_artifact`
+  also exists.
+- No Artifact tool, but `create_artifact` is available (search your deferred tools for it before deciding)
+  → **Path B** (Cowork live artifact).
+- **Neither** → stop. Tell the user artifacts are switched off for them: **Settings → Capabilities →
+  "Create and edit files"** (on Team and Enterprise an owner sets it under **Organization settings →
+  Capabilities**). Do not publish the file any other way.
+
+**Path B MUST run in a LOCAL (on-your-computer) session, not a cloud session.** The read tools are
+authorised for the dashboard artifact only when `create_artifact` runs **locally on the user's computer**.
+In a **cloud** Cowork session the artifact is registered through the cloud→desktop bridge, which **cannot
+bind the `mcp_tools` allowlist** — so the dashboard opens with an empty allowlist and shows "The
+Blueprint's tools aren't authorised for this artifact yet" / "Licence not accessible via MCP" / "No
+projects", no matter how correctly everything else is done. The header shows a **cloud icon** for cloud
+sessions and a **computer/laptop icon** for local ones; to switch, use the **run-location control at the
+top-right of the window** and choose **"On your computer"** (or turn OFF **Settings → Cowork → "Run new
+tasks in the cloud"**), then re-run. Path A has no such requirement.
 
 **1 — Confirm a Revizto MCP connector is connected.** If no `mcp__<id>__list_licenses` tool is available in
 this session, tell the user to add the **Revizto MCP** connector for their region under **Customize →
@@ -60,6 +75,16 @@ Connectors** and stop. The connector is a custom/remote MCP server: transport **
 `https://api.<region>.revizto.com/mcp`, **OAuth Client ID `revizto-mcp`**, client secret **blank**. (The
 Blueprint still opens without a connector — it shows a calm "Connect the Revizto MCP Server" first-run
 panel — but has nothing live to read.)
+
+Path A also needs each Revizto connector's **display name** — the name the user gave it in their connector
+settings, because a claude.ai artifact reaches a connector by name, not by id. Load the
+**`artifact-capabilities`** skill now (the Artifact tool requires it before declaring capabilities); its
+"connectors this session" list maps each connector id to its name. Copy each Revizto connector's name
+exactly as listed. Never guess a name.
+
+Path A also needs the prefix to be a connector **id** (`mcp__` + a UUID + `__`), because the page matches
+connectors by id. If the Revizto tools in this session have no UUID-shaped prefix, stop and tell the user
+this host is not supported yet — do not install a Blueprint that cannot read.
 
 Two Revizto-side conditions are easy to miss, and both surface later as "unreadable licence" rather than as
 a connection error, so mention them if licences come back blocked:
@@ -72,27 +97,48 @@ a connection error, so mention them if licences come back blocked:
 
 If the user had a connector before 30 July 2026, it was created with the previous OAuth client ID and no
 longer authorises — it must be removed and re-added with `revizto-mcp`. Re-adding mints a **new connector
-id**, so a previously-deployed Blueprint's allowlist is bound to an id that no longer exists. That is
+id** (and may change its name), so a previously-deployed Blueprint is bound to a connector that no longer exists. That is
 precisely why this skill is being re-run; do not assume the old artifact can be repaired in place.
 
 **2 — Copy the bundled dashboard verbatim into your scratch workspace.** Do not open it to reproduce
-it — just copy it:
+it — just copy it. Set `HOST` to `claudeai` for Path A or `cowork` for Path B.
+
+**Where to run it.** Run the copy in your **outputs (working) folder** — the folder your shell, your file
+tools and the Artifact tool can all reach. In Cowork the shell sees it under `/sessions/<id>/mnt/outputs/`,
+while the Read and Artifact tools take its path on the computer; `cd` there first, and in steps 5 and 6 give
+those tools the same file by the path they use. A file left in the shell's own home folder cannot be
+published.
 
 ```bash
-A="$CLAUDE_PLUGIN_ROOT/skills/project-intelligence-dashboard/assets"
-cp "$A/dashboard.html" ./pi-blueprint.html
-cat "$A/manifest.json"                        # the expected bytes / lines / sha256 / tools
-wc -c < ./pi-blueprint.html                   # must equal .asset.bytes
-shasum -a 256 ./pi-blueprint.html | cut -d" " -f1   # must equal .asset.sha256
+HOST=claudeai   # Path A. Path B: HOST=cowork
+PR="${CLAUDE_PLUGIN_ROOT:-${PR:-}}"
+[ -n "$PR" ] && [ -f "$PR/.claude-plugin/plugin.json" ] && [ -f "$PR/skills/project-intelligence-dashboard/assets/dashboard.html" ] \
+  || { echo "STOP: set PR to the folder containing this plugin's .claude-plugin/plugin.json (name revizto-project-intelligence), then re-run this block."; exit 1; }
+A="$PR/skills/project-intelligence-dashboard/assets"
+F=$( [ "$HOST" = claudeai ] && echo dashboard-claudeai.html || echo dashboard.html )
+cp "$A/$F" ./pi-blueprint.pristine.html     # never edited: the reference for step 6
+cp "$A/$F" ./pi-blueprint.html              # the copy you edit in step 3
+python3 - "$A/manifest.json" ./pi-blueprint.pristine.html "$HOST" "$A/dashboard.html" <<'PY'
+import hashlib, json, sys
+m = json.load(open(sys.argv[1])); b = open(sys.argv[2], "rb").read(); host = sys.argv[3]
+want = m["asset"] if host == "cowork" else (m.get("claudeai") or {})
+assert want.get("sha256"), "STOP: the manifest has no claude.ai build - this package predates it. Do not deploy."
+if host == "claudeai":
+    cw = hashlib.sha256(open(sys.argv[4], "rb").read()).hexdigest()
+    assert want["portOf"]["sha256"] == m["asset"]["sha256"] == cw, "STOP: the claude.ai build is not the port of this release. Do not deploy."
+size = want.get("bytes", want.get("size")); got = hashlib.sha256(b).hexdigest()
+print("file", host, "| bytes", len(b), "want", size, "| sha256", got[:12], "want", want["sha256"][:12])
+assert len(b) == size and got == want["sha256"], "STOP: the copy does not match the manifest. Do not deploy it."
+print("OK - Blueprint build", m["buildStamp"], "| read:", ", ".join(m["tools"]["read"]), "| write:", ", ".join(m["tools"]["write"]))
+PY
 ```
 
-Compare both against `manifest.json`. If either differs you have the wrong file, a truncated copy,
-or a file you generated yourself — **do not proceed**. If the copy is only a few KB you have
-definitely got the wrong file.
+If an assertion fails you have the wrong file, a truncated copy, or a file you generated yourself —
+**do not proceed**. If the copy is only a few KB you have definitely got the wrong file.
 
-(If `$CLAUDE_PLUGIN_ROOT` isn't set in this environment, locate the plugin's
-`skills/project-intelligence-dashboard/assets/dashboard.html` on disk and copy that. Never substitute
-a hand-written file.)
+(If `$CLAUDE_PLUGIN_ROOT` isn't set in this environment, find the plugin folder — the one whose
+`.claude-plugin/plugin.json` `name` is `revizto-project-intelligence` — and add `PR=/path/to/that/folder`
+as the first line of the block; each shell call starts fresh. Never substitute a hand-written file.)
 
 **3 — Make EXACTLY ONE edit: insert the connector prefix(es) into `CONFIG.connectors`.** Each
 Revizto MCP server you add becomes one selectable row in the Blueprint's **MCP Server** panel; the
@@ -118,12 +164,56 @@ const CONFIG={connectors:[
 ],readOnly:false,tcsVersion:"…",buildStamp:"…"};   // ← both left exactly as they were
 ```
 
-Use a single targeted find-and-replace on that one region. **Do not touch anything else in the file** —
-no reformatting, no other edits. Read the real prefix; never guess it. (If you genuinely cannot obtain
+Path A adds that connector's display name from step 1, exactly as listed:
+
+```js
+  {prefix:"mcp__<connector-id>__",wsHost:"ws.revizto.com",missing:[],name:"<connector display name>"},
+```
+
+Write the line with the helper below, never by hand. On the lines between the `cat` line and the closing
+`RVZ_CONNECTORS_END` line, replace the two example lines with two lines per connected Revizto region, in install
+order: the connector's prefix (read above, from this session's tool names), then its display name (from step 1),
+each exactly as read, nothing else on the line. Path B only: leave the name line empty. On Path A every connector
+needs its exact display name, because the page reaches a connector by name and rejects every call for one without
+it: if you cannot read a name, stop and ask the user for it, and do not publish without it (the helper refuses a
+blank name on the claude.ai build). The
+helper reads those lines as data — they never become code — and writes each prefix and name as a JSON string (with
+`<` as `\u003c`), so no quote, backslash or `</script>` in a name can change it or break the page. If a display name
+spans more than one line, holds a control character or is exactly `RVZ_CONNECTORS_END`, stop and tell the user.
+
+```bash
+cat > ./rvz-connectors.txt <<'RVZ_CONNECTORS_END'
+mcp__<connector-id>__
+<connector display name>
+RVZ_CONNECTORS_END
+python3 - ./pi-blueprint.html ./rvz-connectors.txt <<'PY'
+import json, os, re, sys
+f, data = sys.argv[1], sys.argv[2]
+raw = open(data, encoding="utf-8", newline="").read(); os.remove(data)   # newline="": a \r stays visible
+lines = (raw[:-1] if raw.endswith("\n") else raw).split("\n")
+assert len(lines) >= 2 and len(lines) % 2 == 0, "STOP: write two lines per connector (prefix, then name). Redo this step."
+CONNS = list(zip(lines[0::2], lines[1::2]))
+assert all(re.fullmatch(r"mcp__[A-Za-z0-9_-]+__", p) for p, _ in CONNS), "STOP: a prefix is not mcp__<id>__. Redo this step."
+assert not any(re.search(r"[\x00-\x1f\x7f]", n) for _, n in CONNS), "STOP: a connector name holds a control character. Tell the user."
+js = lambda v: json.dumps(v, ensure_ascii=False).replace("<", "\\u003c")
+ins = "".join("  {prefix:%s,wsHost:\"ws.revizto.com\",missing:[]%s},\n" % (js(p), (",name:" + js(n)) if n else "") for p, n in CONNS)
+s = open(f, encoding="utf-8").read()
+assert not ("window.RVZ_BRIDGE = {" in s and any(not n.strip() for _, n in CONNS)), "STOP: Path A needs every connector's exact display name. Ask the user for it; do not publish without it."
+m = re.search(r"const CONFIG=\{connectors:\[\n( /\*[\s\S]*?\*/\n)\],readOnly:", s)
+assert m and s.count("const CONFIG={connectors:[") == 1, "STOP: CONFIG.connectors is not the shipped empty list. Redo from step 2."
+open(f, "w", encoding="utf-8").write(s[:m.end(1)] + ins + s[m.end(1):])
+print("connectors set:", len(CONNS))
+PY
+```
+
+The helper above is that one edit. **Do not touch anything else in the file** — no reformatting, no other
+edits. Read the real prefix and name; never guess them. (If you genuinely cannot obtain
 a prefix, you may leave `connectors:[]` and deploy anyway — the Blueprint will show the connect CTA —
 but it won't load live data, so prefer inserting the prefix.)
 
-**4 — Call every read tool in `manifest.json` once in this session (mandatory — this is what makes the allowlist bind).**
+**4 — Path B only: call every read tool in `manifest.json` once in this session (mandatory — this is what makes the allowlist bind).**
+Path A skips this step: a claude.ai artifact asks the user to approve its connector tools itself, the first
+time it needs them, so you make **no** Revizto calls at install.
 
 `manifest.json` → `.tools.read` is the authoritative list, generated from the build's own argument
 contract. Use it rather than any list written out in prose, here or anywhere else. A previous
@@ -154,7 +244,35 @@ If any call returns empty or errors for lack of data, that's fine — it still c
 session," which is all the allowlist binding needs. The goal is simply that every one of the ten tools
 has been invoked once so it can be declared. (Repeat per connector prefix if the user has more than one region.)
 
-**5 — Register the artifact from the copied file.** Call `create_artifact` with:
+**5 — Register the artifact from the copied file.**
+
+*Path A — the Artifact tool.*
+
+1. **Re-install or first install?** List the user's artifacts (`action: "list"`). If one titled
+   **Revizto Project Intelligence Blueprint** exists, this is a re-install: read it (`action: "read"` with
+   its `url`; the tool requires that before an update) and publish to that same `url`, so the user keeps
+   their link. Otherwise publish a new artifact.
+2. **The Artifact tool asks you to read a file you did not write before publishing it.** Read
+   `pi-blueprint.html` in parts (the Read tool with `offset` and `limit`). It is large: some lines are the
+   embedded Geist fonts as base64. The sha256 check in step 2 proves these are the released bytes, and step 3
+   is your one edit.
+3. **Publish** with:
+   - `file_path`: `pi-blueprint.html` in your outputs folder, by the path the Artifact tool uses (the file
+     from steps 2–3 — **not** any newly authored file);
+   - `url`: only on a re-install;
+   - `icon`: `chart` on a first publish;
+   - `description`: "Revizto project intelligence: live issues, clashes, health and actions for your Revizto projects.";
+   - `capabilities`:
+     `{"mcp": {"servers": [{"server": "<connector display name>", "tools": [<.tools.read that exist in this session>, <.tools.write that exist>]}]}, "sample": {}}`
+     — one `servers` entry per connector, its `server` exactly the name you wrote into the connector line.
+     `sample` backs the Blueprint's plain-language brief and Ask; the viewer is asked before its first use.
+     Not connected: `{"sample": {}}`.
+
+   **Never call `update_issues` during install.** You declare it; only a user-approved write through the
+   06 gate, with read-only switched off, ever invokes it. A connector tool the user has set to need
+   approval for every use cannot be used by an artifact; reads still work.
+
+*Path B — `create_artifact`.* Call it with:
 
 - `id`: **`revizto-project-intelligence-blueprint`** (reuse this exact id; never invent a new one).
 - `html_path`: the path to your copied `./pi-blueprint.html` (the file from steps 2–3 — **not** any newly authored file).
@@ -176,11 +294,15 @@ has been invoked once so it can be declared. (Repeat per connector prefix if the
 
 - Content: the deployed HTML must match `manifest.json` on **bytes** and **sha256** (recheck as in
   step 2 — the only permitted difference from the shipped file is the `CONFIG.connectors` line you
-  edited, so recompute the hash on the *pristine* copy, not the edited one). It must also contain the
+  edited, so recompute the hash on the *pristine* copy, not the edited one; on Path A compare against
+  `manifest.json` → `claudeai`). It must also contain the
   six-view chrome (panel ids incl. `panel-issues`, `panel-health`, `panel-compare`, `panel-ask`). A
   dashboard you "built" yourself will be far smaller and will match nothing. If it does not match,
   you regenerated it — discard and redo from step 2 by copying the file.
-- Tools: after the artifact opens, it must reach the Terms gate → licence picker, **not** the
+- Tools, Path A: on first live load the artifact asks the user to allow the Revizto tools, then shows the
+  Terms gate → licence picker. "This Revizto MCP connection is no longer registered" straight after
+  install usually means the connector line lacks that connector's `name` — redo from step 2.
+- Tools, Path B: after the artifact opens, it must reach the Terms gate → licence picker, **not** the
   "tools aren't authorised for this artifact yet" panel. If it shows that panel, the `mcp_tools` did not
   bind — confirm you (a) *called* every tool in `manifest.json` → `.tools.read` in step 4 and
   (b) *declared* all of those **plus** `.tools.write` in step 5,

@@ -1,5 +1,89 @@
 # Changelog
 
+## 2.0.0 — 2026-11-24 (the Revizto Open-Source Repository Terms 2.0 and the Apache License 2.0; installs with Claude's Artifact tool; security; a redesign on the Revizto design standard; build `2026-11-24.3`)
+
+The first release since 1.0.4. It carries everything prepared as 1.0.5, which was not released on its own (the
+new licensing model, installation with Claude's Artifact tool and the security fixes, listed under 1.0.5
+below), and a redesign. The redesign changes how the Blueprint looks and is laid out; the data, the
+calculations, the connection model and every safeguard behind a write are those described under 1.0.5.
+
+> **Action required.** Re-run the `project-intelligence-dashboard` skill. Every connection asks you to accept
+> the Terms again, because they have changed (Terms 2.0).
+
+- **Built on the Revizto design standard (1.6).** Geist and Geist Mono, one set of colour, type and spacing
+  tokens, and drawn icons in place of text symbols (with screen-reader text wherever a symbol carried meaning).
+  Brand red marks the main action only; status uses its own colours (on plan teal, watch amber, at risk red).
+- **A new masthead and navigation.** Status badges sit under the title, and the six views are grouped as
+  Understand (Morning brief, Checklist, Analytics, Portfolio) and Act (Ask, Action). On a narrow screen the
+  product links fold into a More menu.
+- **One project bar on every view.** Licence, project, its facts, a one-line pulse (verdict, active issues,
+  % resolved), the detail sample and Refresh sit in the same light bar on all six views; the pulse opens the
+  Morning brief. Dark panels now mean one thing: Claude is speaking or listening (Ask, Action, the briefing).
+- **The Morning brief, recomposed.** The four moves fill the main column and your portfolio sits beside them,
+  aligned with the first cards and on screen as you scroll. Choose how many projects it shows (3 to 10): the
+  ones you viewed most recently come first, then the most recently active (remembered on this device).
+- **Analytics opens with the numbers.** The project pulse (verdict and the four headline figures) and What
+  changed (one table, the last 24 hours beside the last 7 days) now head 03 Analytics, side by side.
+- **The detailed briefing opens in place of the four moves,** with a switch between the two, so nothing else on
+  the page moves. A briefing belongs to the project and persona it was written for: switching either returns
+  the column to the moves.
+- **One figure for unresolved criticals.** While the issue sample is partial, the brief, its recommendations
+  and the headline figure all show the same project-wide estimate (≈), with the count in the sample beside it.
+- **Smaller fixes.** People are named rather than shown by e-mail address in the brief; the verdict is stated
+  once; every move card has an action (Project radar opens Analytics); the timeline's "Today" label no longer
+  overlaps the line's values; a disabled Compare button says what is missing ("Select one more project").
+- **Interaction.** Focus stays on a tab after you choose it; portfolio tiles have a real "Switch to this
+  project" button and work-table rows a real checkbox; every dialog names itself from its heading; Discard
+  asks in the page in Cowork too.
+- **Gates.** `tests/output-encoding.json` re-reviews the splices the new markup adds (619, all escaped or
+  constant) and pins the escaped form of the redesigned project picker and portfolio tiles; the claude.ai port
+  accepts the in-page Discard confirm and the not-connected kind that 2.0.0 carries natively.
+
+## 1.0.5 — not released separately; shipped in 2.0.0 (the Revizto Open-Source Repository Terms 2.0 and the Apache License 2.0; installs with Claude's Artifact tool; security; build `2026-11-24.2`)
+
+The Blueprint now carries the repository's new licensing model, and installs with Claude's Artifact tool.
+The Cowork build (`dashboard.html`) behaves as 1.0.4; the claude.ai build differs only where its host does.
+
+> **Action required.** Re-run the `project-intelligence-dashboard` skill. Every connection asks you to accept
+> the Terms again, because they have changed.
+
+- **Security: every value from Revizto, from you or from Claude is escaped before it is shown.** A project
+  title, issue field, member name or e-mail, status, type or workflow name, error message, stored job or milestone,
+  or a plan Claude proposed, could previously be inserted into the page as HTML in some views (the Compare and
+  project pickers, the portfolio list, the work table, signals, recommendations, the approval and undo text, the
+  timeline). Anyone able to name a project could have placed markup in another user's Blueprint. Every one of these places
+  now escapes its values (apostrophes included), issue links encode each part of the URL, and colours from Revizto
+  are accepted only as hex values. `tests/run.mjs` section 9 pins the escaped form of every fixed site and fails on
+  any new splice into the page that is neither escaped nor reviewed (`tests/output-encoding.json`,
+  `tests/encoding.mjs`).
+- **Installs with Claude's Artifact tool.** Cowork live artifacts (`create_artifact`) were retired for new
+  artifacts on 19 August 2026, so a 1.0.4 install could no longer complete. The plugin now also ships
+  `dashboard-claudeai.html`, the same build for Claude's Artifact tool: it reaches your Revizto connectors by
+  their names through the artifact's own connector access (the 06 write, `update_issues`, included and still
+  behind the read-only switch and approvals), backs the brief and Ask with the artifact's access to Claude,
+  and asks you to allow the Revizto tools before its first live read, so the install makes no Revizto calls.
+  Where the host differs, so does the claude.ai build: Discard (for a paused bulk update) asks in the page,
+  because the claude.ai viewer blocks native dialogs; a connector you have not connected gets its own
+  message; help that pointed at Cowork, or at adding a connector id, points at the install skill or the
+  artifact's Permissions menu; and checkboxes, radios and text fields are drawn white in any host theme (the
+  claude.ai host painted them black on the Blueprint's light page), keeping the red tick on the Terms box, the
+  amber tick on write approvals, and a white box with a red tick on the Read-only pill when it is on.
+  The install skill uses it whenever the session has the Artifact tool, and keeps `dashboard.html` and the
+  `create_artifact` path for organisations that still have live artifacts. It is derived from
+  `dashboard.html` by `tools/claudeai/port.mjs` and checked byte for byte by `tests/run.mjs` and
+  `tools/build.mjs --check`.
+- **Terms as approved by legal.** The Terms gate names the Revizto Project Intelligence Blueprint, by its published
+  name, as the Terms' example of an Item, and the Terms carry no bold text (TERMS.md and the gate alike).
+- **Licence.** The Blueprint is licensed under the Apache License, Version 2.0 (`LICENSE`), with `NOTICE`,
+  and is subject to the **Revizto Open-Source Repository Terms and Conditions, Version 2.0 — 13 November
+  2026** (`TERMS.md`). These replace the Revizto Custom Licence (`LICENSE.md`) and the Blueprint's own
+  Terms 1.1. Revizto's brand assets and the third-party components listed in `NOTICE` are not licensed
+  under the Apache License.
+- **In-app Terms.** The acceptance gate shows the Repository Terms in full, word for word, with their links
+  live, and the agreement names the Revizto MCP Server Terms as well. The Terms version moves from 1.1 to
+  2.0, so every connection is asked to accept them once.
+- **Fonts.** `OFL.txt` now ships with the Blueprint, for the embedded Geist and Geist Mono typefaces.
+
 ## 1.0.4 — 2026-08-28 (the `_cb` outage; an argument contract; no environment concept; guards that cannot go stale; build `2026-08-28.2`)
 
 A customer reported every connection showing *"Connected · licences not readable."* The connections were

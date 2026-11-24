@@ -1,0 +1,83 @@
+<script>
+/* =============================================================================
+   PORT SHIM — claude.ai Artifacts runtime (release; derived by tools/claudeai/port.mjs).
+   The Cowork build reached connectors through a host bridge. On this platform the page
+   asks for the `mcp` capability and calls connectors by DISPLAY NAME. This shim keeps the
+   old bridge's call/response shape so conn-core is unchanged: it maps a Cowork prefix uuid
+   to a connector name, and turns the capability's rejections back into the
+   {isError, content:[{text}]} shape that conn-core classifies.
+   ============================================================================= */
+(function(){
+  /* RELEASE: no connector is baked in. The install skill writes each connector's display name beside
+     its prefix in the page's own connector table; NAMES reads that table at call time. */
+  function NAMES_OF(){
+    var out = {};
+    try{
+      var list = /*@@RVZ_CONNECTOR_TABLE@@*/;
+      (list || []).forEach(function(c){
+        var m = c && /^mcp__([0-9a-f-]{36})__$/i.exec(String(c.prefix || ""));
+        if(m && c.name) out[m[1].toLowerCase()] = String(c.name);
+      });
+    }catch(e){}
+    return out;
+  }
+  /* the tools this page declares; anything else would be refused by the platform */
+  var TOOLS = /*@@RVZ_TOOLS@@*/;
+  function use(name){
+    try{ if(window.claude && typeof window.claude.use==="function") return Promise.resolve(window.claude.use(name)).catch(function(){return null;}); }catch(e){}
+    return Promise.resolve(null);
+  }
+  var mcpP = use("mcp");
+  var dlP = use("downloads");
+  window.RVZ_DOWNLOADS_P = dlP;
+  window.RVZ_DOWNLOADS_OK = undefined;
+  dlP.then(function(d){
+    window.RVZ_DOWNLOADS_OK = !!d;
+    if(!d){ try{ document.body.classList.add("rvz-nodl"); }catch(e){} }
+  });
+  mcpP.then(function(m){
+    if(m) return;
+    try{
+      if(typeof connMsg==="function")
+        connMsg("warn","<b>Connectors are not available in this view.</b> This viewer cannot run the Revizto connectors for this page "+
+          "(signed out, connector access declined, or opened outside claude.ai). The synthetic views work in full; live clash figures need a connector.");
+    }catch(e){}
+  });
+  function errResult(text){ return { isError:true, content:[{ type:"text", text:String(text) }] }; }
+  function toResult(r){
+    if(r && r.isError) return { isError:true, content: Array.isArray(r.content)?r.content:[{type:"text",text:String(r.payload||"tool error")}] };
+    var out = {};
+    if(r && r.structuredContent != null) out.structuredContent = r.structuredContent;
+    else if(r && r.payload != null && typeof r.payload === "object") out.structuredContent = r.payload;
+    if(r && Array.isArray(r.content)) out.content = r.content;
+    else if(r && typeof r.payload === "string") out.content = [{ type:"text", text:r.payload }];
+    if(out.structuredContent == null && !out.content) out.content = [{ type:"text", text: JSON.stringify(r == null ? null : r) }];
+    return out;
+  }
+  function fromError(e){
+    var code = (e && e.code) || "", msg = (e && e.message) || String(e || "error");
+    if(code === "rate_limited") return errResult("rate limit (429): " + msg);
+    if(code === "timeout") return errResult("timed out waiting for server: " + msg);
+    if(code === "server_not_connected" || code === "server_not_found")
+      return errResult("Revizto connector not connected for this viewer: " + msg);
+    if(code === "not_granted" || code === "unavailable" || code === "denied")
+      throw new Error("No MCP bridge: connector access was not granted (" + (code||"") + ")");
+    if(code === "tool_not_found" || code === "unknown_tool" || code === "tool_not_declared") return errResult("Unknown tool: " + msg);
+    return errResult(msg);   /* tool_error and the rest: the server's own words, classified by conn-core */
+  }
+  window.RVZ_BRIDGE = {
+    callMcpTool: function(fullName, args){
+      var m = /^mcp__([0-9a-f-]{36})__(.+)$/i.exec(String(fullName||""));
+      if(!m) return Promise.resolve(errResult("Unknown tool: " + fullName));
+      var server = NAMES_OF()[m[1].toLowerCase()], tool = m[2];
+      if(!server) return Promise.resolve(errResult("Failed to parse SSE message (connector " + m[1] + " has no connector name in this install; run the install skill again)"));
+      if(!TOOLS[tool]) return Promise.resolve(errResult("Unknown tool: " + tool + " is not declared by this page"));
+      return mcpP.then(function(mcp){
+        if(!mcp) throw new Error("No MCP bridge in this host");
+        return mcp.callTool(server, tool, args || {}).then(toResult, fromError);
+      });
+    }
+  };
+})();
+
+</script>

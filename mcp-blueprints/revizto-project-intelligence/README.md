@@ -1,6 +1,6 @@
 # Revizto Project Intelligence Blueprint
 
-Live project intelligence over the **Revizto MCP Server**, delivered as a Claude Cowork artifact.
+Live project intelligence over the **Revizto MCP Server**, delivered as a Claude artifact.
 
 It follows one explicit path: **MCP Server → Licence → Project.** Each Revizto MCP server you connect is
 its own connection, named as you named it in Claude. You choose which server the Blueprint reads from,
@@ -15,7 +15,7 @@ The Blueprint **opens read-only every session**. Read-only is a toggle you contr
 the write surface becomes available, so you can push reassignments, status changes and more into your
 Revizto project. Every write runs count-first targeting, a diff preview, and an explicit approval step.
 
-**Status:** `v1.0.4` (build `2026-08-28.2`). Version history in [CHANGELOG.md](CHANGELOG.md).
+**Status:** `v2.0.0` (build `2026-11-24.3`). Version history in [CHANGELOG.md](CHANGELOG.md).
 
 > ### Upgrading? Re-run the install skill.
 >
@@ -38,8 +38,8 @@ Five steps, per-user, **no Claude admin required**.
 
 ### Prerequisites
 
-- **Claude desktop app with Cowork.** The Blueprint runs as a Cowork artifact — not in a plain chat and
-  not on claude.ai.
+- **Claude with artifacts switched on.** The Blueprint installs as an artifact. Artifacts need **Settings →
+  Capabilities → "Create and edit files"** (on Team and Enterprise an owner sets it).
 - **A Revizto licence the MCP Server accepts.** Three things must all be true: the Revizto MCP Server app
   is activated on the organisation account, your licence role is Administrator or Owner, and that account
   is authorised for your connector. The Blueprint verifies each licence with a real call and tells you
@@ -47,17 +47,19 @@ Five steps, per-user, **no Claude admin required**.
 - **(Team/Enterprise only) Admin network allowlist** — your Claude admin allows the Revizto MCP connector
   domain(s) and `cdn.jsdelivr.net` under **Admin settings → Capabilities**.
 
-### Step 1 — Run this task on your computer, not the cloud 🔴
+### Step 1 — Check how your Claude creates artifacts
 
-**The single most important step.** A Claude task runs either on your computer or in the cloud. Reading
-your data needs two independent gates open: the connector must be signed in (Step 2), *and* the artifact's
-own tool allowlist must authorise the tools. Only the install skill fills that second gate, and only when
-it runs **locally** — a cloud session cannot bind it, and the dashboard opens but shows "tools aren't
-authorised for this artifact".
+Most Claude accounts now create artifacts with Claude's built-in **Artifact** tool, and the install skills
+use it. The task can then run anywhere, and the first time a plugin reads live data the artifact asks you
+to **allow its Revizto tools**. Nothing to do in this step.
 
-Use the run-location control at the top-right of the Claude window → **"On your computer"** (the header
-then shows a laptop icon, not a cloud icon). To make it the default: **Settings → Cowork → turn off "Run
-new tasks in the cloud."**
+**Only if your organisation still uses Cowork live artifacts** (organisations on customer-managed encryption
+keys, zero data retention or a HIPAA-ready setup): reading live data then needs the artifact's own tool
+allowlist, which only the install skill fills, and only when it runs **locally** — in a cloud session the
+artifact opens but cannot read Revizto. Use the run-location control at the top-right of the Claude
+window → **"On your computer"** (the header then shows a laptop icon). To make it the default:
+**Settings → Cowork → turn off "Run new tasks in the cloud."** The skill tells you which way it is
+installing.
 
 ### Step 2 — Connect the Revizto MCP connector
 
@@ -91,11 +93,11 @@ region can you access?"*
 **Sync** → install **revizto-project-intelligence**. The same marketplace also lists the Revizto Project
 Intelligence Matrix; install it too if you want it — each installs on its own.
 
-**Or upload the package.** If you were supplied `revizto-project-intelligence-v1.0.4.plugin` (also
+**Or upload the package.** If you were supplied `revizto-project-intelligence-v2.0.0.plugin` (also
 attached to the GitHub release), use **Directory → Plugins → Personal → Local uploads**. No repository
 access needed.
 
-Either way the install detail should list **3 skills** at version **1.0.4**.
+Either way the install detail should list **3 skills** at version **2.0.0**.
 
 > **Upgrading?** Remove the old entry before installing the new one, or Claude keeps serving the cached
 > version. **Added the marketplace before the rename?**
@@ -118,12 +120,14 @@ Confirm with *"list your available skills"* before continuing.
 
 ### Step 5 — Open the Blueprint
 
-In a Cowork session running on your computer, say:
+In a Claude task, say:
 
 > Open the Revizto Project Intelligence Blueprint — follow the `project-intelligence-dashboard` skill.
 
-It copies the bundled dashboard, calls your Revizto tools, and registers the artifact with those tools
-authorised. Then accept the **Terms**, choose your **MCP Server**, and pick your **Licence**.
+It copies the bundled dashboard, checks it against its manifest and publishes it as an artifact. With the
+Artifact tool it makes no Revizto calls: allow the Revizto tools when the artifact asks. (On the Cowork
+live-artifact path it calls your Revizto tools and registers the artifact with those tools authorised.)
+Then accept the **Terms**, choose your **MCP Server**, and pick your **Licence**.
 
 If Claude starts *designing* a dashboard instead, the skill is not enabled — go back to Step 4.
 
@@ -138,15 +142,19 @@ If Claude starts *designing* a dashboard instead, the skill is not enabled — g
   archived**, tagged when it does.
 - **06 Action anything shows a padlock on first load.** Correct — toggle the **Read-only** pill off to
   enable writes.
-- About / footer reads build **`2026-08-28.2`**.
+- About / footer reads build **`2026-11-24.2`**.
 
 ### Troubleshooting
 
 | Symptom | Fix |
 |---|---|
-| "Tools aren't authorised for this artifact" / "Licence not accessible" / no projects | You ran the install **in the cloud**. Re-run it on your computer (Step 1). This is the usual cause. |
+| "This copy of the Blueprint cannot reach the Revizto connectors from this view" | The request was declined, or the connector is not connected for you. Allow them from the artifact's Permissions menu, or reconnect (Step 2). |
+| "This Revizto MCP connection is no longer registered" | The connector was renamed, re-added or rebuilt since the install, or the install did not record its name. Re-run the skill (Step 5). A connector added by id inside the Blueprint cannot be reached from a claude.ai artifact. |
+| "This Revizto connector isn’t connected for you" | Connect it in Claude (Settings → Connectors), allow it when the artifact asks, then Reload. |
+| "Tools aren't authorised for this artifact" / "Licence not accessible" / no projects | Cowork live-artifact installs only: you ran the install **in the cloud**. Re-run it on your computer (Step 1). This is the usual cause. |
+| An approved 06 Action write fails | A connector tool you set to need approval for every use cannot be used by an artifact. Allow `update_issues` for the connector, or keep the Blueprint read-only. |
 | Asking Claude to open the Blueprint does nothing, or it starts **designing** one | The `project-intelligence-dashboard` skill is not enabled (Step 4). It should copy a file, never author one. |
-| Build stamp older than `2026-08-28.2` | The deployed artifact predates the plugin update. Re-run the skill (Step 5). |
+| Build stamp older than `2026-11-24.2` | The deployed artifact predates the plugin update. Re-run the skill (Step 5). |
 | Marketplace add fails: `github_repo_not_accessible`, or a prompt about the Claude GitHub App | "Sync automatically" was left **on**. Remove the entry and re-add with it off (Step 3). |
 | Adding the marketplace says it needs **admin** | You are on the **Organization** tab. Use **Personal** — per-user, no admin. |
 | Plugin stuck on an old version after reinstall | Cache. Quit Claude, then `chflags -R nouchg ~/.claude/plugins 2>/dev/null; rm -rf ~/.claude/plugins/cache ~/.claude/plugins/marketplaces/revizto`, reopen and re-add. On Windows: `%USERPROFILE%\.claude\plugins\`. |
@@ -178,8 +186,8 @@ One `CONFIG` object at the top of `dashboard.html`:
 |---|---|---|
 | `connectors` | `[]` | One entry per connected region, `{prefix, env, wsHost, missing}`. The install skill fills this with your own `mcp__<connector-id>__` prefixes; connections can also be added at runtime from the MCP Server panel. |
 | `readOnly` | `false` | The Read-only pill is a live per-session toggle. The Blueprint opens read-only regardless; this constant only controls whether the toggle can be turned off. Set `true` to hard-lock read-only and disable writes entirely. |
-| `tcsVersion` | `"1.1"` | Terms version. Bumping it re-prompts acceptance on every connection. |
-| `buildStamp` | `"2026-08-28.2"` | Shown in About and the Terms footer, for support. |
+| `tcsVersion` | `"2.0"` | Terms version (Revizto Open-Source Repository Terms 2.0). Bumping it re-prompts acceptance on every connection. |
+| `buildStamp` | `"2026-11-24.2"` | Shown in About and the Terms footer, for support. |
 
 ## Trust posture
 
@@ -210,13 +218,22 @@ This plugin lives in `mcp-blueprints/revizto-project-intelligence/` of the
 ```
 .claude-plugin/plugin.json           plugin manifest
 skills/
-  project-intelligence-dashboard/    install action + assets/dashboard.html + assets/manifest.json
+  project-intelligence-dashboard/    install action + assets/dashboard.html (Cowork live artifacts)
+                                     + assets/dashboard-claudeai.html (Claude's Artifact tool; derived by
+                                       tools/claudeai/port.mjs at the repository root) + assets/manifest.json
   skill-aeco-innovation-revizto/       Revizto platform knowledge
   skill-aeco-innovation-revizto-api/   Revizto API / MCP reference
 tools/ · tests/ · package.json       build and verification gates (see RELEASING.md)
-CHANGELOG.md · CONNECTORS.md · SKILLS-MANIFEST.md · TERMS.md · LICENSE.md
+CHANGELOG.md · CONNECTORS.md · SKILLS-MANIFEST.md · LICENSE · NOTICE · TERMS.md · OFL.txt
 ```
 
-## Licence
+## Licence and terms
 
-See [LICENSE.md](LICENSE.md).
+This item is licensed under the [Apache License, Version 2.0](LICENSE), except for Revizto's names, logos,
+trademarks, service marks and other brand assets (the Excluded Materials, Section 5 of the Terms) and the
+third-party components listed in [NOTICE](NOTICE), which keep their own licences. Its use is subject to the
+[Revizto Open-Source Repository Terms and Conditions, Version 2.0 — 13 November 2026](TERMS.md).
+
+The Blueprint embeds the Geist and Geist Mono typefaces (Copyright 2024 The Geist Project Authors), used
+under the SIL Open Font License 1.1 — see [OFL.txt](OFL.txt). It loads Chart.js 4.5.0 (MIT) from
+`cdn.jsdelivr.net` at run time.

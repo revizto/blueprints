@@ -17,6 +17,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { execFileSync } from 'child_process';
 import os from 'os';
+import crypto from 'crypto';
+import { port, selftest as portSelftest, NATIVE_DIALOG, withoutShim } from '../../../tools/claudeai/port.mjs';
+import { unreviewed as unreviewedSplices, escaperBindings } from './encoding.mjs';
 
 const ROOT  = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ASSET = path.join(ROOT, 'skills/project-intelligence-dashboard/assets/dashboard.html');
@@ -32,7 +35,7 @@ const section = t => console.log('\n' + t);
 /* --------------------------------------------------------------------- helpers */
 function inlineScript() {
   const blocks = [];
-  for (const m of SRC.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)) {
+  for (const m of SRC.matchAll(/<script([^>]*)>([\s\S]*?)<\/script[^>]*>/gi)) {
     const attrs = m[1];
     if (/src=/i.test(attrs)) continue;
     const t = /type\s*=\s*["']([^"']+)/i.exec(attrs);
@@ -382,6 +385,168 @@ section('6  VERSION  (one release, one number, in every file that states it)');
      new RegExp('`' + stamp.replace(/\./g, '\\.') + '`').test(topSection),
      'asset ships ' + stamp + '; top section says ' +
        ((/build `([^`]+)`/.exec(topSection) || [])[1] || '(none)'));
+}
+
+section('7  TERMS  (the gate carries the Repository Terms word for word; one version, everywhere)');
+{
+  // The in-app gate shows legal's Revizto Open-Source Repository Terms in full. They are compared WORD FOR
+  // WORD with this folder's TERMS.md (itself a byte copy of the root file, derived from legal's docx and
+  // pinned by sha256 in the release pre-flight), so a hand-edit to either can never ship unnoticed.
+  const stripTags = t => {   // until stable, so a tag rebuilt by the removal of another is removed too; then no stray `<` is left
+    let s = String(t), prev;
+    do { prev = s; s = s.replace(/<\/?(?:b|strong|em|i|a)\b[^<>]*>/gi, ''); } while (s !== prev);
+    do { prev = s; s = s.replace(/<[^<>]*>/g, ' '); } while (s !== prev);
+    return s.replace(/</g, ' ');
+  };
+  const ENT = { '&mdash;': '—', '&amp;': '&', '&quot;': '"', '&#39;': "'" };
+  // one pass over the entities, so `&amp;quot;` decodes once to `&quot;` and never on to `"`
+  const words = t => stripTags(t).replace(/&(?:mdash|amp|quot|#39);/g, e => ENT[e])
+    .replace(/[*_#]/g, '').split(/\s+/).filter(Boolean);
+  const i = SRC.indexOf('<div class="tcs-terms" id="tcsTerms">'), j = i < 0 ? -1 : SRC.indexOf('</div>', i);
+  const gate = i < 0 || j < 0 ? [] : words(SRC.slice(i, j));
+  const termsFile = fs.existsSync(path.join(ROOT, 'TERMS.md')) ? fs.readFileSync(path.join(ROOT, 'TERMS.md'), 'utf8') : '';
+  // TERMS.md = a version line, the two-line title, then the Terms. The gate carries its own title.
+  const body = termsFile.split(/\n## Terms and Conditions\n/)[1] || '';
+  const ref = words(body);
+  let k = 0; while (k < ref.length && ref[k] === gate[k]) k++;
+  ok('the gate carries the Repository Terms (#tcsTerms)', gate.length > 1000, 'found ' + gate.length + ' words');
+  ok('...word for word against TERMS.md (' + ref.length + ' words)', ref.length > 1000 && gate.length === ref.length && k === ref.length,
+     'first difference at word ' + k + ': TERMS.md "' + ref.slice(k, k + 6).join(' ') + '" vs gate "' + gate.slice(k, k + 6).join(' ') + '"');
+  const ver = (/^_Version (\d+\.\d+) — /m.exec(termsFile) || [])[1];
+  const tcs = (/tcsVersion:"([^"]+)"/.exec(SRC) || [])[1];
+  ok('the gate re-gates at the Terms version TERMS.md states', !!ver && tcs === ver, 'TERMS.md ' + ver + ' vs tcsVersion ' + tcs);
+  ok('no retired Custom Licence wording, and LICENSE + NOTICE ship beside the plugin',
+     !/Custom Licen[cs]e/.test(SRC) && fs.existsSync(path.join(ROOT, 'LICENSE')) && fs.existsSync(path.join(ROOT, 'NOTICE')) &&
+     !fs.existsSync(path.join(ROOT, 'LICENSE.md')));
+}
+
+section('8  CLAUDE.AI BUILD  (the file the Artifact tool publishes is the port of dashboard.html, nothing else)');
+{
+  // Cowork's create_artifact is gone for new artifacts (19 Aug 2026); a session normally has the Artifact tool,
+  // whose pages reach connectors by display name through the `mcp` capability. dashboard-claudeai.html is
+  // derived from dashboard.html by tools/claudeai/port.mjs at the repository root and must never be edited by hand.
+  const CA = path.join(ROOT, 'skills/project-intelligence-dashboard/assets/dashboard-claudeai.html');
+  const MAN = path.join(ROOT, 'skills/project-intelligence-dashboard/assets/manifest.json');
+  const sha = b => crypto.createHash('sha256').update(b).digest('hex');
+  const CONTROLS = fs.readFileSync(path.join(ROOT, '..', '..', 'tools/claudeai/controls.css'), 'utf8');
+  let derived = null, why = '';
+  try { derived = port('blueprint', SRC); } catch (e) { why = e.message; }
+  // Each check returns its own verdict so the same function can be run against injected defects (Forbidden #14).
+  const checks = (ca, man, src) => {
+    const caText = ca.toString('utf8'), cam = man.claudeai || {};
+    const caTools = ((/var TOOLS = \{([^}]*)\};/.exec(caText) || [])[1] || '').split(',').map(x => x.split(':')[0]).sort();
+    return [
+      ['ships', 'the claude.ai build ships beside dashboard.html', ca.length > 0],
+      ['manifest', 'manifest describes it as the port of this dashboard.html',
+        cam.file === 'dashboard-claudeai.html' && cam.size === ca.length && cam.sha256 === sha(ca) &&
+        !!cam.portOf && cam.portOf.sha256 === sha(Buffer.from(src, 'utf8'))],
+      ['port', 'it is byte for byte what tools/claudeai/port.mjs derives', derived !== null && Buffer.compare(ca, Buffer.from(derived, 'utf8')) === 0, why],
+      ['host', 'it reaches connectors through the mcp capability, never the Cowork bridge',
+        /use\("mcp"\)/.test(caText) && !/\b\w+\.cowork\.\w+/.test(caText)],
+      ['sample', 'askClaude is backed by the sample capability', /use\("sample"\)/.test(caText) && /askClaude: function\(system, data\)/.test(caText)],
+      ['dialog', 'no native dialog (the claude.ai viewer blocks confirm, alert and prompt)',
+        !NATIVE_DIALOG.test(withoutShim(caText))],
+      ['controls', 'host-proof controls: white checkboxes, radios and fields in any host theme (rvz-controls)',
+        caText.split('<style id="rvz-controls">').length === 2 && caText.includes(CONTROLS)],
+      ['tools', "the shim's tool list is exactly the contract's reads and writes",
+        JSON.stringify(caTools) === JSON.stringify([...(man.tools ? man.tools.read.concat(man.tools.write) : [])].sort()), caTools.join(',')],
+      ['empty', 'it ships no connector', !/mcp__[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.test(caText) &&
+        /const CONFIG=\{connectors:\[\n \/\*[\s\S]*?\*\/\n\],readOnly:/.test(caText)],
+    ];
+  };
+  const ca0 = fs.existsSync(CA) ? fs.readFileSync(CA) : Buffer.alloc(0);
+  const man0 = fs.existsSync(MAN) ? JSON.parse(fs.readFileSync(MAN, 'utf8')) : {};
+  for (const [, name, cond, detail] of checks(ca0, man0, SRC)) ok(name, cond, detail);
+  ok('the port refuses every input it cannot fully apply (its selftest)', portSelftest().length === 0);
+  // Every check above must be able to fail: inject the defect each exists to catch.
+  const t = ca0.toString('utf8');
+  const fails = (ca, man = man0) => checks(Buffer.from(ca), man, SRC).filter(c => !c[2]).map(c => c[0]);
+  const cases = [
+    ['ships', ''],
+    ['manifest', t, { ...man0, claudeai: { ...man0.claudeai, portOf: { file: 'dashboard.html', sha256: '0' } } }],
+    ['port', t.replace('Allow the Revizto tools from this artifact', 'Allow the tools from this artifact')],
+    ['host', t + 'window.cowork.callMcpTool'],
+    ['sample', t.replace('askClaude: function(system, data)', 'askClaude: function(sys, data)')],
+    ['dialog', t.replace('function closeConfirm()', 'function x(){window.confirm ("y")}\nfunction closeConfirm()')],
+    ['controls', t.replace('-webkit-appearance:none;appearance:none;color-scheme:light;flex-shrink:0', 'flex-shrink:0')],
+    ['tools', t.replace('var TOOLS = {', 'var TOOLS = {delete_issues:1,')],
+    ['empty', t.replace('const CONFIG={connectors:[\n', 'const CONFIG={connectors:[\n{prefix:"mcp__' + ['1a2b3c4d', '1111', '2222', '3333', '444455556666'].join('-') + '__"},\n')],
+  ];
+  const blind = cases.filter(([id, ca, man]) => !fails(ca, man).includes(id)).map(c => c[0]);
+  ok('every claude.ai check above goes red on its own injected defect (' + cases.length + ')', blind.length === 0, 'blind: ' + blind.join(', '));
+}
+
+section('9  OUTPUT ENCODING  (no value from Revizto, the user, storage or Claude reaches the page as markup)');
+{
+  // CodeQL js/xss-through-dom on PR #5 (Compare picker) and the two audits behind it: project titles, issue fields,
+  // member names and e-mails, status/type/workflow names, server error text, stored jobs and milestones and Claude's
+  // plans were spliced into innerHTML unescaped; every such place is escaped since build 2026-11-24.2.
+  // tests/output-encoding.json pins (a) the escaped form of every fixed site and (b) every remaining splice that is
+  // not one whole escaping call, each reviewed. A revert, or a new splice that is not reviewed, fails here.
+  const pins = JSON.parse(fs.readFileSync(path.join(ROOT, 'tests/output-encoding.json'), 'utf8'));
+  const missing = src => (pins.escaped || []).filter(x => !src.includes(x));
+  const left = src => unreviewedSplices(src, pins.reviewed || {});
+  ok('every fixed site keeps its escaped form (' + (pins.escaped || []).length + ')', (pins.escaped || []).length > 40 && missing(SRC).length === 0,
+     missing(SRC).slice(0, 3).join(' | '));
+  ok('every splice into a string is one escaping call or reviewed (' + Object.keys(pins.reviewed || {}).length + ' reviewed)',
+     Object.keys(pins.reviewed || {}).length > 100 && left(SRC).length === 0, left(SRC).slice(0, 5).join(' | '));
+  ok('the escapers are declared once and never rebound, shadowed or passed in as a parameter', escaperBindings(SRC).length === 0,
+     escaperBindings(SRC).slice(0, 3).join(' | '));
+  // the gate can fail: each injected regression must be caught by one of the three checks
+  const red = s => missing(s).length > 0 || left(s).length > 0 || escaperBindings(s).length > 0;
+  const probes = [
+    ['Compare picker title revert', SRC.replace('<span>${_esc(p.title)}</span>', '<span>${p.title}</span>')],
+    ['assignee options revert', SRC.replace('`<option value="${_esc(e)}">${_esc(e)}</option>`', '`<option value="${e}">${e}</option>`')],
+    ['moves list revert', SRC.replace('<div class="mi">${_esc(mv[2])}</div>', '<div class="mi">${mv[2]}</div>')],
+    ['no-project banner revert (concatenation)', SRC.replace('"</b><br>"+_esc((_kk&&_kk.d)||', '"</b><br>"+((_kk&&_kk.d)||')],
+    ['colour validation removed', SRC.replace('return _safeCol(sc);', 'return sc;')],
+    ['escape call with raw data after it', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _x=`<b>${_esc("")+w.title}</b>`;')],
+    ['new raw concatenation', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _y=\'<b>\'+w.reporter+\'</b>\';')],
+    ['new raw interpolation of an unlisted name', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _z=`<i>${w.reporter}</i>`;')],
+    // the two blind spots Copilot found in the first version of this gate (PR #5 review)
+    ['raw value nested deep in a reviewed interpolation', SRC.replace('["criticals","Criticals"]', '["criticals",DATA.meta.name]')],
+    ['raw operand mid-chain, away from any markup literal', SRC.replace('"</b> holds "+RS.conc+', '" "+RS._untrusted+" "+"</b> holds "+RS.conc+')],
+    // the four blind spots Copilot found in the second version (PR #5 re-review), and the two sinks beside them
+    ['raw value between two escaping calls whose strings hold brackets', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _a=`<b>${_esc("(")+w.reporter+_esc(")")}</b>`;')],
+    ['raw value between template-literal markup', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _b=`<b>`+w.reporter+`</b>`;')],
+    ['raw value between bracketed markup', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _c=("<b>")+w.reporter+("</b>");')],
+    ['a closing brace inside a string in an interpolation', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _d=`<b>${w.x==="}"?"":w.reporter}</b>`;')],
+    ['raw value assigned straight to innerHTML', SRC.replace('function rowHtml(w){', 'function rowHtml(w){document.body.innerHTML=w.reporter;')],
+    ['raw value appended to accumulated markup', SRC.replace('function rowHtml(w){', 'function rowHtml(w){let _e="";_e+=w.reporter;')],
+    // what the independent review of the third version got past it
+    ['raw value returned from a markup builder', SRC.replace('function rowHtml(w){', 'function rowHtml(w){if(w.err)return w.reporter;')],
+    ['raw ternary arm returned from a markup builder', SRC.replace('function rowHtml(w){', 'function rowHtml(w){if(w.x)return w.x?"<tr>"+_esc(w.a):w.reporter;')],
+    ['self-append without +=', SRC.replace('function rowHtml(w){', 'function rowHtml(w){let _h=`<tr>`;_h=_h+w.reporter;')],
+    ['regex after an if head hides the rest of the line', SRC.replace('function rowHtml(w){', "function rowHtml(w){if(w)/'/.test(w.x);document.body.innerHTML=w.reporter;")],
+    ['regex after an object literal', SRC.replace('function rowHtml(w){', 'function rowHtml(w){let _n={}/1;document.body.innerHTML=w.reporter;_n=_n/2;')],
+    ['escaper shadowed', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _esc=s=>s;')],
+    ['escaper reassigned', SRC.replace('function rowHtml(w){', 'function rowHtml(w){fmt=String;')],
+    ['escaper taken as a parameter', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _f=(tcsEsc)=>tcsEsc(w.reporter);')],
+    ['sink by bracket access', SRC.replace('function rowHtml(w){', 'function rowHtml(w){document.body["innerHTML"]=w.reporter;')],
+    ['sink by Object.assign', SRC.replace('function rowHtml(w){', 'function rowHtml(w){Object.assign(document.body,{innerHTML:w.reporter});')],
+    ['srcdoc by setAttribute', SRC.replace('function rowHtml(w){', 'function rowHtml(w){document.body.setAttribute("srcdoc",w.reporter);')],
+    ['insertAdjacentHTML by .call', SRC.replace('function rowHtml(w){', 'function rowHtml(w){Element.prototype.insertAdjacentHTML.call(document.body,"beforeend",w.reporter);')],
+    ['document.write by optional chaining', SRC.replace('function rowHtml(w){', 'function rowHtml(w){window.document?.write(w.reporter);')],
+    ['createContextualFragment', SRC.replace('function rowHtml(w){', 'function rowHtml(w){document.createRange().createContextualFragment(w.reporter);')],
+    ['attribute fragment without a bracket', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _g=\'" onmouseover="\'+w.reporter;')],
+    ['escaped bracket in the literal', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _i="\\x3cimg src=x\\x3e"+w.reporter;')],
+    ['escaped value in an event handler', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _j=`<a onclick="go(\'${_esc(w.reporter)}\')">x</a>`;')],
+    ['escaped value as a URL', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _k=`<a href="${_esc(w.reporter)}">x</a>`;')],
+    ['encodeURIComponent in a single-quoted attribute', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _l=`<a title=\'${encodeURIComponent(w.reporter)}\'>x</a>`;')],
+    // and what the second independent review got past the fourth
+    ['escaped value concatenated into a URL attribute', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _m=\'<a href="\'+_esc(w.reporter)+\'">x</a>\';')],
+    ['escaped value in an attribute-name position', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _n=`<b ${_esc(w.reporter)}>x</b>`;')],
+    ['escaped value in srcdoc', SRC.replace('function rowHtml(w){', 'function rowHtml(w){const _o=`<iframe srcdoc="${_esc(w.reporter)}"></iframe>`;')],
+    ['escaper shadowed by a catch parameter', SRC.replace('function rowHtml(w){', 'function rowHtml(w){try{throw 0}catch(_esc){}')],
+    ['escaper replaced on window', SRC.replace('function rowHtml(w){', 'function rowHtml(w){window.tcsEsc=s=>s;')],
+    ['with statement', SRC.replace('function rowHtml(w){', 'function rowHtml(w){with({}){}')],
+    ['regex after a labelled block hides the rest of the line', SRC.replace('function rowHtml(w){', "function rowHtml(w){L:{}/'/;if(w.x)return \"<b>\"+w.reporter;/'/;")],
+    ['block after a call on the next line taken for a function', SRC.replace('function rowHtml(w){', 'function rowHtml(w){String() {if(w.x)return w.reporter}')],
+    ['sink named by a string argument', SRC.replace('function rowHtml(w){', 'function rowHtml(w){Reflect.set(document.body,"innerHTML",w.reporter);')],
+    ['sink called with optional chaining', SRC.replace('function rowHtml(w){', 'function rowHtml(w){document.body.insertAdjacentHTML?.("beforeend",w.reporter);')],
+  ];
+  const blind = probes.filter(([, s]) => !red(s)).map(p => p[0]);
+  ok('the gate goes red on every injected regression (' + probes.length + ')', blind.length === 0, 'blind: ' + blind.join(', '));
 }
 
 /* ---------------------------------------------------------------- verdict */

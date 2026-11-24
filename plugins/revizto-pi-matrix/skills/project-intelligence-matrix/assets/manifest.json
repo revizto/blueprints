@@ -1,13 +1,13 @@
 {
-  "md5": "bd5b6382bcd5a75992475eb45fc64af8",
+  "md5": "9a145ecded847f1e0dcb3a16bc36b029",
   "file": "matrix.html",
   "product": "Revizto Project Intelligence Matrix",
-  "version": "1.0.0",
-  "stamp": "1.0.0",
-  "tcsVersion": "1.1",
-  "buildDate": "2026-11-16",
-  "size": 1142946,
-  "sha256": "b9019be4f25b7fa2c3009dfcf54b0d3152e3b3fce719be2ae43c4a6f3d12f9a6",
+  "version": "1.0.1",
+  "stamp": "1.0.1",
+  "tcsVersion": "2.0",
+  "buildDate": "2026-11-24",
+  "size": 1171986,
+  "sha256": "99c4649fa7c29955719c273741d5304e05e2482d0cbe2a8ca955d7e384ad2f0f",
   "anchor": "/*@@INSTALL_CONNECTORS@@*/",
   "anchorCount": 1,
   "tools": {
@@ -28,5 +28,15 @@
     ],
     "write": []
   },
-  "packagedBy": "package_release.py"
+  "packagedBy": "package_release.py",
+  "claudeai": {
+    "file": "matrix-claudeai.html",
+    "size": 1180488,
+    "md5": "645318840f275c9e663da86325104d0c",
+    "sha256": "61cacd47ce6f2664883d749affa6f5b94fbc3e3a0fadad6ba498e3808e135a15",
+    "portOf": {
+      "file": "matrix.html",
+      "sha256": "99c4649fa7c29955719c273741d5304e05e2482d0cbe2a8ca955d7e384ad2f0f"
+    }
+  }
 }
