@@ -17,8 +17,8 @@ OK = ['Revizto "Syd"', 'Sydney"', 'Sydney\\', 'Sydney\\\\\\', 'a</script><b>x', 
       "it's \\n not a newline", 'a"""b', '"""+str(open(%r,"w").write("x"))+r"""' % CANARY, '|~|', 'x y z',
       '$(touch %s) `touch %s` ${HOME}' % (CANARY, CANARY), 'PY', 'RVZ_CONNECTORS_END ']
 REFUSED = ['two\nlines', 'tab\there', 'x\nPY\ntouch %s\n' % CANARY, 'Sydney\r', 'Syd\rmcp__evil__\rEvil', 'a\r\nb']
-TARGETS = [('plugins/revizto-pi-matrix/skills/project-intelligence-matrix', 'matrix.html', 'pi-matrix.html'),
-           ('mcp-blueprints/revizto-project-intelligence/skills/project-intelligence-dashboard', 'dashboard.html', 'pi-blueprint.html')]
+TARGETS = [('plugins/revizto-pi-matrix/skills/project-intelligence-matrix', 'matrix.html', 'pi-matrix.html', 'matrix-claudeai.html'),
+           ('mcp-blueprints/revizto-project-intelligence/skills/project-intelligence-dashboard', 'dashboard.html', 'pi-blueprint.html', 'dashboard-claudeai.html')]
 EXAMPLE = 'mcp__<connector-id>__\n<connector display name>\n'
 fails = 0
 
@@ -29,7 +29,7 @@ def check(ok, what):
     fails += not ok
 
 
-for skill_dir, asset, page in TARGETS:
+for skill_dir, asset, page, claudeai in TARGETS:
     skill = open(os.path.join(ROOT, skill_dir, 'SKILL.md'), encoding='utf-8').read()
     shipped_p = os.path.join(ROOT, skill_dir, 'assets', asset)
     shipped = open(shipped_p, encoding='utf-8').read()
@@ -39,8 +39,8 @@ for skill_dir, asset, page in TARGETS:
         continue
     block = m.group(1)
 
-    def run(lines):
-        d = os.path.join(TMP, 'w'); shutil.rmtree(d, ignore_errors=True); os.makedirs(d); shutil.copy(shipped_p, os.path.join(d, page))
+    def run(lines, src=None):
+        d = os.path.join(TMP, 'w'); shutil.rmtree(d, ignore_errors=True); os.makedirs(d); shutil.copy(src or shipped_p, os.path.join(d, page))
         r = subprocess.run(['bash', '-c', block.replace(EXAMPLE, ''.join(l + '\n' for l in lines))], cwd=d, capture_output=True, text=True)
         return r, open(os.path.join(d, page), encoding='utf-8').read(), os.path.exists(os.path.join(d, 'rvz-connectors.txt'))
 
@@ -64,6 +64,15 @@ for skill_dir, asset, page in TARGETS:
         check(r.returncode != 0 and out == shipped, page + ': refused, page untouched ' + repr(name)[:60])
     r, out, _ = run(['mcp__x__;rm', 'n'])
     check(r.returncode != 0 and out == shipped, page + ': a prefix that is not mcp__<id>__ is refused')
+    # Path A (the claude.ai build): a connector is reached by its display name, so a blank name is refused (Copilot, PR #5)
+    ca_p = os.path.join(ROOT, skill_dir, 'assets', claudeai); ca = open(ca_p, encoding='utf-8').read()
+    for name in ['', '   ']:
+        r, out, _ = run([PFX, name], ca_p)
+        check(r.returncode != 0 and out == ca and 'display name' in (r.stdout + r.stderr), claudeai + ': Path A refuses a blank display name ' + repr(name))
+    r, out, _ = run([PFX, 'Sydney', PFX.replace('1a2b', '9f9f'), ''], ca_p)
+    check(r.returncode != 0 and out == ca, claudeai + ': Path A refuses a blank name for any one of several connectors')
+    r, out, _ = run([PFX, 'Revizto Sydney MCP'], ca_p)
+    check(r.returncode == 0 and 'Revizto Sydney MCP' in out, claudeai + ': Path A accepts a named connector')
 check(not os.path.exists(CANARY), 'no name ran a command')
 shutil.rmtree(TMP, ignore_errors=True)
 print('\n%s' % ('all passed' if not fails else '%d FAILED' % fails))

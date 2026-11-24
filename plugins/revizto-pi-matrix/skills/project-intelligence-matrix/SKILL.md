@@ -187,7 +187,10 @@ const CONNECTORS=[{prefix:"mcp__<connector-id>__",env:"prod",origin:"current",na
 Write the line with the helper below, never by hand. On the lines between the `cat` line and the closing
 `RVZ_CONNECTORS_END` line, replace the two example lines with two lines per connected Revizto region, in install
 order: the connector's prefix (read above, from this session's tool names), then its display name (from step 1),
-each exactly as read, nothing else on the line. Path B, or a name you could not read: leave the name line empty. The
+each exactly as read, nothing else on the line. Path B only: leave the name line empty. On Path A every connector
+needs its exact display name, because the page reaches a connector by name and rejects every call for one without
+it: if you cannot read a name, stop and ask the user for it, and do not publish without it (the helper refuses a
+blank name on the claude.ai build). The
 helper reads those lines as data — they never become code — and writes each prefix and name as a JSON string (with
 `<` as `\u003c`), so no quote, backslash or `</script>` in a name can change it or break the page. If a display name
 spans more than one line, holds a control character or is exactly `RVZ_CONNECTORS_END`, stop and tell the user. The
@@ -211,6 +214,7 @@ assert not any(re.search(r"[\x00-\x1f\x7f]", n) for _, n in CONNS), "STOP: a con
 js = lambda v: json.dumps(v, ensure_ascii=False).replace("<", "\\u003c")
 ent = ",".join("{prefix:%s,env:\"prod\",origin:\"current\"%s}" % (js(p), (",name:" + js(n)) if n else "") for p, n in CONNS)
 s = open(f, encoding="utf-8").read()
+assert not ("window.RVZ_BRIDGE = {" in s and any(not n.strip() for _, n in CONNS)), "STOP: Path A needs every connector's exact display name. Ask the user for it; do not publish without it."
 old = "const CONNECTORS=[/*@@INSTALL_CONNECTORS@@*/];"
 assert s.count(old) == 1, "STOP: install marker missing or repeated. Redo from step 2."
 open(f, "w", encoding="utf-8").write(s.replace(old, "const CONNECTORS=[" + ent + "];"))

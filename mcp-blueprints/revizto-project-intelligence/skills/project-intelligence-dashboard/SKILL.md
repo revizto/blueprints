@@ -173,7 +173,10 @@ Path A adds that connector's display name from step 1, exactly as listed:
 Write the line with the helper below, never by hand. On the lines between the `cat` line and the closing
 `RVZ_CONNECTORS_END` line, replace the two example lines with two lines per connected Revizto region, in install
 order: the connector's prefix (read above, from this session's tool names), then its display name (from step 1),
-each exactly as read, nothing else on the line. Path B, or a name you could not read: leave the name line empty. The
+each exactly as read, nothing else on the line. Path B only: leave the name line empty. On Path A every connector
+needs its exact display name, because the page reaches a connector by name and rejects every call for one without
+it: if you cannot read a name, stop and ask the user for it, and do not publish without it (the helper refuses a
+blank name on the claude.ai build). The
 helper reads those lines as data — they never become code — and writes each prefix and name as a JSON string (with
 `<` as `\u003c`), so no quote, backslash or `</script>` in a name can change it or break the page. If a display name
 spans more than one line, holds a control character or is exactly `RVZ_CONNECTORS_END`, stop and tell the user.
@@ -195,6 +198,7 @@ assert not any(re.search(r"[\x00-\x1f\x7f]", n) for _, n in CONNS), "STOP: a con
 js = lambda v: json.dumps(v, ensure_ascii=False).replace("<", "\\u003c")
 ins = "".join("  {prefix:%s,wsHost:\"ws.revizto.com\",missing:[]%s},\n" % (js(p), (",name:" + js(n)) if n else "") for p, n in CONNS)
 s = open(f, encoding="utf-8").read()
+assert not ("window.RVZ_BRIDGE = {" in s and any(not n.strip() for _, n in CONNS)), "STOP: Path A needs every connector's exact display name. Ask the user for it; do not publish without it."
 m = re.search(r"const CONFIG=\{connectors:\[\n( /\*[\s\S]*?\*/\n)\],readOnly:", s)
 assert m and s.count("const CONFIG={connectors:[") == 1, "STOP: CONFIG.connectors is not the shipped empty list. Redo from step 2."
 open(f, "w", encoding="utf-8").write(s[:m.end(1)] + ins + s[m.end(1):])
